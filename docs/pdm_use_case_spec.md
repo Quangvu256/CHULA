@@ -24,4 +24,4 @@ ISO 19650-3 Annex A and the H&S schema of ISO 19650-6 for one use case.
 
 Verdict: **CDT-ready** = all mandatory + score >= 0.8; **conditional** = all mandatory + score >= 0.5 (or one mandatory miss at score >= 0.7); otherwise **not ready**.
 
-Run: `python3 backend/check_ifc_pdm.py <model.ifc>`
+Run: `python3 backend/audit/check_ifc_pdm.py <model.ifc>`

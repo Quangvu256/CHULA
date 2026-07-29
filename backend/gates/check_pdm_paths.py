@@ -8,7 +8,7 @@ Checks, in order:
   3. every high-PdM node is reachable from the spine
 """
 import json, collections, itertools, os, sys
-os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 FILES = ["data/iso19650-1_extraction_v4.json", "data/iso19650-2_extraction_v1.json",
          "data/iso19650-3_extraction_v1.2.json", "data/iso19650-4_extraction_v1.json", "data/iso19650-5_extraction_v1.json",

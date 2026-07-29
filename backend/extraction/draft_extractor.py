@@ -2,8 +2,8 @@
 """Machine-generated FIRST DRAFT of an ISO 19650-style extraction - the automation
 half of the hybrid pipeline. Deterministic, stdlib-only.
 
-    python3 backend/draft_extractor.py <pdf> "<standard name>" [--out draft.json]
-    python3 backend/draft_extractor.py --benchmark        # score the method against
+    python3 backend/extraction/draft_extractor.py <pdf> "<standard name>" [--out draft.json]
+    python3 backend/extraction/draft_extractor.py --benchmark        # score the method against
                                                       # the hand-curated gold files
 
 What it does (and honestly cannot do):
@@ -18,7 +18,7 @@ Every output object carries status='draft'; nothing is merge-ready until it has
 passed the gates in docs/extraction_protocol.md.
 """
 import json, re, sys, os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "gates"))
 from evaluate_kg import text_of, parse_terms, clean, strip_xrefs, KG_FILES   # noqa: E402
 
 

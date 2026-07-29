@@ -57,8 +57,8 @@ Verify: `MATCH (n:Iso19650) RETURN count(n)` must return **388**.
 Requires Python >= 3.9. No `pip install` - everything is standard library.
 
 ```bash
-python3 backend/serve.py            # web UI on http://localhost:8000
-python3 backend/check_ifc_pdm.py model.ifc --json report.json   # CLI audit
+python3 backend/api/serve.py            # web UI on http://localhost:8000
+python3 backend/audit/check_ifc_pdm.py model.ifc --json report.json   # CLI audit
 ```
 
 `pdftotext`/`pdftoppm` (poppler) are needed only by the tools that read the
@@ -79,7 +79,7 @@ source PDFs - see the licensing note below. macOS: `brew install poppler`.
 
 ```bash
 # Backend (terminal 1) - no pip install, Python >= 3.9
-python3 backend/serve.py                  # API + built frontend on :8000
+python3 backend/api/serve.py                  # API + built frontend on :8000
 
 # Frontend dev loop (terminal 2) - hot reload on :4200, /api proxied to :8000
 cd frontend && npm install
@@ -93,27 +93,27 @@ cd frontend && npx ng build
 
 ```bash
 # Audit an IFC model against the PdM requirements
-python3 backend/check_ifc_pdm.py model.ifc            # exit 0 = CDT-READY, 2 otherwise
+python3 backend/audit/check_ifc_pdm.py model.ifc            # exit 0 = CDT-READY, 2 otherwise
 
 # Regenerate the requirements after any change to the KG
-python3 backend/gen_pdm_spec.py
+python3 backend/spec/gen_pdm_spec.py
 
 # Re-export and (re)load Neo4j after any change to the KG
-python3 backend/export_neo4j.py
+python3 backend/graphdb/export_neo4j.py
 docker compose exec neo4j cypher-shell -u neo4j -p '<pw>' -f /import/load_iso19650_kg.cypher
 
 # Run the full evaluation (needs the source PDFs on the host)
-python3 backend/evaluate_kg.py                        # writes docs/evaluation_report.md
+python3 backend/gates/evaluate_kg.py                        # writes docs/evaluation_report.md
 
 # First draft of a NEW standard, then curate per docs/extraction_protocol.md
-python3 backend/draft_extractor.py path/to/standard.pdf "ISO XXXXX" --out draft.json
-python3 backend/draft_extractor.py --benchmark        # score the generator vs gold
+python3 backend/extraction/draft_extractor.py path/to/standard.pdf "ISO XXXXX" --out draft.json
+python3 backend/extraction/draft_extractor.py --benchmark        # score the generator vs gold
 ```
 
 ## Verification
 
 Every merge must pass five machine-enforced gates
-(`python3 backend/evaluate_kg.py`, exit 0). Current state:
+(`python3 backend/gates/evaluate_kg.py`, exit 0). Current state:
 
 | Gate | Checks | Result |
 |---|---|---|

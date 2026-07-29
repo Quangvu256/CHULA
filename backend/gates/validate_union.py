@@ -6,7 +6,7 @@ duplicate ids, duplicate names, dangling relationship endpoints, unknown
 relationship types or labels, non-ASCII bytes, self-loops, exact duplicate edges.
 """
 import json, os, sys, collections, unicodedata
-os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 FILES = ["data/iso19650-1_extraction_v4.json", "data/iso19650-2_extraction_v1.json",
          "data/iso19650-3_extraction_v1.2.json", "data/iso19650-4_extraction_v1.json", "data/iso19650-5_extraction_v1.json",

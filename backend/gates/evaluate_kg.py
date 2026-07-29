@@ -2,10 +2,10 @@
 """Quantitative evaluation of the ISO 19650 knowledge graph - the 'evaluation
 section' of the method, runnable as one command:
 
-    python3 backend/evaluate_kg.py        # console table + docs/evaluation_report.md
+    python3 backend/gates/evaluate_kg.py        # console table + docs/evaluation_report.md
 
 Five layers, each with a metric:
-  E1 structural integrity   - composes backend/validate_union.py (ids, names, endpoints,
+  E1 structural integrity   - composes backend/gates/validate_union.py (ids, names, endpoints,
                               type/label closure, ASCII)
   E2 definition fidelity    - every Clause-3 term node's definition string-matched
                               against the source PDF text (verbatim after removing
@@ -14,7 +14,7 @@ Five layers, each with a metric:
                               a heading inventory built from the PDFs; free-text
                               attributions ('mapped from ISO 19650-x ...') resolved
                               against the named standard
-  E4 traversability         - composes backend/check_pdm_paths.py (orphans, components,
+  E4 traversability         - composes backend/gates/check_pdm_paths.py (orphans, components,
                               PdM spine, high-PdM reachability)
   E5 term coverage          - PDF Clause-3 terms vs graph nodes, counting reuse-first
                               placements (a P2 term owned by the P3 file counts as
@@ -26,7 +26,7 @@ the ISO copy is clean but missing pages - their union is reliable.
 """
 import json, re, subprocess, sys, tempfile, os, glob, difflib
 
-ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.chdir(ROOT)
 SERIES = os.path.join(ROOT, "1. ISO 19650 Series")
 KG_FILES = ["data/iso19650-1_extraction_v4.json", "data/iso19650-2_extraction_v1.json",
@@ -124,7 +124,7 @@ def main():
     metrics = {}
 
     # ---- E1 structural ----
-    r1 = subprocess.run([sys.executable, "backend/validate_union.py"], capture_output=True, text=True)
+    r1 = subprocess.run([sys.executable, "backend/gates/validate_union.py"], capture_output=True, text=True)
     metrics["E1_structural_pass"] = r1.returncode == 0
     nums = re.search(r"union: (\d+) nodes / (\d+) relationships", r1.stdout)
     metrics["nodes"], metrics["edges"] = int(nums.group(1)), int(nums.group(2))
@@ -200,7 +200,7 @@ def main():
         report.append("E3 unresolved: " + "; ".join(f"{w} [{o} {t}]" for w, o, t in bad[:10]))
 
     # ---- E4 traversability ----
-    r4 = subprocess.run([sys.executable, "backend/check_pdm_paths.py"], capture_output=True, text=True)
+    r4 = subprocess.run([sys.executable, "backend/gates/check_pdm_paths.py"], capture_output=True, text=True)
     metrics["E4_traversability_pass"] = r4.returncode == 0
     sp = re.search(r"spine: (\d+)/(\d+)", r4.stdout)
     hp = re.search(r"high-PdM nodes: (\d+)\s+reachable from the spine: (\d+)", r4.stdout)

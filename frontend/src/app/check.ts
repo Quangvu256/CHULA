@@ -79,7 +79,7 @@ import { AppState } from './state';
     </tbody>
   </table></div>
   <p class="hint">Same audit from the terminal:
-    <code>python3 backend/check_ifc_pdm.py model.ifc --json report.json</code></p>
+    <code>python3 backend/audit/check_ifc_pdm.py model.ifc --json report.json</code></p>
   `,
 })
 export class CheckTab {

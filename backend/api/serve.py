@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """API backend + static host for the Angular frontend.
 
-    python3 backend/serve.py [port]        # http://localhost:8000
+    python3 backend/api/serve.py [port]        # http://localhost:8000
 
 Endpoints: /api/kg /api/spec /api/graph /api/method /api/check (POST, raw body
 + X-Filename). Everything else serves frontend/dist (SPA fallback to index.html).
@@ -11,9 +11,10 @@ disagree. Stdlib only; HOST=0.0.0.0 for containers.
 import json, os, sys, tempfile, threading, webbrowser, urllib.parse
 from http.server import ThreadingHTTPServer, BaseHTTPRequestHandler
 
-HERE = os.path.dirname(os.path.abspath(__file__))
-ROOT = os.path.dirname(HERE)
-sys.path.insert(0, HERE)
+HERE = os.path.dirname(os.path.abspath(__file__))          # backend/api
+BACKEND = os.path.dirname(HERE)                            # backend
+ROOT = os.path.dirname(BACKEND)                            # repo root
+sys.path.insert(0, os.path.join(BACKEND, "audit"))
 from check_ifc_pdm import run_check, load_spec          # noqa: E402
 
 NEO4J_BROWSER = os.environ.get("NEO4J_BROWSER", "http://192.168.110.146:7474")

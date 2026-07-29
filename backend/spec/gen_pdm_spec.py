@@ -13,7 +13,7 @@ Outputs:
   docs/pdm_use_case_spec.md - human-readable use case specification
 """
 import json, os, sys
-os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 FILES = ["data/iso19650-1_extraction_v4.json", "data/iso19650-2_extraction_v1.json",
          "data/iso19650-3_extraction_v1.2.json", "data/iso19650-4_extraction_v1.json", "data/iso19650-5_extraction_v1.json",
@@ -337,7 +337,7 @@ for r in REQS:
 md += ["", "Verdict: **CDT-ready** = all mandatory + score >= 0.8; "
        "**conditional** = all mandatory + score >= 0.5 (or one mandatory miss at "
        "score >= 0.7); otherwise **not ready**.",
-       "", "Run: `python3 backend/check_ifc_pdm.py <model.ifc>`"]
+       "", "Run: `python3 backend/audit/check_ifc_pdm.py <model.ifc>`"]
 open("docs/pdm_use_case_spec.md", "w").write("\n".join(md) + "\n")
 
 print(f"OK: {len(REQS)} requirements ({sum(1 for r in REQS if r['mandatory'])} mandatory), "
