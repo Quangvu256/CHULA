@@ -1,0 +1,855 @@
+{
+  "use_case": "Predictive Maintenance on a Cognitive Digital Twin",
+  "derived_from": [
+    "iso19650-1_extraction_v4.json",
+    "iso19650-2_extraction_v1.json",
+    "iso19650-3_extraction_v1.2.json",
+    "iso19650-4_extraction_v1.json",
+    "iso19650-5_extraction_v1.json",
+    "iso19650-6_extraction_v2.json"
+  ],
+  "how_generated": "Each requirement is a triple: (1) an anchor into the knowledge graph, cited by node id - generation aborts if a cited node no longer exists; (2) an IFC probe, which is the only hand-authored part, because ISO 19650 delegates the IFC schema itself to ISO 16739; and (3) a gating level - MANDATORY when the data cannot be joined at all without it, otherwise a weight from 1 to 3. The Pset_Risk property names are not hand-authored either: they are read from the field_* nodes' ifc4_3 / ifc4_0 / ifc2x3 keys, which carry ISO 19650-6 Annex D Table D.2.",
+  "normative_basis_for_automated_checking": {
+    "statement": "ISO 19650-4:2022 gives this checker its normative standing: 3.2.3 Note 3 allows an information reviewer to be an artificial intelligence agent or an automated rules-based process; 7.2 makes conformance against the chosen exchange schema a review criterion; 7.6 asks for completeness checks against requirement-derived checklists using repeatable automated processes. An IFC readiness audit under this specification is therefore an information review in the ISO 19650-4 sense, not an extra-standard invention.",
+    "sources": [
+      {
+        "node": "term_information_reviewer",
+        "name": "information reviewer",
+        "definition": "actor who reviews information and its information container",
+        "pdm_relevance": "high",
+        "modality": "normative",
+        "standard": "ISO 19650-4",
+        "clause": "3.2.3"
+      },
+      {
+        "node": "criterion_conformance",
+        "name": "review criterion - conformance",
+        "definition": "check of the information container against the chosen exchange schema and data format",
+        "pdm_relevance": "high",
+        "modality": "normative",
+        "standard": "ISO 19650-4",
+        "clause": "7.2"
+      },
+      {
+        "node": "criterion_completeness",
+        "name": "review criterion - completeness",
+        "definition": "check for the presence and adequacy of the information against the level of information need specified by the EIR and any additional expectations; the reviewer shall consider three requirements: to satisfy the purposes associated to the immediate delivery stage or operational trigger event; to support oversight and coordination of the delivery or operational phase; and to enable long-term management and societal requirements, using standard naming and classification and open standards; the reviewer shall consider using a formalized procedure when checking against the information requirements or checklists derived from them, possibly including structured rules using REPEATABLE AUTOMATED PROCESSES, and means of sharing checking procedures with information providers through the information production methods and procedures",
+        "pdm_relevance": "high",
+        "modality": "normative",
+        "standard": "ISO 19650-4",
+        "clause": "7.6"
+      }
+    ]
+  },
+  "modality_note": "Each citation is tagged normative, informative or mixed, straight from the extraction files. ISO 19650-3 Annex A and ISO 19650-5 Annex B are informative: they give 'examples of information that can be required within an AIM', not obligations. ISO 19650-6 Annex C and Annex D are informative too. A requirement whose basis is entirely informative is still sound engineering for this use case, but it is a recommendation of the series rather than a rule of it - M4 is the one mandatory gate in that position.",
+  "verdict_rule": {
+    "cdt_ready": "all mandatory pass AND recommended score >= 0.8",
+    "conditional": "all mandatory pass AND recommended score >= 0.5, or exactly one mandatory fails with score >= 0.7",
+    "not_ready": "otherwise"
+  },
+  "requirements": [
+    {
+      "id": "M1",
+      "mandatory": true,
+      "category": "identification",
+      "title": "Maintainable equipment is modelled as typed distribution elements",
+      "rationale": "No typed plant, nothing to maintain: PdM needs pumps, fans, chillers etc. as their IFC classes, not as untyped proxies.",
+      "probe": {
+        "kind": "entity_any",
+        "entities": [
+          "IfcPump",
+          "IfcFan",
+          "IfcCompressor",
+          "IfcChiller",
+          "IfcBoiler",
+          "IfcCoolingTower",
+          "IfcUnitaryEquipment",
+          "IfcAirToAirHeatRecovery",
+          "IfcHeatExchanger",
+          "IfcEvaporator",
+          "IfcEvaporativeCooler",
+          "IfcHumidifier",
+          "IfcTank",
+          "IfcFilter",
+          "IfcDuctSilencer",
+          "IfcAirTerminal",
+          "IfcAirTerminalBox",
+          "IfcDamper",
+          "IfcValve",
+          "IfcElectricMotor",
+          "IfcElectricGenerator",
+          "IfcTransformer",
+          "IfcSwitchingDevice",
+          "IfcDistributionChamberElement",
+          "IfcFlowMovingDevice",
+          "IfcEnergyConversionDevice",
+          "IfcFlowController",
+          "IfcDistributionElement",
+          "IfcDistributionControlElement"
+        ],
+        "proxy_warn": "IfcBuildingElementProxy"
+      },
+      "sources": [
+        {
+          "node": "term_asset",
+          "name": "asset",
+          "definition": "item, thing or entity that has potential or actual value to an organization",
+          "pdm_relevance": "high",
+          "modality": "normative",
+          "standard": "ISO 19650-1",
+          "clause": "3.2.8"
+        },
+        {
+          "node": "term_asset_system_description",
+          "name": "asset and served-system description",
+          "definition": "description of an asset and the asset system that it serves",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-3",
+          "clause": "A.4.4"
+        }
+      ],
+      "loop_step": "The thing being maintained",
+      "if_missing": "There is nothing to hang condition data, risks or work orders on. A model full of untyped proxies cannot tell a pump from a handrail, so no asset register can be built from it and the whole loop has no subject.",
+      "probe_human": "At least one instance of: IfcPump, IfcFan, IfcCompressor, IfcChiller, IfcBoiler, IfcCoolingTower and 23 more.",
+      "basis": "mixed"
+    },
+    {
+      "id": "M2",
+      "mandatory": true,
+      "category": "identification",
+      "title": "Equipment carries stable unique identifiers (GlobalId unique, Name/Tag set)",
+      "rationale": "The unique asset identifier is the join key between the IFC model, the H&S register and the condition time series.",
+      "probe": {
+        "kind": "identifiers",
+        "entities": [
+          "IfcPump",
+          "IfcFan",
+          "IfcCompressor",
+          "IfcChiller",
+          "IfcBoiler",
+          "IfcCoolingTower",
+          "IfcUnitaryEquipment",
+          "IfcAirToAirHeatRecovery",
+          "IfcHeatExchanger",
+          "IfcEvaporator",
+          "IfcEvaporativeCooler",
+          "IfcHumidifier",
+          "IfcTank",
+          "IfcFilter",
+          "IfcDuctSilencer",
+          "IfcAirTerminal",
+          "IfcAirTerminalBox",
+          "IfcDamper",
+          "IfcValve",
+          "IfcElectricMotor",
+          "IfcElectricGenerator",
+          "IfcTransformer",
+          "IfcSwitchingDevice",
+          "IfcDistributionChamberElement",
+          "IfcFlowMovingDevice",
+          "IfcEnergyConversionDevice",
+          "IfcFlowController",
+          "IfcDistributionElement",
+          "IfcDistributionControlElement"
+        ],
+        "min_named": 0.8
+      },
+      "sources": [
+        {
+          "node": "term_asset_unique_identifier",
+          "name": "unique asset identifier",
+          "definition": "unique identifier associated with an asset so that its information can be distinguished and linked consistently",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-3",
+          "clause": "A.4.1"
+        },
+        {
+          "node": "field_identifier",
+          "name": "Identifier",
+          "definition": "unique identifier of the record; for a context it is the project/asset identifier, for a risk, risk treatment or incident it is project/asset identifier - originator identifier - sequential number ( - record type), as defined in 4.4.2 and 4.4.3",
+          "pdm_relevance": "high",
+          "modality": "normative",
+          "standard": "ISO 19650-6",
+          "clause": "4.3.2; Table 1; 4.3.3; Table 2; 4.3.4; Table 3; 4.3.5; Table 4; Annex A; Table A.1"
+        },
+        {
+          "node": "term_hs_identifier",
+          "name": "health and safety record identifier",
+          "definition": "identifier which shall be unique to the project or asset; the context identifier is composed of the project/asset identifier as identified in the project/asset information standard (example PR101); risk, risk treatment and incident identifiers are composed of the project/asset identifier - the originator identifier - the sequential number ( - record type), where the identifier includes the originator raising the risk, treatment or incident, the sequential number is unique within the context and typically four digits, and an optional final element (record type) can distinguish among risk, treatment or incident (example PR101-AAA-0003-Risk)",
+          "pdm_relevance": "medium",
+          "modality": "normative",
+          "standard": "ISO 19650-6",
+          "clause": "4.4; Figure 2; Figure 3"
+        }
+      ],
+      "loop_step": "Join key - every step",
+      "if_missing": "The IFC model, the health and safety register and the condition time series each end up with their own private key for the same pump. Nothing can be joined, so the sensor reading can never be attributed to the asset it came from.",
+      "probe_human": "Every equipment occurrence has a unique GlobalId, and at least 80% of them carry a Name or Tag.",
+      "basis": "mixed"
+    },
+    {
+      "id": "M3",
+      "mandatory": true,
+      "category": "structure",
+      "title": "Spatial structure exists and equipment is contained in it",
+      "rationale": "Risk and incident records resolve to 'space, location, zone or site'; an element outside the spatial tree has no location.",
+      "probe": {
+        "kind": "containment",
+        "spatial": [
+          "IfcSite",
+          "IfcBuilding",
+          "IfcBuildingStorey",
+          "IfcSpace",
+          "IfcFacility",
+          "IfcFacilityPart",
+          "IfcBridge",
+          "IfcRoad",
+          "IfcRailway",
+          "IfcMarineFacility"
+        ],
+        "entities": [
+          "IfcPump",
+          "IfcFan",
+          "IfcCompressor",
+          "IfcChiller",
+          "IfcBoiler",
+          "IfcCoolingTower",
+          "IfcUnitaryEquipment",
+          "IfcAirToAirHeatRecovery",
+          "IfcHeatExchanger",
+          "IfcEvaporator",
+          "IfcEvaporativeCooler",
+          "IfcHumidifier",
+          "IfcTank",
+          "IfcFilter",
+          "IfcDuctSilencer",
+          "IfcAirTerminal",
+          "IfcAirTerminalBox",
+          "IfcDamper",
+          "IfcValve",
+          "IfcElectricMotor",
+          "IfcElectricGenerator",
+          "IfcTransformer",
+          "IfcSwitchingDevice",
+          "IfcDistributionChamberElement",
+          "IfcFlowMovingDevice",
+          "IfcEnergyConversionDevice",
+          "IfcFlowController",
+          "IfcDistributionElement",
+          "IfcDistributionControlElement"
+        ],
+        "min_contained": 0.8
+      },
+      "sources": [
+        {
+          "node": "term_space",
+          "name": "space",
+          "definition": "limited three-dimensional extent defined physically or notionally",
+          "pdm_relevance": "medium",
+          "modality": "normative",
+          "standard": "ISO 19650-1",
+          "clause": "3.1.2"
+        },
+        {
+          "node": "field_associated_location",
+          "name": "Associated location",
+          "definition": "space, location, zone or site associated with the record; for a context it is the site or zone and only exceptional zones need be recorded; can be a name, category description or model entity reference",
+          "pdm_relevance": "high",
+          "modality": "normative",
+          "standard": "ISO 19650-6",
+          "clause": "4.3.2; Table 1; 4.3.3; Table 2; 4.3.4; Table 3; 4.3.5; Table 4; Annex A; Table A.1"
+        },
+        {
+          "node": "term_asset_location_spatial_context",
+          "name": "asset location and spatial context",
+          "definition": "asset location and related spatial data, potentially using spatial referencing or geographic information systems",
+          "pdm_relevance": "medium",
+          "modality": "informative",
+          "standard": "ISO 19650-3",
+          "clause": "A.4.1"
+        }
+      ],
+      "loop_step": "Where the risk or the work happens",
+      "if_missing": "Risk, incident and work-order records cannot resolve a location. Maintenance planning loses access routes and exclusion zones, and a risk cannot be scoped to a zone.",
+      "probe_human": "A spatial tree exists (IfcSite, IfcBuilding, IfcBuildingStorey, IfcSpace...) and at least 80% of equipment sits inside it.",
+      "basis": "mixed"
+    },
+    {
+      "id": "M4",
+      "mandatory": true,
+      "category": "structure",
+      "title": "Systems are modelled and equipment is assigned to them",
+      "rationale": "Annex D maps the H&S context product to IfcSystem, and the asset/served-system description is one of the AIM contents ISO 19650-3 Annex A gives as an example of commercial OIR.",
+      "probe": {
+        "kind": "system_assignment",
+        "systems": [
+          "IfcSystem",
+          "IfcDistributionSystem",
+          "IfcBuildingSystem"
+        ],
+        "entities": [
+          "IfcPump",
+          "IfcFan",
+          "IfcCompressor",
+          "IfcChiller",
+          "IfcBoiler",
+          "IfcCoolingTower",
+          "IfcUnitaryEquipment",
+          "IfcAirToAirHeatRecovery",
+          "IfcHeatExchanger",
+          "IfcEvaporator",
+          "IfcEvaporativeCooler",
+          "IfcHumidifier",
+          "IfcTank",
+          "IfcFilter",
+          "IfcDuctSilencer",
+          "IfcAirTerminal",
+          "IfcAirTerminalBox",
+          "IfcDamper",
+          "IfcValve",
+          "IfcElectricMotor",
+          "IfcElectricGenerator",
+          "IfcTransformer",
+          "IfcSwitchingDevice",
+          "IfcDistributionChamberElement",
+          "IfcFlowMovingDevice",
+          "IfcEnergyConversionDevice",
+          "IfcFlowController",
+          "IfcDistributionElement",
+          "IfcDistributionControlElement"
+        ]
+      },
+      "sources": [
+        {
+          "node": "term_asset_system_description",
+          "name": "asset and served-system description",
+          "definition": "description of an asset and the asset system that it serves",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-3",
+          "clause": "A.4.4"
+        },
+        {
+          "node": "term_ifc_representation",
+          "name": "IFC representation of health and safety information",
+          "definition": "mapping of the 4.3 schema to ISO 16739-1 IFC4.3, IFC4.0 and IFC2x3 (Table D.1): Context maps to IfcProject, with location as IfcSite/IfcZone, product as IfcFacility/IfcSystem and activity as IfcProject/IfcWorkPlan; Risk, Incident and Treatment map to Pset_Risk and IfcAnnotation, with location as IfcSpaceType/IfcSpace, product as IfcElementType/IfcElement and activity as IfcTaskType/IfcTask; Party maps to IfcActor and IfcActorRole; context is represented by the higher-level objects, and treatments can be represented by changes to the specifications of the associated locations, products and activities associated to the risks and incidents; Pset_Risk can be associated to locations, products and/or tasks, or to a separate annotation such as a 2D or 3D symbol compliant to ISO 7010",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-6",
+          "clause": "Annex D; Table D.1; Table D.2"
+        },
+        {
+          "node": "term_asset_function_interdependency",
+          "name": "asset function and operational interdependency",
+          "definition": "asset function and any interdependency with the activities that require that function",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-3",
+          "clause": "A.4.4"
+        }
+      ],
+      "loop_step": "System context and knock-on effect",
+      "if_missing": "Criticality cannot be reasoned about: you cannot tell that this pump failing takes the whole chilled water loop down, so alert prioritisation degrades to per-component guessing.",
+      "probe_human": "At least one IfcSystem / IfcDistributionSystem exists and equipment is assigned to it through IfcRelAssignsToGroup.",
+      "basis": "informative"
+    },
+    {
+      "id": "M5",
+      "mandatory": true,
+      "category": "identification",
+      "title": "Equipment is classified against an external convention",
+      "rationale": "Categorization shall follow the convention in the project/asset information standard (e.g. Uniclass); classification is how model elements join external code tables in the CDT.",
+      "probe": {
+        "kind": "classification",
+        "entities": [
+          "IfcPump",
+          "IfcFan",
+          "IfcCompressor",
+          "IfcChiller",
+          "IfcBoiler",
+          "IfcCoolingTower",
+          "IfcUnitaryEquipment",
+          "IfcAirToAirHeatRecovery",
+          "IfcHeatExchanger",
+          "IfcEvaporator",
+          "IfcEvaporativeCooler",
+          "IfcHumidifier",
+          "IfcTank",
+          "IfcFilter",
+          "IfcDuctSilencer",
+          "IfcAirTerminal",
+          "IfcAirTerminalBox",
+          "IfcDamper",
+          "IfcValve",
+          "IfcElectricMotor",
+          "IfcElectricGenerator",
+          "IfcTransformer",
+          "IfcSwitchingDevice",
+          "IfcDistributionChamberElement",
+          "IfcFlowMovingDevice",
+          "IfcEnergyConversionDevice",
+          "IfcFlowController",
+          "IfcDistributionElement",
+          "IfcDistributionControlElement"
+        ]
+      },
+      "sources": [
+        {
+          "node": "term_hs_categorization",
+          "name": "health and safety categorization",
+          "definition": "categorization of assets, health and safety risks and incidents according to the regional, national or project/asset convention identified in the project/asset information standard; risk treatment is categorized within the schema itself (Table 4)",
+          "pdm_relevance": "medium",
+          "modality": "normative",
+          "standard": "ISO 19650-6",
+          "clause": "4.3.7; Annex B"
+        },
+        {
+          "node": "field_category",
+          "name": "Category",
+          "definition": "classification of the asset (context) or of the risk, incident or treatment; for context, risk and incident the enumeration is the external convention identified in the project/asset information standard (4.3.7), for treatment it is the fixed five-value enumeration of Table 4",
+          "pdm_relevance": "high",
+          "modality": "normative",
+          "standard": "ISO 19650-6",
+          "clause": "4.3.2; Table 1; 4.3.3; Table 2; 4.3.4; Table 3; 4.3.5; Table 4; Annex A; Table A.1"
+        }
+      ],
+      "loop_step": "Joining external code tables",
+      "if_missing": "Categorisation has no anchor, so equipment cannot be matched to failure-mode libraries, spares catalogues or the regional risk classification. ISO 19650-6 4.3.7 delegates categorisation to exactly such an external convention.",
+      "probe_human": "Equipment is linked to an IfcClassificationReference through IfcRelAssociatesClassification.",
+      "basis": "normative"
+    },
+    {
+      "id": "R1",
+      "mandatory": false,
+      "weight": 3,
+      "category": "technical_data",
+      "title": "Manufacturer and model data on equipment (Pset_ManufacturerTypeInformation)",
+      "rationale": "ISO 19650-3 Annex A lists vendor data and lead time as example AIM content; manufacturer plus model is the minimum for failure-mode libraries and spares planning.",
+      "probe": {
+        "kind": "pset_coverage",
+        "entities": [
+          "IfcPump",
+          "IfcFan",
+          "IfcCompressor",
+          "IfcChiller",
+          "IfcBoiler",
+          "IfcCoolingTower",
+          "IfcUnitaryEquipment",
+          "IfcAirToAirHeatRecovery",
+          "IfcHeatExchanger",
+          "IfcEvaporator",
+          "IfcEvaporativeCooler",
+          "IfcHumidifier",
+          "IfcTank",
+          "IfcFilter",
+          "IfcDuctSilencer",
+          "IfcAirTerminal",
+          "IfcAirTerminalBox",
+          "IfcDamper",
+          "IfcValve",
+          "IfcElectricMotor",
+          "IfcElectricGenerator",
+          "IfcTransformer",
+          "IfcSwitchingDevice",
+          "IfcDistributionChamberElement",
+          "IfcFlowMovingDevice",
+          "IfcEnergyConversionDevice",
+          "IfcFlowController",
+          "IfcDistributionElement",
+          "IfcDistributionControlElement"
+        ],
+        "psets": [
+          "Pset_ManufacturerTypeInformation"
+        ],
+        "min": 0.5
+      },
+      "sources": [
+        {
+          "node": "term_vendor_lead_time",
+          "name": "asset vendor data and lead time",
+          "definition": "vendor data identifying the organization that supplied an asset, including asset lead time",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-3",
+          "clause": "A.4.4"
+        },
+        {
+          "node": "term_spares_inventory_information",
+          "name": "spares inventory information",
+          "definition": "identities and levels of spares held, inter-changeability, specifications and storage locations",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-3",
+          "clause": "A.4.4"
+        }
+      ],
+      "loop_step": "Failure-mode library and spares",
+      "if_missing": "Failure modes have to be guessed rather than looked up from the manufacturer's data, and spares and lead time cannot be planned. Pilot can still run on generic models.",
+      "probe_human": "At least 50% of equipment carries Pset_ManufacturerTypeInformation.",
+      "basis": "informative"
+    },
+    {
+      "id": "R2",
+      "mandatory": false,
+      "weight": 3,
+      "category": "technical_data",
+      "title": "Engineering/design parameters on equipment (Pset_*Common)",
+      "rationale": "Design parameters are the reference the condition data is judged against (asset condition and duty).",
+      "probe": {
+        "kind": "pset_coverage",
+        "entities": [
+          "IfcPump",
+          "IfcFan",
+          "IfcCompressor",
+          "IfcChiller",
+          "IfcBoiler",
+          "IfcCoolingTower",
+          "IfcUnitaryEquipment",
+          "IfcAirToAirHeatRecovery",
+          "IfcHeatExchanger",
+          "IfcEvaporator",
+          "IfcEvaporativeCooler",
+          "IfcHumidifier",
+          "IfcTank",
+          "IfcFilter",
+          "IfcDuctSilencer",
+          "IfcAirTerminal",
+          "IfcAirTerminalBox",
+          "IfcDamper",
+          "IfcValve",
+          "IfcElectricMotor",
+          "IfcElectricGenerator",
+          "IfcTransformer",
+          "IfcSwitchingDevice",
+          "IfcDistributionChamberElement",
+          "IfcFlowMovingDevice",
+          "IfcEnergyConversionDevice",
+          "IfcFlowController",
+          "IfcDistributionElement",
+          "IfcDistributionControlElement"
+        ],
+        "psets_prefix_suffix": [
+          "Pset_",
+          "Common"
+        ],
+        "min": 0.5
+      },
+      "sources": [
+        {
+          "node": "term_asset_design_parameters",
+          "name": "asset engineering data and design parameters",
+          "definition": "engineering data and design parameters relevant to the asset",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-3",
+          "clause": "A.4.2"
+        },
+        {
+          "node": "term_asset_condition_duty",
+          "name": "asset condition and duty",
+          "definition": "the condition and duty of assets including intensity of use",
+          "pdm_relevance": "high",
+          "modality": "mixed",
+          "standard": "ISO 19650-3",
+          "clause": "5.1.3; A.4.4"
+        }
+      ],
+      "loop_step": "Baseline the condition data is judged against",
+      "if_missing": "There is no design duty point to compare a reading against, so anomaly detection has to learn every threshold from scratch instead of starting from the design envelope.",
+      "probe_human": "At least 50% of equipment carries a Pset_...Common set.",
+      "basis": "mixed"
+    },
+    {
+      "id": "R3",
+      "mandatory": false,
+      "weight": 3,
+      "category": "monitoring",
+      "title": "Condition monitoring points modelled (sensors/instruments/controllers)",
+      "rationale": "The sensor is where the condition observation is produced; without modelled monitoring points the twin cannot bind the time series to locations. Also security-relevant: connected plant is Annex B code 41.",
+      "probe": {
+        "kind": "entity_any",
+        "entities": [
+          "IfcSensor",
+          "IfcSensorType",
+          "IfcFlowInstrument",
+          "IfcController",
+          "IfcControllerType",
+          "IfcUnitaryControlElement",
+          "IfcActuator"
+        ]
+      },
+      "sources": [
+        {
+          "node": "term_condition_monitoring_system",
+          "name": "condition monitoring system",
+          "definition": "enterprise system functionality: condition monitoring",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-3",
+          "clause": "A.5"
+        },
+        {
+          "node": "term_scada_system",
+          "name": "supervisory control and data acquisition (SCADA)",
+          "definition": "enterprise system functionality: supervisory control and data acquisition (SCADA)",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-3",
+          "clause": "A.5"
+        },
+        {
+          "node": "term_iot_security_assessment",
+          "name": "internet of things security assessment",
+          "definition": "assessment that the organization(s) should undertake prior to the implementation of any system based on the internet of things or other distributed technologies, comprising: a) understanding the security architecture of the proposed technologies; b) determining the extent to which that architecture meets the security requirements of the organization(s); c) assessing any security risks, including the potential impact of a failure of the technology, against the risk appetite of the organization(s) and the benefits which it is anticipated can be gained; and d) putting in place appropriate and proportionate security risk mitigation measures to manage any unacceptable security risks",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-5",
+          "clause": "B.3.4"
+        }
+      ],
+      "loop_step": "Where the measurement comes from",
+      "if_missing": "The twin has no modelled measurement points, so the time series cannot be bound to a location in the model. Readings can still be attached by asset tag, but the spatial reasoning is lost - and connected plant is also the ISO 19650-5 security surface.",
+      "probe_human": "At least one instance of: IfcSensor, IfcSensorType, IfcFlowInstrument, IfcController, IfcControllerType, IfcUnitaryControlElement and 1 more.",
+      "basis": "informative"
+    },
+    {
+      "id": "R4",
+      "mandatory": false,
+      "weight": 2,
+      "category": "hs_risk",
+      "title": "Health and safety risks attached via Pset_Risk",
+      "rationale": "Annex D maps the Part 6 risk schema onto Pset_Risk; version-appropriate property names are read from the KG.",
+      "probe": {
+        "kind": "pset_risk",
+        "props_by_schema": {
+          "ifc4_3": [
+            "RiskName",
+            "RiskType",
+            "NatureOfRisk",
+            "AssociatedProduct",
+            "AssociatedActivity",
+            "AssociatedLocation",
+            "UnmigatedRiskSignificance",
+            "MitigatedRiskSignificance",
+            "UnmigatedRiskLikelihood",
+            "MitigatedRiskLikelihood",
+            "UnmigatedRiskConsequence",
+            "MitigatedRiskConsequence",
+            "MitigationPlanned",
+            "MitigationAccepted"
+          ],
+          "ifc4_0": [
+            "RiskType",
+            "NatureOfRisk",
+            "SubNatureOfRisk1",
+            "SubNatureOfRisk2",
+            "AssociatedProduct",
+            "RiskCause",
+            "AssociatedLocation",
+            "RiskRating",
+            "AssessmentOfRisk",
+            "RiskConsequence",
+            "AffectsSurroundings",
+            "RiskOwner",
+            "PreventiveMeasures"
+          ],
+          "ifc2x3": [
+            "AssociatedProduct",
+            "AssociatedLocation"
+          ]
+        }
+      },
+      "sources": [
+        {
+          "node": "term_ifc_representation",
+          "name": "IFC representation of health and safety information",
+          "definition": "mapping of the 4.3 schema to ISO 16739-1 IFC4.3, IFC4.0 and IFC2x3 (Table D.1): Context maps to IfcProject, with location as IfcSite/IfcZone, product as IfcFacility/IfcSystem and activity as IfcProject/IfcWorkPlan; Risk, Incident and Treatment map to Pset_Risk and IfcAnnotation, with location as IfcSpaceType/IfcSpace, product as IfcElementType/IfcElement and activity as IfcTaskType/IfcTask; Party maps to IfcActor and IfcActorRole; context is represented by the higher-level objects, and treatments can be represented by changes to the specifications of the associated locations, products and activities associated to the risks and incidents; Pset_Risk can be associated to locations, products and/or tasks, or to a separate annotation such as a 2D or 3D symbol compliant to ISO 7010",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-6",
+          "clause": "Annex D; Table D.1; Table D.2"
+        },
+        {
+          "node": "field_level_of_risk",
+          "name": "Level of risk (health and safety schema field)",
+          "definition": "prioritization provided to support communication and review; the grade can be derived from likelihood and consequence using the combination matrix of Table C.2",
+          "pdm_relevance": "high",
+          "modality": "normative",
+          "standard": "ISO 19650-6",
+          "clause": "4.3.3; Table 2; 4.3.4; Table 3; Annex A; Table A.1"
+        },
+        {
+          "node": "field_likelihood",
+          "name": "Likelihood (health and safety schema field)",
+          "definition": "optional Annex C extension to Tables 2 and 3: grade of the likelihood, to support communication and review; six values - Very low, Low, Moderate, High, Very high, Unknown; the grade will be Unknown until it has been assessed",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-6",
+          "clause": "4.3.3; Table 2; 4.3.4; Table 3; Annex C; Table C.1; Annex A; Table A.1"
+        },
+        {
+          "node": "field_consequence",
+          "name": "Consequence (health and safety schema field)",
+          "definition": "optional Annex C extension to Tables 2 and 3: grade of the consequence, to support communication and review; same six-value enumeration as likelihood",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-6",
+          "clause": "4.3.3; Table 2; 4.3.4; Table 3; Annex C; Table C.1; Annex A; Table A.1"
+        }
+      ],
+      "loop_step": "The safety half of the loop",
+      "if_missing": "The programme can only be measured on downtime, not on safety outcome. Risks stay in spreadsheets outside the model and cannot be queried against the equipment they belong to.",
+      "probe_human": "A Pset_Risk property set is present, and its property names are matched against the ones ISO 19650-6 Annex D Table D.2 gives for the file's own IFC version (IFC4.3, IFC4.0 or IFC2x3).",
+      "basis": "mixed"
+    },
+    {
+      "id": "R5",
+      "mandatory": false,
+      "weight": 2,
+      "category": "maintenance",
+      "title": "Maintenance activities present (IfcTask / work schedule)",
+      "rationale": "ISO 19650-3 Annex A lists the future maintenance and inspection schedule as example AIM content; Annex D maps H&S activity to IfcTask.",
+      "probe": {
+        "kind": "entity_any",
+        "entities": [
+          "IfcTask",
+          "IfcTaskType",
+          "IfcWorkSchedule",
+          "IfcWorkPlan"
+        ]
+      },
+      "sources": [
+        {
+          "node": "term_maintenance_inspection_schedule",
+          "name": "future maintenance and inspection schedule",
+          "definition": "future schedule of maintenance and inspection tasks including details of overdue tasks, the maintenance organization, and qualifications/certifications required to carry out each task",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-3",
+          "clause": "A.4.1"
+        },
+        {
+          "node": "term_ifc_representation",
+          "name": "IFC representation of health and safety information",
+          "definition": "mapping of the 4.3 schema to ISO 16739-1 IFC4.3, IFC4.0 and IFC2x3 (Table D.1): Context maps to IfcProject, with location as IfcSite/IfcZone, product as IfcFacility/IfcSystem and activity as IfcProject/IfcWorkPlan; Risk, Incident and Treatment map to Pset_Risk and IfcAnnotation, with location as IfcSpaceType/IfcSpace, product as IfcElementType/IfcElement and activity as IfcTaskType/IfcTask; Party maps to IfcActor and IfcActorRole; context is represented by the higher-level objects, and treatments can be represented by changes to the specifications of the associated locations, products and activities associated to the risks and incidents; Pset_Risk can be associated to locations, products and/or tasks, or to a separate annotation such as a 2D or 3D symbol compliant to ISO 7010",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-6",
+          "clause": "Annex D; Table D.1; Table D.2"
+        }
+      ],
+      "loop_step": "Existing maintenance regime",
+      "if_missing": "The current schedule is invisible, so predicted interventions cannot be compared with or merged into what is already planned - a common cause of duplicated work orders.",
+      "probe_human": "At least one instance of: IfcTask, IfcTaskType, IfcWorkSchedule, IfcWorkPlan.",
+      "basis": "informative"
+    },
+    {
+      "id": "R6",
+      "mandatory": false,
+      "weight": 1,
+      "category": "technical_data",
+      "title": "Commissioning data recorded",
+      "rationale": "Commissioning dates/data are the baseline the degradation trend starts from.",
+      "probe": {
+        "kind": "property_name_contains",
+        "needle": "commission"
+      },
+      "sources": [
+        {
+          "node": "term_asset_commissioning_data",
+          "name": "asset commissioning dates and data",
+          "definition": "commissioning dates and commissioning data associated with an asset",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-3",
+          "clause": "A.4.2"
+        }
+      ],
+      "loop_step": "Start of the degradation curve",
+      "if_missing": "There is no commissioning baseline, so age-based and trend-based models have no origin and remaining-life estimates lose their reference point.",
+      "probe_human": "Any property whose name contains 'commission'.",
+      "basis": "informative"
+    },
+    {
+      "id": "R7",
+      "mandatory": false,
+      "weight": 1,
+      "category": "technical_data",
+      "title": "Warranty / service life data recorded",
+      "rationale": "Replacement planning input; supports RUL horizon sanity checks.",
+      "probe": {
+        "kind": "pset_any",
+        "psets": [
+          "Pset_Warranty",
+          "Pset_ServiceLife",
+          "Pset_Condition"
+        ]
+      },
+      "sources": [
+        {
+          "node": "term_asset_performance_target",
+          "name": "asset condition and performance target",
+          "definition": "condition or performance target or standard associated with an asset",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-3",
+          "clause": "A.4.4"
+        },
+        {
+          "node": "term_maintenance_history",
+          "name": "historical maintenance record",
+          "definition": "historical record of proactive and reactive maintenance tasks performed",
+          "pdm_relevance": "high",
+          "modality": "informative",
+          "standard": "ISO 19650-3",
+          "clause": "A.4.1"
+        }
+      ],
+      "loop_step": "Replacement planning and sanity checks",
+      "if_missing": "Warranty and service-life bounds are unknown, so remaining-life predictions cannot be sanity-checked against the expected life of the equipment.",
+      "probe_human": "Any of these property sets: Pset_Warranty, Pset_ServiceLife, Pset_Condition.",
+      "basis": "informative"
+    },
+    {
+      "id": "R8",
+      "mandatory": false,
+      "weight": 1,
+      "category": "structure",
+      "title": "Spaces/zones modelled (not just storeys)",
+      "rationale": "Alignment/zone-level location is what lets a risk or a work order be scoped to a zone; IfcSpace/IfcZone is the H&S location target in Annex D.",
+      "probe": {
+        "kind": "entity_any",
+        "entities": [
+          "IfcSpace",
+          "IfcZone"
+        ]
+      },
+      "sources": [
+        {
+          "node": "term_space",
+          "name": "space",
+          "definition": "limited three-dimensional extent defined physically or notionally",
+          "pdm_relevance": "medium",
+          "modality": "normative",
+          "standard": "ISO 19650-1",
+          "clause": "3.1.2"
+        },
+        {
+          "node": "field_associated_location",
+          "name": "Associated location",
+          "definition": "space, location, zone or site associated with the record; for a context it is the site or zone and only exceptional zones need be recorded; can be a name, category description or model entity reference",
+          "pdm_relevance": "high",
+          "modality": "normative",
+          "standard": "ISO 19650-6",
+          "clause": "4.3.2; Table 1; 4.3.3; Table 2; 4.3.4; Table 3; 4.3.5; Table 4; Annex A; Table A.1"
+        }
+      ],
+      "loop_step": "Fine-grained location",
+      "if_missing": "Location resolution stops at storey level. Permits, exclusion zones and zone-scoped risks all become imprecise.",
+      "probe_human": "At least one instance of: IfcSpace, IfcZone.",
+      "basis": "normative"
+    }
+  ]
+}

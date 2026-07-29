@@ -1,0 +1,14 @@
+# Copyrighted source standards - never ship these in an image.
+# Tools that need them (evaluate_kg, draft_extractor) run on the host
+# against your own licensed copies.
+1. ISO 19650 Series/
+
+# VCS / editor / OS noise
+.git
+.gitignore
+.claude
+.DS_Store
+**/.DS_Store
+
+# Superseded extraction versions (history, not runtime)
+tmp/*.superseded

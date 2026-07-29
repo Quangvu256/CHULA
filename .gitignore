@@ -1,0 +1,20 @@
+# ---- ISO-derived content: never committed ----------------------------------
+# The source standards are copyrighted; the extraction JSONs and the Cypher
+# export contain verbatim definitions derived from them. Developers obtain
+# these from the project team (or licensed PDFs + the extraction protocol),
+# they do not travel through git.
+1. ISO 19650 Series/
+iso19650-*_extraction*.json
+*.superseded
+tmp/load_iso19650_kg.cypher
+
+# ---- OS / editor noise -----------------------------------------------------
+.DS_Store
+**/.DS_Store
+
+# ---- Local environment -----------------------------------------------------
+.env
+
+# Personal tool settings
+.claude/
+tmp/draft_*.json
