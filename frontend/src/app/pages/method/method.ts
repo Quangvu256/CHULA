@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common';
-import { Component, effect, inject, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { Api } from '../../core/api';
 import { MT } from './i18n';
 

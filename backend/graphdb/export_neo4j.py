@@ -14,7 +14,7 @@ a shared :Iso19650 label; `part` records the source file. Relationships MERGE
 on type + provenance, so the deliberate cross-file duplicate assertions (same
 triple, two standards) load as two edges, each with its own provenance.
 """
-import json, os, sys, collections
+import json, os
 os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 FILES = {

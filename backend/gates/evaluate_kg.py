@@ -24,7 +24,7 @@ pdftotext runs fresh on every invocation so the report never depends on stale
 text dumps. P2 uses BOTH available PDFs: the BSI copy is complete but OCR-poor,
 the ISO copy is clean but missing pages - their union is reliable.
 """
-import json, re, subprocess, sys, tempfile, os, glob, difflib
+import json, re, subprocess, sys, os, glob, difflib
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.chdir(ROOT)

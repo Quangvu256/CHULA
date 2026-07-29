@@ -7,7 +7,7 @@ Checks, in order:
   2. the PdM spine - can a sensor reading reach a risk treatment / work order
   3. every high-PdM node is reachable from the spine
 """
-import json, collections, itertools, os, sys
+import json, collections, os, sys
 os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 FILES = ["data/iso19650-1_extraction_v4.json", "data/iso19650-2_extraction_v1.json",

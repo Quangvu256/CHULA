@@ -48,7 +48,7 @@ def kg_stats():
 
 
 def graph_data():
-    """Whole graph, flattened for the browser. ~250 KB - fine over localhost."""
+    """Whole graph, flattened for the browser (~550 KB - fine over localhost)."""
     nodes, edges = [], []
     for _, d in _load_kg():
         # "ISO 19650-1:2018" -> "ISO 19650-1": the year is display noise here and

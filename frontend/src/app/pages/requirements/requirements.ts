@@ -43,7 +43,7 @@ import { AppState } from '../../core/state';
       }
     </div>
 
-    <div class="tree" #tree>
+    <div class="tree">
       <details class="grp" open><summary>Mandatory gates
         <small>&mdash; {{gates(s).length}} &middot; fail any one and the model cannot join the twin</small></summary>
         @for (r of gates(s); track r.id) { <ng-container *ngTemplateOutlet="node; context: {r}"/> }
