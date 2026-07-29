@@ -44,25 +44,25 @@ missing pages - their union is authoritative. Figures are read from page images
 
 | Gate | Tool | Must hold |
 |---|---|---|
-| G1 structure | `tmp/validate_union.py` | 0 duplicate ids/names, 0 dangling endpoints, closed type/label sets, ASCII |
-| G2 fidelity | `tmp/evaluate_kg.py` (E2) | every Clause-3 definition verbatim vs PDF |
-| G3 references | `tmp/evaluate_kg.py` (E3) | every provenance clause resolves in its standard |
-| G4 traversability | `tmp/check_pdm_paths.py` | 0 orphans, 1 component, PdM spine intact, high-PdM reachable |
-| G5 coverage | `tmp/evaluate_kg.py` (E5) | source terms all represented in the union |
+| G1 structure | `backend/validate_union.py` | 0 duplicate ids/names, 0 dangling endpoints, closed type/label sets, ASCII |
+| G2 fidelity | `backend/evaluate_kg.py` (E2) | every Clause-3 definition verbatim vs PDF |
+| G3 references | `backend/evaluate_kg.py` (E3) | every provenance clause resolves in its standard |
+| G4 traversability | `backend/check_pdm_paths.py` | 0 orphans, 1 component, PdM spine intact, high-PdM reachable |
+| G5 coverage | `backend/evaluate_kg.py` (E5) | source terms all represented in the union |
 
 A change to any file re-runs all five gates; a merged graph is one that passes
-all five. `tmp/evaluate_kg.py` emits the consolidated report
-(`tmp/evaluation_report.md`, `tmp/evaluation_metrics.json`).
+all five. `backend/evaluate_kg.py` emits the consolidated report
+(`docs/evaluation_report.md`, `data/generated/evaluation_metrics.json`).
 
 ## Hybrid pipeline for new documents
 
-1. `python3 tmp/draft_extractor.py <pdf> "<standard>"` - deterministic first
+1. `python3 backend/draft_extractor.py <pdf> "<standard>"` - deterministic first
    draft: Clause-3 terms (verbatim, provenance attached) + candidate edges from
    definition cross-references and trigger phrases. Everything `status: draft`.
 2. Curation: resolve reuse against the union, add the structure the machine
    cannot see (tables, figures via page images, annex lists, modality,
    cross-part bridges), remove the `status` fields.
-3. Gates G1-G5. Only then merge, re-export (`tmp/export_neo4j.py`), reload.
+3. Gates G1-G5. Only then merge, re-export (`backend/export_neo4j.py`), reload.
 
 Benchmarked against the four hand-curated gold files (2026-07-29, v2 of the
 generator, which adds machine modality tagging, registry-based reuse-first

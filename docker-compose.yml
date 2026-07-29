@@ -11,7 +11,7 @@ services:
     restart: unless-stopped
 
   # Graph database. The knowledge graph is loaded from the generated Cypher
-  # (tmp/load_iso19650_kg.cypher, mounted read-only at /import) - see README.
+  # (data/generated/load_iso19650_kg.cypher, mounted read-only at /import).
   neo4j:
     image: neo4j:5
     environment:
@@ -21,7 +21,7 @@ services:
       - "7687:7687"   # Bolt
     volumes:
       - neo4j_data:/data
-      - ./tmp:/import:ro
+      - ./data/generated:/import:ro
     healthcheck:
       test: ["CMD-SHELL", "cypher-shell -u ${NEO4J_USER:-neo4j} -p ${NEO4J_PASSWORD:-changeme-please} 'RETURN 1' || exit 1"]
       interval: 10s

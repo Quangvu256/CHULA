@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Check an IFC (STEP/SPF) model against the PdM use-case requirements.
 
-Usage:  python3 tmp/check_ifc_pdm.py <model.ifc> [--json out.json]
+Usage:  python3 backend/check_ifc_pdm.py <model.ifc> [--json out.json]
 
-Reads tmp/pdm_ifc_requirements.json (generated from the knowledge graph by
-tmp/gen_pdm_spec.py). Stdlib only - no ifcopenshell needed: presence/coverage
+Reads data/generated/pdm_ifc_requirements.json (generated from the knowledge
+graph by backend/gen_pdm_spec.py). Stdlib only - no ifcopenshell needed: presence/coverage
 checks only require entity types, string attributes and the five binding
 relationships (properties, containment, groups, classification), which a small
 SPF tokenizer can index reliably.
@@ -183,8 +183,8 @@ def evaluate(req, schema, ents, idx):
 
 
 # ---------------------------------------------------------------- public API
-SPEC_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)),
-                         "pdm_ifc_requirements.json")
+SPEC_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                         "data", "generated", "pdm_ifc_requirements.json")
 
 
 def load_spec(path=SPEC_PATH):

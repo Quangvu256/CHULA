@@ -2,8 +2,8 @@
 """Machine-generated FIRST DRAFT of an ISO 19650-style extraction - the automation
 half of the hybrid pipeline. Deterministic, stdlib-only.
 
-    python3 tmp/draft_extractor.py <pdf> "<standard name>" [--out draft.json]
-    python3 tmp/draft_extractor.py --benchmark        # score the method against
+    python3 backend/draft_extractor.py <pdf> "<standard name>" [--out draft.json]
+    python3 backend/draft_extractor.py --benchmark        # score the method against
                                                       # the hand-curated gold files
 
 What it does (and honestly cannot do):
@@ -15,7 +15,7 @@ What it does (and honestly cannot do):
   CANNOT - tables, figures, annex lists, modality nuance, cross-part reuse
            resolution, PdM relevance rating: exactly the content a curator adds.
 Every output object carries status='draft'; nothing is merge-ready until it has
-passed the gates in tmp/extraction_protocol.md.
+passed the gates in docs/extraction_protocol.md.
 """
 import json, re, sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -166,17 +166,17 @@ def draft_from_pdf(pdf, standard, registry=None):
             "extraction_notes": {"status": "draft", "generator": "tmp/draft_extractor.py",
                                  "caveats": "terms and definition cross-references only; "
                                  "tables, figures, annexes, modality and cross-part reuse "
-                                 "require curation per tmp/extraction_protocol.md"},
+                                 "require curation per docs/extraction_protocol.md"},
             "reuse_resolved": reused,
             "nodes": nodes, "relationships": edges}
 
 
 def benchmark():
     """Score the generator against the hand-curated gold files it did NOT help build."""
-    GOLD = [("iso19650-1_extraction_v4.json", "1"),
-            ("iso19650-4_extraction_v1.json", "4"),
-            ("iso19650-5_extraction_v1.json", "5"),
-            ("iso19650-6_extraction_v2.json", "6")]
+    GOLD = [("data/iso19650-1_extraction_v4.json", "1"),
+            ("data/iso19650-4_extraction_v1.json", "4"),
+            ("data/iso19650-5_extraction_v1.json", "5"),
+            ("data/iso19650-6_extraction_v2.json", "6")]
     from evaluate_kg import pdf_for
     print(f"{'gold file':34s} {'node P':>7s} {'node R':>7s} {'termR':>6s} "
           f"{'edge R':>7s} {'typeOK':>7s}")

@@ -1,12 +1,12 @@
 {
   "use_case": "Predictive Maintenance on a Cognitive Digital Twin",
   "derived_from": [
-    "iso19650-1_extraction_v4.json",
-    "iso19650-2_extraction_v1.json",
-    "iso19650-3_extraction_v1.2.json",
-    "iso19650-4_extraction_v1.json",
-    "iso19650-5_extraction_v1.json",
-    "iso19650-6_extraction_v2.json"
+    "data/iso19650-1_extraction_v4.json",
+    "data/iso19650-2_extraction_v1.json",
+    "data/iso19650-3_extraction_v1.2.json",
+    "data/iso19650-4_extraction_v1.json",
+    "data/iso19650-5_extraction_v1.json",
+    "data/iso19650-6_extraction_v2.json"
   ],
   "how_generated": "Each requirement is a triple: (1) an anchor into the knowledge graph, cited by node id - generation aborts if a cited node no longer exists; (2) an IFC probe, which is the only hand-authored part, because ISO 19650 delegates the IFC schema itself to ISO 16739; and (3) a gating level - MANDATORY when the data cannot be joined at all without it, otherwise a weight from 1 to 3. The Pset_Risk property names are not hand-authored either: they are read from the field_* nodes' ifc4_3 / ifc4_0 / ifc2x3 keys, which carry ISO 19650-6 Annex D Table D.2.",
   "normative_basis_for_automated_checking": {

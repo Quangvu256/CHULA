@@ -2,7 +2,7 @@
 
 Acceptance criteria for an IFC model feeding the Predictive Maintenance
 Cognitive Digital Twin. Generated from the ISO 19650 knowledge graph by
-`tmp/gen_pdm_spec.py`; every row cites the graph nodes it derives from.
+`backend/gen_pdm_spec.py`; every row cites the graph nodes it derives from.
 In ISO 19650 terms this is EIR-level content: it refines the AIR of
 ISO 19650-3 Annex A and the H&S schema of ISO 19650-6 for one use case.
 
@@ -24,4 +24,4 @@ ISO 19650-3 Annex A and the H&S schema of ISO 19650-6 for one use case.
 
 Verdict: **CDT-ready** = all mandatory + score >= 0.8; **conditional** = all mandatory + score >= 0.5 (or one mandatory miss at score >= 0.7); otherwise **not ready**.
 
-Run: `python3 tmp/check_ifc_pdm.py <model.ifc>`
+Run: `python3 backend/check_ifc_pdm.py <model.ifc>`

@@ -9,14 +9,15 @@ The Pset_Risk property names are not hand-authored either: they are read from
 the field_* nodes' ifc4_3 / ifc4_0 / ifc2x3 keys (ISO 19650-6 Annex D, Table D.2).
 
 Outputs:
-  tmp/pdm_ifc_requirements.json  - machine-readable, consumed by check_ifc_pdm.py
-  tmp/pdm_use_case_spec.md       - human-readable use case specification
+  data/generated/pdm_ifc_requirements.json - machine-readable, consumed by check_ifc_pdm.py
+  docs/pdm_use_case_spec.md - human-readable use case specification
 """
-import json, sys
+import json, os, sys
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-FILES = ["iso19650-1_extraction_v4.json", "iso19650-2_extraction_v1.json",
-         "iso19650-3_extraction_v1.2.json", "iso19650-4_extraction_v1.json", "iso19650-5_extraction_v1.json",
-         "iso19650-6_extraction_v2.json"]
+FILES = ["data/iso19650-1_extraction_v4.json", "data/iso19650-2_extraction_v1.json",
+         "data/iso19650-3_extraction_v1.2.json", "data/iso19650-4_extraction_v1.json", "data/iso19650-5_extraction_v1.json",
+         "data/iso19650-6_extraction_v2.json"]
 KG = {}
 for f in FILES:
     for n in json.load(open(f))["nodes"]:
@@ -316,14 +317,14 @@ spec = {
     },
     "requirements": REQS,
 }
-json.dump(spec, open("tmp/pdm_ifc_requirements.json", "w"), indent=2)
+json.dump(spec, open("data/generated/pdm_ifc_requirements.json", "w"), indent=2)
 
 # ---- human-readable spec ----
 md = ["# PdM use case - IFC information requirements",
       "",
       "Acceptance criteria for an IFC model feeding the Predictive Maintenance",
       "Cognitive Digital Twin. Generated from the ISO 19650 knowledge graph by",
-      "`tmp/gen_pdm_spec.py`; every row cites the graph nodes it derives from.",
+      "`backend/gen_pdm_spec.py`; every row cites the graph nodes it derives from.",
       "In ISO 19650 terms this is EIR-level content: it refines the AIR of",
       "ISO 19650-3 Annex A and the H&S schema of ISO 19650-6 for one use case.",
       "",
@@ -336,8 +337,8 @@ for r in REQS:
 md += ["", "Verdict: **CDT-ready** = all mandatory + score >= 0.8; "
        "**conditional** = all mandatory + score >= 0.5 (or one mandatory miss at "
        "score >= 0.7); otherwise **not ready**.",
-       "", "Run: `python3 tmp/check_ifc_pdm.py <model.ifc>`"]
-open("tmp/pdm_use_case_spec.md", "w").write("\n".join(md) + "\n")
+       "", "Run: `python3 backend/check_ifc_pdm.py <model.ifc>`"]
+open("docs/pdm_use_case_spec.md", "w").write("\n".join(md) + "\n")
 
 print(f"OK: {len(REQS)} requirements ({sum(1 for r in REQS if r['mandatory'])} mandatory), "
       f"all citations resolved against the KG")

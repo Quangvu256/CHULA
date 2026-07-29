@@ -6,7 +6,7 @@
 1. ISO 19650 Series/
 iso19650-*_extraction*.json
 *.superseded
-tmp/load_iso19650_kg.cypher
+data/generated/load_iso19650_kg.cypher
 
 # ---- OS / editor noise -----------------------------------------------------
 .DS_Store
@@ -17,4 +17,9 @@ tmp/load_iso19650_kg.cypher
 
 # Personal tool settings
 .claude/
-tmp/draft_*.json
+draft_*.json
+
+# ---- Frontend build artifacts ----------------------------------------------
+node_modules/
+frontend/dist/
+frontend/.angular/

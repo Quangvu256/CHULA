@@ -11,4 +11,9 @@
 **/.DS_Store
 
 # Superseded extraction versions (history, not runtime)
-tmp/*.superseded
+*.superseded
+
+# Frontend: sources are copied, artifacts are rebuilt inside the image
+node_modules
+frontend/dist
+frontend/.angular

@@ -7,11 +7,12 @@ Checks, in order:
   2. the PdM spine - can a sensor reading reach a risk treatment / work order
   3. every high-PdM node is reachable from the spine
 """
-import json, collections, itertools, sys
+import json, collections, itertools, os, sys
+os.chdir(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-FILES = ["iso19650-1_extraction_v4.json", "iso19650-2_extraction_v1.json",
-         "iso19650-3_extraction_v1.2.json", "iso19650-4_extraction_v1.json", "iso19650-5_extraction_v1.json",
-         "iso19650-6_extraction_v2.json"]
+FILES = ["data/iso19650-1_extraction_v4.json", "data/iso19650-2_extraction_v1.json",
+         "data/iso19650-3_extraction_v1.2.json", "data/iso19650-4_extraction_v1.json", "data/iso19650-5_extraction_v1.json",
+         "data/iso19650-6_extraction_v2.json"]
 
 nodes, edges = {}, []
 for f in FILES:
