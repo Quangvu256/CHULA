@@ -1,10 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { AppState } from './state';
-import { CheckTab } from './check';
-import { RequirementsTab } from './requirements';
-import { GraphTab } from './graph';
-import { MethodTab } from './method';
-import { PoliciesTab } from './policies';
+import { AppState } from './core/state';
+import { CheckTab } from './pages/check/check';
+import { RequirementsTab } from './pages/requirements/requirements';
+import { GraphTab } from './pages/graph/graph';
+import { MethodTab } from './pages/method/method';
+import { PoliciesTab } from './pages/policies/policies';
 
 @Component({
   selector: 'app-root',

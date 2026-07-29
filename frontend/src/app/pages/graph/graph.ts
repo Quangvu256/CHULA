@@ -1,7 +1,7 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChild,
          effect, inject, signal } from '@angular/core';
-import { Api } from './api';
-import { AppState } from './state';
+import { Api } from '../../core/api';
+import { AppState } from '../../core/state';
 
 /** Canvas graph explorer. The physics is the deterministic settle engine ported
  *  verbatim from the previous UI: phyllotaxis seed (no Math.random), monotonic

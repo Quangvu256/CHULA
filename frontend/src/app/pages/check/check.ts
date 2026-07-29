@@ -1,6 +1,6 @@
 import { Component, inject, signal } from '@angular/core';
-import { Api } from './api';
-import { AppState } from './state';
+import { Api } from '../../core/api';
+import { AppState } from '../../core/state';
 
 @Component({
   selector: 'check-tab',
