@@ -119,6 +119,7 @@ export class GraphTab implements AfterViewInit, OnDestroy {
   private simAlpha = 0; private anim = 0;
   private drag: any = null; private pan: any = null; private hover: any = null;
   private moved = false; private userMoved = false;
+  private ro?: ResizeObserver;
 
   constructor() {
     // other tabs can ask us to focus a node
@@ -130,6 +131,18 @@ export class GraphTab implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.ctx = this.cvRef.nativeElement.getContext('2d')!;
+    // The component boots while its tab is display:none, so the first resize()
+    // sees a 0x0 rect and every subsequent clearRect() clears nothing - frames
+    // of the settle animation stack up as flicker. A ResizeObserver fires the
+    // moment the canvas actually gets layout (tab opened, window resized,
+    // fullscreen in/out) and re-establishes correct W/H before the next draw.
+    this.ro = new ResizeObserver(() => {
+      const r = this.cvRef.nativeElement.getBoundingClientRect();
+      if (r.width < 5 || r.height < 5) return;   // still hidden
+      this.resize();
+      if (!this.userMoved) this.fit(); else this.draw();
+    });
+    this.ro.observe(this.cvRef.nativeElement);
     this.api.graph().then(g => {
       this.G = g;
       g.nodes.forEach((n: any) => this.byId[n.id] = n);
@@ -141,6 +154,7 @@ export class GraphTab implements AfterViewInit, OnDestroy {
     (document as any).addEventListener('webkitfullscreenchange', this.onFsChange);
   }
   ngOnDestroy() {
+    this.ro?.disconnect();
     cancelAnimationFrame(this.anim);
     document.removeEventListener('fullscreenchange', this.onFsChange);
     (document as any).removeEventListener('webkitfullscreenchange', this.onFsChange);
@@ -237,6 +251,7 @@ export class GraphTab implements AfterViewInit, OnDestroy {
     let left = ticks;
     const per = Math.max(1, Math.ceil(ticks / 90));
     const go = () => {
+      if (this.W < 5) { this.anim = requestAnimationFrame(go); return; }  // tab hidden: wait
       for (let k = 0; k < per && left > 0; k++) { this.tickOnce(); this.simAlpha *= decay; left--; }
       if (!this.userMoved) this.fit(); else this.draw();
       if (left > 0) this.anim = requestAnimationFrame(go);
