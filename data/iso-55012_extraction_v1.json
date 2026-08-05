@@ -1,0 +1,718 @@
+{
+ "standard": "ISO 55012:2024",
+ "source_document": "data/ISO_55012_2024(en).pdf (ISO 55012:2024(en), First edition 2024-11, Asset management - Guidance on people involvement and competence, 12 pages)",
+ "role_in_kg": "people_and_competence_layer: the human dimension of the ISO 55000 family. Supplies the culture, leadership, awareness and competence vocabulary that determines whether the organization can actually operate the asset management system - and, for the PdM use case, whether personnel are competent in the new methodologies, technologies and informational systems (8.2) that predictive actions rely on.",
+ "depends_on": [
+  "iso19650-1_extraction_v4.json",
+  "iso19650-2_extraction_v1.json",
+  "iso19650-3_extraction_v1.2.json",
+  "iso19650-4_extraction_v1.json",
+  "iso19650-5_extraction_v1.json",
+  "iso19650-6_extraction_v2.json",
+  "iso-ts-55010_extraction_v1.json",
+  "iso-55000_extraction_v1.json",
+  "iso-55011_extraction_v1.json"
+ ],
+ "extraction_notes": {
+  "registry_scope": "Reconciliation registry is the union of the nine preceding extraction files. One clause-3 term is reused rather than re-noded: competence (55012 3.5 is [SOURCE: ISO 55000:2024, 3.3.11, modified - Note to entry added], already noded as term_competence by the 55000 file); its 55012 refinements arrive as the individual/organizational competence SUBTYPE_OF nodes. Reused concepts (organization, objective, top management, asset management system, SAMP, policy, risk, knowledge, documented information, level of service, stakeholder, continual improvement, maturity, principles) receive relationships only.",
+  "id_convention": "Keeps term_<snake_case>; adds attribute_<snake_case> for the eight Clause 5.2 leadership attributes, in the same spirit as the existing specialized prefixes (enabler_, phase_, practice_). No new labels, no new relationship types.",
+  "name_conventions": "The eight attribute names carry a '(leadership attribute)' qualifier: 'commitment' collides with the clause-3 term and 'integrity' with the ISO 19650-5 security concept; the rest are qualified for consistency. The two competence perspectives share one verbatim source sentence (8.2 defines both in a single sentence) - distinguished by their edges, documented on the node.",
+  "verbatim_convention": "All definitions are verbatim ISO 55012:2024 text (inline cross-reference numbers elided; non-contiguous quotes joined by ' [...] '), asserted at build time and enforced by backend/gates/verify_verbatim.py. No exemptions needed: Figure A.1 (interrelationship of the elements) is captured as the SUPPORTS/DESCRIBES edge structure, not nodeified.",
+  "bsdd_mapping": "All clause-3 terms and body concepts checked against the buildingSMART Data Dictionary via api.bsdd.buildingsmart.org TextSearch (2026-08-05): ZERO genuine matches - people/HR vocabulary is absent from the construction-domain bSDD dictionaries. Absence means checked-no-genuine-match, per backend/gates/verify_bsdd.py.",
+  "merge_note": "File name does not match the iso19650-* union glob; it is listed explicitly in the union tooling (validate_union, check_pdm_paths, export_neo4j, serve, gen_pdm_spec, evaluate_kg, verify_bsdd, verify_verbatim) and must always be loaded together with the other nine files."
+ },
+ "nodes": [
+  {
+   "id": "term_involvement",
+   "label": "Concept",
+   "name": "involvement",
+   "definition": "taking part in an activity, event or situation",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "3.1"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.1",
+   "note": "Note 1 to entry: involvement is applicable to both people within an organization and those from external third parties. Note 2: applicable to both internal and externally provided resources. [SOURCE: ISO 9000:2015, 3.1.3, modified - Notes to entry added.]"
+  },
+  {
+   "id": "term_commitment",
+   "label": "Concept",
+   "name": "commitment",
+   "definition": "level of work and dedication given to the asset management system",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "3.2"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.2"
+  },
+  {
+   "id": "term_engagement",
+   "label": "Concept",
+   "name": "engagement",
+   "definition": "involvement in, and contribution to, activities to achieve shared objectives",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "3.3"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.3",
+   "note": "[SOURCE: ISO 9000:2015, 3.1.4]."
+  },
+  {
+   "id": "term_leader",
+   "label": "Concept",
+   "name": "leader",
+   "definition": "person who influences a group of people towards the achievement of a goal, and in turn recognizes the contribution of this, and mutual dependency with other groups, in achieving an organizational goal",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "3.4"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.4",
+   "note": "5.1: while top management is responsible for the overall success of the asset management system, the concept of leadership extends beyond top management, to anyone in an organization who is responsible for developing and delivering strategies and plans related to their scope of influence or role. Leadership (establishing direction, enabling environment and culture) is distinct from management (organizing resources and monitoring results); both are required."
+  },
+  {
+   "id": "term_organizational_culture",
+   "label": "Concept",
+   "name": "organizational culture",
+   "definition": "values, beliefs and practices that influence the conduct and behaviour of people and organizations",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "3.6"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.6",
+   "note": "[SOURCE: ISO 30400:2022, 3.1.3]. 4.1: may contain formal aspects such as documented policies and procedures, as well as informal aspects such as shared values, communication styles, social norms and social networks; the culture adapts over time to the operating context."
+  },
+  {
+   "id": "term_am_culture",
+   "label": "Concept",
+   "name": "asset management culture",
+   "definition": "An asset management culture which supports people in recognizing and aligning with the organization's vision can improve the organization's performance, motivate people and coordinate their behaviour, which in turn can help achieve the organization's overall asset management objectives.",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "4.3"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "4.1: cultivating an organizational culture around the asset management principles and practices described in ISO 55000, ensuring all personnel are aware of the need for asset management to maximize value and genuinely committed to that vision. 4.2 preliminary steps a)-g) include defining asset management objectives consistent with the policy, aligning behaviour to the SAMP statements, a clear organizational structure, and fostering collaboration across engineering, operations, maintenance, finance, procurement, IT and marketing."
+  },
+  {
+   "id": "attribute_vision",
+   "label": "Concept",
+   "name": "vision (leadership attribute)",
+   "definition": "Effective leaders have a clear vision for the organization which they articulate and communicate to all personnel in the organization.",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.2"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause"
+  },
+  {
+   "id": "attribute_commitment",
+   "label": "Concept",
+   "name": "commitment (leadership attribute)",
+   "definition": "Effective leaders are passionate about their work and are committed to seeing their vision become a reality.",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.3"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause"
+  },
+  {
+   "id": "attribute_integrity",
+   "label": "Concept",
+   "name": "integrity (leadership attribute)",
+   "definition": "By embracing and advocating for the principles and values that underlie their strategic plans, and in particular by ensuring that their own actions reflect these principles, positive leaders act as important examples to other personnel of the expectations of the organizational culture.",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.4"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause"
+  },
+  {
+   "id": "attribute_communicative",
+   "label": "Concept",
+   "name": "communicative (leadership attribute)",
+   "definition": "Competent leaders know the importance of communicating with relevant people within the organization and they are effective at selecting the appropriate means of communication to maximize understanding and alignment depending on context.",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.5"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause"
+  },
+  {
+   "id": "attribute_domain_knowledge",
+   "label": "Concept",
+   "name": "domain knowledge (leadership attribute)",
+   "definition": "Although a leader is not necessarily a technical subject matter expert, they should have sufficient domain knowledge to be able to appropriately evaluate risk and opportunities and ensure that strategies established are operationally correct.",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.6"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause"
+  },
+  {
+   "id": "attribute_team_building",
+   "label": "Concept",
+   "name": "team building (leadership attribute)",
+   "definition": "Cooperative leaders recognize that a team can achieve more than a single individual; working across roles and functions can bring energy, ideas and new solutions to any task.",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.7"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause"
+  },
+  {
+   "id": "attribute_decision_making",
+   "label": "Concept",
+   "name": "decision-making (leadership attribute)",
+   "definition": "People often look to their leadership for prompt, thoughtful and insightful decisions so that they can focus on the achievement of the asset management objectives within agreed priorities.",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.8"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause"
+  },
+  {
+   "id": "attribute_openness",
+   "label": "Concept",
+   "name": "openness (leadership attribute)",
+   "definition": "Good, supportive leaders always consider the views of others and encourage open dialogue to foster innovation and knowledge sharing.",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.9"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause"
+  },
+  {
+   "id": "term_change_management",
+   "label": "Concept",
+   "name": "change management",
+   "definition": "change management is a critical component of successful implementation of an asset management system, as well as for supporting future iterations of the management system and ensuring it is adaptable.",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "6.1"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "6.1: without a dedicated strategy for how changes to the asset management system are communicated, implemented and monitored, conformity and progress are likely inconsistent; success of a change should be evaluated with metrics measuring changes in behaviour and progress towards the asset management objectives."
+  },
+  {
+   "id": "term_multi_level_engagement",
+   "label": "Concept",
+   "name": "multi-level engagement in strategy development",
+   "definition": "Effective engagement across multiple levels of the organization should include: a) identification of suitably qualified personnel (at multiple organizational levels) to provide input into the development of the SAMP and asset management objectives",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "6.2"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause",
+   "note": "Personnel at various levels have valuable experience and insight into how strategies are translated into operational activities, the effectiveness of organizational initiatives, and logistical roadblocks (6.2). Benefits (6.3): learning, more effective decision-making, credibility and trust, and improved risk management from openness to different personnel and stakeholder perspectives."
+  },
+  {
+   "id": "term_am_awareness",
+   "label": "Concept",
+   "name": "asset management awareness",
+   "definition": "Awareness within an asset management system requires the ability to know a person's responsibilities within the asset management system, as well as an understanding of how a person can receive relevant information.",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "7.2"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause",
+   "note": "7.2 communication measures a)-f): documented job descriptions and organizational charts; role-specific onboarding; documentation of operational or informal knowledge; accessible libraries of documented information or knowledge management systems; periodic planned communications; an asset management skills matrix. 7.2: effective communication also requires a feedback mechanism wherein personnel can demonstrate that they have received information and understand its meaning."
+  },
+  {
+   "id": "term_am_skills_matrix",
+   "label": "Concept",
+   "name": "asset management skills matrix",
+   "definition": "development of an asset management skills matrix that lists the asset management competencies required by personnel in the different domain areas",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "7.2 f)"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause"
+  },
+  {
+   "id": "term_individual_competence",
+   "label": "Concept",
+   "name": "individual competence",
+   "definition": "Individual competence relates to the knowledge and skill encompassed by one individual, while organizational competence is a broader concept that relates to the overall aggregation of individual competencies across the organization.",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "8.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "8.2: individual competence within an asset management system can be subdivided into a) technical competencies related to asset management, b) leadership competencies related to the establishment and execution of strategies and plans, c) leadership competencies focused on organizing and motivating personnel, and d) financial competences. Competence is defined by both the topics under consideration and the depth of technical expertise (education plus experience)."
+  },
+  {
+   "id": "term_organizational_competence",
+   "label": "Concept",
+   "name": "organizational competence",
+   "definition": "Individual competence relates to the knowledge and skill encompassed by one individual, while organizational competence is a broader concept that relates to the overall aggregation of individual competencies across the organization.",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "8.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "Shares its verbatim source sentence with the individual competence node - the one sentence defines both referents, distinguished by their edges."
+  },
+  {
+   "id": "term_competence_requirements",
+   "label": "Concept",
+   "name": "competence requirements",
+   "definition": "organizations should determine the competence required to achieve expected results at the organizational, team, group and individual levels",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "8.3"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "8.3 considerations a)-h) include: work breakdown structure assessments to identify role functions; managerial and leadership activities; the organization's context, stakeholder needs and the adopted level of service the assets have to meet; continual review; impact of lack of competence; personnel changes; evaluation approaches; internal development or external expertise for gaps. Then: evaluate existing competence with a standardized approach, compare with required levels, and use a risk-based approach to prioritize actions to address competence gaps."
+  },
+  {
+   "id": "term_competence_management_plan",
+   "label": "Concept",
+   "name": "competence management plan",
+   "definition": "When establishing a competence management plan related to roles within the asset management system, the organization should evaluate opportunities for increasing competence",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "8.4"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "8.4 opportunities a)-f): formal training; self-directed study, conferences and seminars; participation in committees and technical groups; mentoring; contributions to standards, publications and presentations; experience including internships and job-shadowing. Support through adequate resources and monitoring through periodic review, evaluation and audit; at its simplest, embedding competence and training requirements into job descriptions and role profiles."
+  }
+ ],
+ "relationships": [
+  {
+   "from": "term_involvement",
+   "to": "term_organization",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "3.1 Note 1"
+   }
+  },
+  {
+   "from": "term_commitment",
+   "to": "term_asset_management_system",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "3.2"
+   }
+  },
+  {
+   "from": "term_engagement",
+   "to": "term_involvement",
+   "type": "REFINES",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "3.3"
+   }
+  },
+  {
+   "from": "term_engagement",
+   "to": "term_objective",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "3.3"
+   }
+  },
+  {
+   "from": "term_leader",
+   "to": "term_top_management",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.1"
+   }
+  },
+  {
+   "from": "term_leader",
+   "to": "term_asset_management_plan",
+   "type": "ESTABLISHES",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.1"
+   }
+  },
+  {
+   "from": "term_leader",
+   "to": "principle_am_leadership",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.1"
+   }
+  },
+  {
+   "from": "term_organizational_culture",
+   "to": "term_organization",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "3.6"
+   }
+  },
+  {
+   "from": "term_am_culture",
+   "to": "term_organizational_culture",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "4.1; 4.3"
+   }
+  },
+  {
+   "from": "term_am_culture",
+   "to": "term_asset_management",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "4.3"
+   }
+  },
+  {
+   "from": "term_am_culture",
+   "to": "principle_am_value",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "4.1"
+   }
+  },
+  {
+   "from": "term_am_culture",
+   "to": "term_asset_management_policy",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "4.1"
+   }
+  },
+  {
+   "from": "term_am_culture",
+   "to": "term_strategic_asset_management_plan",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "4.1"
+   }
+  },
+  {
+   "from": "term_top_management",
+   "to": "term_am_culture",
+   "type": "ESTABLISHES",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "4.1; 4.2"
+   }
+  },
+  {
+   "from": "attribute_vision",
+   "to": "term_leader",
+   "type": "DESCRIBES",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.2"
+   }
+  },
+  {
+   "from": "attribute_commitment",
+   "to": "term_leader",
+   "type": "DESCRIBES",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.3"
+   }
+  },
+  {
+   "from": "attribute_integrity",
+   "to": "term_leader",
+   "type": "DESCRIBES",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.4"
+   }
+  },
+  {
+   "from": "attribute_communicative",
+   "to": "term_leader",
+   "type": "DESCRIBES",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.5"
+   }
+  },
+  {
+   "from": "attribute_domain_knowledge",
+   "to": "term_leader",
+   "type": "DESCRIBES",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.6"
+   }
+  },
+  {
+   "from": "attribute_team_building",
+   "to": "term_leader",
+   "type": "DESCRIBES",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.7"
+   }
+  },
+  {
+   "from": "attribute_decision_making",
+   "to": "term_leader",
+   "type": "DESCRIBES",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.8"
+   }
+  },
+  {
+   "from": "attribute_openness",
+   "to": "term_leader",
+   "type": "DESCRIBES",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "5.2.9"
+   }
+  },
+  {
+   "from": "attribute_commitment",
+   "to": "term_commitment",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "3.2; 5.2.3"
+   }
+  },
+  {
+   "from": "term_change_management",
+   "to": "term_asset_management_system",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "6.1"
+   }
+  },
+  {
+   "from": "term_change_management",
+   "to": "term_continual_improvement",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "6.1"
+   }
+  },
+  {
+   "from": "term_change_management",
+   "to": "term_am_maturity",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "6.1"
+   }
+  },
+  {
+   "from": "term_multi_level_engagement",
+   "to": "term_strategic_asset_management_plan",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "6.2 a)"
+   }
+  },
+  {
+   "from": "term_multi_level_engagement",
+   "to": "term_stakeholder",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "6.3.2-6.3.5"
+   }
+  },
+  {
+   "from": "term_multi_level_engagement",
+   "to": "term_risk",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "6.1; 6.3.5"
+   }
+  },
+  {
+   "from": "term_multi_level_engagement",
+   "to": "term_engagement",
+   "type": "REFINES",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "6.2"
+   }
+  },
+  {
+   "from": "term_am_awareness",
+   "to": "term_asset_management_system",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "7.1"
+   }
+  },
+  {
+   "from": "term_am_awareness",
+   "to": "term_knowledge",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "7.2 NOTE; 7.3 d)"
+   }
+  },
+  {
+   "from": "term_am_awareness",
+   "to": "term_documented_information",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "7.2 a)"
+   }
+  },
+  {
+   "from": "term_am_skills_matrix",
+   "to": "term_am_awareness",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "7.2 f)"
+   }
+  },
+  {
+   "from": "term_am_skills_matrix",
+   "to": "term_competence",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "7.2 f)"
+   }
+  },
+  {
+   "from": "term_individual_competence",
+   "to": "term_competence",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "8.2"
+   }
+  },
+  {
+   "from": "term_organizational_competence",
+   "to": "term_competence",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "8.2"
+   }
+  },
+  {
+   "from": "term_individual_competence",
+   "to": "term_organizational_competence",
+   "type": "AGGREGATED_INTO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "8.2"
+   }
+  },
+  {
+   "from": "term_competence_requirements",
+   "to": "term_asset_management_system",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "8.1; 8.3"
+   }
+  },
+  {
+   "from": "term_competence_requirements",
+   "to": "term_level_of_service",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "8.3 c)"
+   }
+  },
+  {
+   "from": "term_competence_requirements",
+   "to": "term_risk",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "8.3"
+   }
+  },
+  {
+   "from": "term_competence_management_plan",
+   "to": "term_competence_requirements",
+   "type": "DERIVED_FROM",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "8.3; 8.4"
+   }
+  },
+  {
+   "from": "term_competence_management_plan",
+   "to": "term_documented_information",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55012:2024",
+    "clause": "8.3"
+   }
+  },
+  {
+   "from": "term_individual_competence",
+   "to": "term_financial_function",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55012:2024 8.2 d) and ISO/TS 55010:2019 3.4"
+   }
+  },
+  {
+   "from": "term_competence_requirements",
+   "to": "term_predictive_action",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55012:2024 8.2 and ISO 55000:2024 3.3.21"
+   }
+  }
+ ],
+ "cross_references": {
+  "iso_55000_family": "Normative reference: ISO 55000 (terms). Positioned by ISO 55000:2024 0.2 as the people member of the family; 5.2.1 operationalizes the ISO 55000 leadership principle (4.2.4); competence definition sourced from ISO 55000:2024 3.3.11; Bibliography points to ISO 30401 (knowledge management), ISO 10015 (competence management) and ISO 55013 (data assets).",
+  "pdm_tie": "Deliberately thin: this layer determines who can run the PdM capability. 8.2's requirement that personnel understand 'the new methodologies, technologies and informational systems involved in asset management practice' is the competence hook for the predictive-maintenance model, condition monitoring stream and CDT audit; the skills matrix (7.2 f) is where an organization would record PdM-specific competencies."
+ }
+}

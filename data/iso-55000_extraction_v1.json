@@ -1,0 +1,1304 @@
+{
+ "standard": "ISO 55000:2024",
+ "source_document": "data/ISO_55000_2024(en).pdf (ISO 55000:2024(en), Second edition 2024-07, Asset management - Vocabulary, overview and principles, 13 pages)",
+ "role_in_kg": "vocabulary_root_55000_family: authoritative terms basis for the ISO 55000 family (ISO/TS 55010 clause 3 states that the terms and definitions given in ISO 55000 apply). Supplies the generic management-system vocabulary (organization, risk, objective, monitoring, predictive action) that both the ISO/TS 55010 financial layer and the ISO 19650 PdM extension nodes specialize.",
+ "depends_on": [
+  "iso19650-1_extraction_v4.json",
+  "iso19650-2_extraction_v1.json",
+  "iso19650-3_extraction_v1.2.json",
+  "iso19650-4_extraction_v1.json",
+  "iso19650-5_extraction_v1.json",
+  "iso19650-6_extraction_v2.json",
+  "iso-ts-55010_extraction_v1.json"
+ ],
+ "extraction_notes": {
+  "registry_scope": "Reconciliation registry is the union of the seven preceding extraction files at extraction time. Eight ISO 55000 terms were already noded and get no new node, only relationships and/or in-place definition upgrades: asset (3.1.1 = ISO 19650-1 term_asset, identical wording), life cycle (3.1.3 vs ISO 19650-1 term_life_cycle, different wording, same concept), information (3.1.11 vs ISO 19650-1 term_information), asset management (3.2.1 = ISO 19650-3 term_asset_management, identical wording), asset management plan (3.2.5 -> ISO/TS 55010 node upgraded in place with the verbatim definition and definition_provenance), capability (3.2.6 vs ISO 19650-1 term_capability), top management (3.3.3 = ISO 19650-5 term_top_management, identical wording), strategic asset management plan (3.3.29 -> ISO/TS 55010 node upgraded in place).",
+  "id_convention": "Keeps term_<snake_case> and reuses ISO 19650-1's principle_ prefix for the three Clause 4.2 asset management principles. No new labels, no new relationship types.",
+  "name_conventions": "'object, noun' is noded as 'object'. The 4.2.2/4.2.3/4.2.4 principles carry the '(asset management principle)' qualifier because 'value' is also a Clause 3 term in this file and 'alignment'/'leadership' collide with ISO/TS 55010 node names.",
+  "bsdd_mapping": "Terms checked against the buildingSMART Data Dictionary via api.bsdd.buildingsmart.org TextSearch (2026-08-04); genuine matches carry flat bsdd_uri/bsdd_dictionary/bsdd_code properties (process -> IfcProcess, measurement -> LifeMACS measurement, monitoring -> Uniclass Ac_05_50_54). Rejected false friend: IfcBridgeFRAMEWORK (a framework bridge) for 'framework'. Absence of the properties means checked-no-genuine-match; the reject-list lives in backend/gates/verify_bsdd.py.",
+  "structure_notes": "Clause 4.3 outcomes (assurance, adaptability, sustainability) and benefits a)-j) are recorded in note fields, not nodeified (informative lists). Figure 1 (4.4, relationship between key terms) is captured as the GOVERNS/APPLIES_TO edges among asset management, the asset management system and the asset portfolio. The Foreword change-list vs the 2014 edition and the 0.2 family roadmap (ISO 55011/55012/55013) are context only.",
+  "merge_note": "File name does not match the iso19650-* union glob; it is listed explicitly in the union tooling (validate_union, check_pdm_paths, export_neo4j, serve, gen_pdm_spec, evaluate_kg, verify_bsdd) and must always be loaded together with the other seven files.",
+  "verbatim_convention": "All definitions in this file are verbatim ISO text: clause-3 terms verbatim per the E2 convention (inline cross-reference numbers elided), and body/annex concept definitions are verbatim sentences quoted from the cited clause, with non-contiguous quotes joined by ' [...] '. Machine-enforced by backend/gates/verify_verbatim.py."
+ },
+ "nodes": [
+  {
+   "id": "term_asset_life",
+   "label": "Concept",
+   "name": "asset life",
+   "definition": "period from asset ideation to asset end of life",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.2"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.1.2",
+   "note": "Note 1 to entry: 'useful life' is the period over which an asset is capable of fulfilling a purpose to an entity. Note 2: asset life can differ from the period the organization holds responsibility for the asset. Note 3: end-of-life is when the asset can no longer cause any residual obligations."
+  },
+  {
+   "id": "term_life_cycle_management",
+   "label": "Concept",
+   "name": "life cycle management",
+   "definition": "applying asset management over the life cycle of assets",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.4"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.1.4"
+  },
+  {
+   "id": "term_asset_type",
+   "label": "Concept",
+   "name": "asset type",
+   "definition": "grouping of assets having common characteristics that distinguish those assets as a group or class",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.5"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.1.5"
+  },
+  {
+   "id": "term_asset_system",
+   "label": "Concept",
+   "name": "asset system",
+   "definition": "set of assets that interact or are interrelated",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.6"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.1.6",
+   "note": "3.1.1 Note 2: a grouping of assets referred to as an asset system can also be considered as an asset. 3.1.8 Note 3: asset systems can be distinguished as being critical in a similar manner to individual assets."
+  },
+  {
+   "id": "term_asset_portfolio",
+   "label": "Concept",
+   "name": "asset portfolio",
+   "definition": "assets that are within the scope of an asset management system",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.7"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.1.7",
+   "note": "Note 1 to entry: a portfolio is typically established and assigned for managerial control purposes."
+  },
+  {
+   "id": "term_critical_asset",
+   "label": "Concept",
+   "name": "critical asset",
+   "definition": "asset having the potential to significantly impact the achievement of an organization's objectives",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.8"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.1.8",
+   "note": "Note 1 to entry: assets can be safety-critical, environment-critical or performance-critical and can relate to legal, regulatory or statutory requirements. Note 2: critical assets can refer to those assets necessary to provide services to critical customers. Criticality is the natural prioritization key for predictive-maintenance alerting and capital planning."
+  },
+  {
+   "id": "term_object",
+   "label": "Concept",
+   "name": "object",
+   "definition": "anything perceivable or conceivable",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.9"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.1.9",
+   "note": "Verbatim term is 'object, noun'. Note 1 to entry: an object can be physical (e.g. a pump, a bridge, a building), or non-physical (e.g. a project plan, copyright, software)."
+  },
+  {
+   "id": "term_data",
+   "label": "Concept",
+   "name": "data",
+   "definition": "facts about an object",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.10"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.1.10",
+   "note": "[SOURCE: ISO 9000:2015, 3.8.1]. The cross-reference '(3.1.9)' after 'object' is elided per the extraction convention."
+  },
+  {
+   "id": "term_organizational_objective",
+   "label": "Concept",
+   "name": "organizational objective",
+   "definition": "overarching objective that sets the context and direction for an organization's activities",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.2.2",
+   "note": "Note 1 to entry: organizational objectives are established through the strategic level planning activities of the organization."
+  },
+  {
+   "id": "term_organizational_plan",
+   "label": "Concept",
+   "name": "organizational plan",
+   "definition": "documented information that specifies the plans to achieve the organizational objectives",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.3"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.2.3"
+  },
+  {
+   "id": "term_management",
+   "label": "Concept",
+   "name": "management",
+   "definition": "coordinated activities to direct and control an organization",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.4"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.2.4",
+   "note": "[SOURCE: ISO 9000:2015, 3.3.3, modified]. Note 5 to entry: the term 'management' can be qualified by a specific domain it addresses - asset management is such a domain-qualified management."
+  },
+  {
+   "id": "term_level_of_service",
+   "label": "Concept",
+   "name": "level of service",
+   "definition": "parameters, or combination of parameters, which reflect social, political, environmental and economic outcomes that an organization delivers",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.7"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.2.7",
+   "note": "Note 1 to entry: the parameters may include safety, customer satisfaction, quality, quantity, capacity, reliability, responsiveness, environmental acceptability, cost and availability."
+  },
+  {
+   "id": "term_organization",
+   "label": "Concept",
+   "name": "organization",
+   "definition": "person or group of people that has its own functions with responsibilities, authorities and relationships to achieve its objectives",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.1"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.3.1",
+   "note": "Note 1 to entry: includes sole-trader, company, corporation, firm, enterprise, authority, partnership, charity or institution, or part or combination thereof, whether incorporated or not, public or private."
+  },
+  {
+   "id": "term_stakeholder",
+   "label": "Concept",
+   "name": "stakeholder",
+   "definition": "person or organization that can affect, be affected by, or perceive itself to be affected by a decision or activity",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.2"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.3.2",
+   "note": "Admitted term: interested party."
+  },
+  {
+   "id": "term_management_system",
+   "label": "Concept",
+   "name": "management system",
+   "definition": "set of interrelated or interacting elements of an organization to establish policies and objectives, as well as processes to achieve those objectives",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.4"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.3.4",
+   "note": "Note 1 to entry: a management system can address a single discipline or several disciplines. Note 2: the elements include the organization's structure, roles and responsibilities, planning and operation. 4.4: the Harmonized Structure serves as the basis for all ISO Management System Standards and facilitates integrating the asset management system into the organization's broader management framework."
+  },
+  {
+   "id": "term_asset_management_system",
+   "label": "Concept",
+   "name": "asset management system",
+   "definition": "management system for asset management",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.5"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.3.5",
+   "note": "Clause 1 NOTE: for the purposes of this document, ISO 55001 and ISO 55002, the term 'asset management system' is used to refer to a management system for asset management. 4.4: organizations use an asset management system to direct, coordinate and control their asset management activities."
+  },
+  {
+   "id": "term_policy",
+   "label": "Concept",
+   "name": "policy",
+   "definition": "intentions and direction of an organization as formally expressed by its top management",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.6"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.3.6"
+  },
+  {
+   "id": "term_objective",
+   "label": "Concept",
+   "name": "objective",
+   "definition": "result to be achieved",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.7"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.3.7",
+   "note": "Note 3 to entry: an objective can be expressed as an intended result, a purpose, an operational criterion, an asset management objective or by other words with similar meaning (aim, goal, target). Note 4: asset management objectives are set by the organization, consistent with the asset management policy, to achieve specific results."
+  },
+  {
+   "id": "term_risk",
+   "label": "Concept",
+   "name": "risk",
+   "definition": "effect of uncertainty on objectives",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.8"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.3.8",
+   "note": "Note 1 to entry: an effect is a deviation from the expected - positive or negative. Note 2: uncertainty is the state, even partial, of deficiency of information related to, understanding or knowledge of, an event, its consequence, or likelihood. Note 4: risk is often expressed as a combination of the consequences of an event and the associated likelihood of occurrence (as defined in ISO 31073). Root concept behind the ISO 19650-5 security risks and the ISO 19650-6 health and safety risk chain."
+  },
+  {
+   "id": "term_opportunity",
+   "label": "Concept",
+   "name": "opportunity",
+   "definition": "circumstance or set of circumstances that can be exploited to improve performance, exceed original objectives and/or intended results, pursue additional objectives, or achieve continual improvement",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.9"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.3.9"
+  },
+  {
+   "id": "term_process",
+   "label": "Concept",
+   "name": "process",
+   "definition": "set of interrelated or interacting activities that uses or transforms inputs to deliver a result",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.10"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.3.10",
+   "bsdd_uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/class/IfcProcess",
+   "bsdd_dictionary": "IFC",
+   "bsdd_code": "IfcProcess",
+   "note": "Note 1 to entry: whether the result of a process is called an output, a product or a service depends on the context of the reference."
+  },
+  {
+   "id": "term_competence",
+   "label": "Concept",
+   "name": "competence",
+   "definition": "ability to apply knowledge and skills to achieve intended results",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.11"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.3.11"
+  },
+  {
+   "id": "term_documented_information",
+   "label": "Concept",
+   "name": "documented information",
+   "definition": "information required to be controlled and maintained by an organization and the medium on which it is contained",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.12"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.3.12",
+   "note": "Note 2 to entry: documented information can refer to the management system including related processes, information created in order for the organization to operate (documentation), and evidence of results achieved (records). The ISO 19650 information container is the construction-sector realization of this concept."
+  },
+  {
+   "id": "term_performance",
+   "label": "Concept",
+   "name": "performance",
+   "definition": "measurable result",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.13"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.3.13",
+   "note": "Note 3 to entry: for the purposes of asset management, performance can relate to assets in their ability to fulfil requirements or objectives and thereby their ability to realize value."
+  },
+  {
+   "id": "term_continual_improvement",
+   "label": "Concept",
+   "name": "continual improvement",
+   "definition": "recurring activity to enhance performance",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.14"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.3.14"
+  },
+  {
+   "id": "term_effectiveness",
+   "label": "Concept",
+   "name": "effectiveness",
+   "definition": "extent to which planned activities are realized and planned results are achieved",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.15"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.3.15"
+  },
+  {
+   "id": "term_requirement",
+   "label": "Concept",
+   "name": "requirement",
+   "definition": "need or expectation that is stated, generally implied or obligatory",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.16"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.3.16"
+  },
+  {
+   "id": "term_conformity",
+   "label": "Concept",
+   "name": "conformity",
+   "definition": "fulfilment of a requirement",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.17"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.3.17"
+  },
+  {
+   "id": "term_nonconformity",
+   "label": "Concept",
+   "name": "nonconformity",
+   "definition": "non-fulfilment of a requirement",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.18"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.3.18",
+   "note": "Note 1 to entry: nonconformity can be any deviation from asset management system requirements or any failure of an asset to meet or perform to specification."
+  },
+  {
+   "id": "term_corrective_action",
+   "label": "Concept",
+   "name": "corrective action",
+   "definition": "action to eliminate the cause(s) of a nonconformity and to prevent recurrence",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.19"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.3.19"
+  },
+  {
+   "id": "term_preventive_action",
+   "label": "Concept",
+   "name": "preventive action",
+   "definition": "action to eliminate the cause of a potential nonconformity or other undesirable potential situation",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.20"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.3.20",
+   "note": "Note 2 to entry: preventive action is taken to prevent occurrence and to preserve an asset's function whereas corrective action is taken to prevent recurrence. Note 3: preventive action is normally carried out while the asset is functionally available and operable or prior to the initiation of functional failure."
+  },
+  {
+   "id": "term_predictive_action",
+   "label": "Concept",
+   "name": "predictive action",
+   "definition": "action that predicts future behaviour of a parameter required to support decision-making",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.21"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.3.21",
+   "note": "THE vocabulary anchor for the PdM use case. Note 1 to entry: predictive actions inform asset management decisions inclusive of preventing and/or correcting a nonconformity as well as the realization of maximum value from an opportunity. Note 2: predictive actions do not alter the state of assets and/or systems themselves. Note 4: predictive actions may include modelling, testing, surveillance, monitoring, statistical analyses, calculations, algorithm development, expert system development, artificial intelligence system development, digital twinning, alarm and warning system development - i.e. the predictive-maintenance analytical model, the condition monitoring stream and the Cognitive Digital Twin are all ISO 55000 predictive actions."
+  },
+  {
+   "id": "term_incident",
+   "label": "Concept",
+   "name": "incident",
+   "definition": "unplanned event or occurrence",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.22"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.3.22"
+  },
+  {
+   "id": "term_audit",
+   "label": "Concept",
+   "name": "audit",
+   "definition": "systematic and independent process for obtaining evidence and evaluating it objectively to determine the extent to which the audit criteria are fulfilled",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.23"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.3.23",
+   "note": "Note 1 to entry: an audit can be internal (first party), external (second or third party) or combined. Note 3: 'audit evidence' and 'audit criteria' are defined in ISO 19011."
+  },
+  {
+   "id": "term_measurement",
+   "label": "Concept",
+   "name": "measurement",
+   "definition": "process to determine a value",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.24"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.3.24",
+   "bsdd_uri": "https://identifier.buildingsmart.org/uri/bw/LM/0.1.2/class/measurement",
+   "bsdd_dictionary": "LifeMACS",
+   "bsdd_code": "measurement",
+   "note": "Note 1 to entry: in this definition a 'value' refers to a numerical value, which is different than value in the context of stakeholder's value or asset management value."
+  },
+  {
+   "id": "term_monitoring",
+   "label": "Concept",
+   "name": "monitoring",
+   "definition": "determining the status of a system, a process or an activity",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.25"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.3.25",
+   "bsdd_uri": "https://identifier.buildingsmart.org/uri/nbs/uniclass2015/1/class/Ac_05_50_54",
+   "bsdd_dictionary": "Uniclass 2015",
+   "bsdd_code": "Ac_05_50_54",
+   "note": "Note 2 to entry: for the purposes of asset management, monitoring can also refer to determining the status of an asset - typically referred to as 'condition monitoring' or 'performance monitoring'."
+  },
+  {
+   "id": "term_knowledge",
+   "label": "Concept",
+   "name": "knowledge",
+   "definition": "understanding of facts, information and principles acquired through experience, research or education",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.26"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.3.26",
+   "note": "Note 1 to entry: asset management knowledge can be derived from internal sources (intellectual property, lessons learned from failures, simulation models; see ISO 30401) and external sources (standards, academia, customers, external providers)."
+  },
+  {
+   "id": "term_sustainability",
+   "label": "Concept",
+   "name": "sustainability",
+   "definition": "state of the global system, including environmental, social and economic aspects, in which the needs of the present are met without compromising the ability of future generations to meet their own needs",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.27"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.3.27",
+   "note": "[SOURCE: ISO Guide 82:2019, 3.1, modified]. Note 3 to entry: in asset management, sustainability of assets or asset systems refers to their ability to meet present objectives without compromising their ability to meet future objectives."
+  },
+  {
+   "id": "term_value",
+   "label": "Concept",
+   "name": "value",
+   "definition": "results from satisfying needs and expectations",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.28"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.3.28",
+   "note": "Note 1 to entry: value represents the result of considering positive and negative impacts, as well as financial and non-financial impacts, on stakeholders over a time horizon that includes all such impacts. 4.2.2: asset management focuses on the value assets provide to the organization over time."
+  },
+  {
+   "id": "term_framework",
+   "label": "Concept",
+   "name": "framework",
+   "definition": "structure of processes and specifications designed to support the accomplishment of a specific task",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.30"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.3.30",
+   "note": "Note 1 to entry: the framework for asset management decision-making is used in defining the value the organization aims to derive from its assets and the criteria for asset management decision-making to achieve value. bSDD note: IFC 'IfcBridgeFRAMEWORK' is a framework bridge structure - a false friend, deliberately NOT mapped."
+  },
+  {
+   "id": "principle_am_value",
+   "label": "Principle",
+   "name": "value (asset management principle)",
+   "definition": "Asset management focuses on the value assets provide to the organization over time. This principle encourages clear contributions to organizational objectives, life cycle management and transparent decision-making processes.",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "4.2.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause"
+  },
+  {
+   "id": "principle_am_alignment",
+   "label": "Principle",
+   "name": "alignment (asset management principle)",
+   "definition": "asset management aligns financial, technical and operational decisions with the organizational objectives, promoting vertical and horizontal coordination",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "4.2.3"
+   },
+   "pdm_relevance": "high",
+   "source_type": "body_clause",
+   "note": "Vertical alignment links organizational purpose, asset management objectives, strategies, plans and activities; horizontal alignment represents collaboration across departments, functions and responsibilities for different stages of the asset life cycle. ISO/TS 55010 is the ISO 55000-family elaboration of this principle for the financial/non-financial pair."
+  },
+  {
+   "id": "principle_am_leadership",
+   "label": "Principle",
+   "name": "leadership (asset management principle)",
+   "definition": "Leadership and sustained commitment at all levels are crucial for successful asset management. Effective leadership establishes a clear direction, roles, responsibilities and authorities, with transparent consultation and the development of a collaborative culture that is aligned to organizational success.",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "4.2.4"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause"
+  },
+  {
+   "id": "term_am_maturity",
+   "label": "Concept",
+   "name": "asset management maturity",
+   "definition": "Asset management maturity is key to enhancing an organization's performance. The organization's progress can be measured by its maturity: showing how well it is performing and where targeted improvements can be made. [...] An organization's asset management and asset management system maturity are reflected in its capabilities, which are essential elements enabling success.",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "4.5"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "Maturity indicators include: understanding and communicating the value wanted from assets; adopting a complete life cycle perspective; accurate information about assets for decision-making; integration of the asset management system into the overall management system; effective management of risks and opportunities; a supportive asset management culture; established continual improvement."
+  }
+ ],
+ "relationships": [
+  {
+   "from": "term_asset_life",
+   "to": "term_asset",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.2"
+   }
+  },
+  {
+   "from": "term_life_cycle",
+   "to": "term_asset_life",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.3 Note 3"
+   }
+  },
+  {
+   "from": "term_life_cycle_management",
+   "to": "term_asset_management",
+   "type": "REFINES",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.4"
+   }
+  },
+  {
+   "from": "term_life_cycle_management",
+   "to": "term_life_cycle",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.4"
+   }
+  },
+  {
+   "from": "term_asset_type",
+   "to": "term_asset",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.5"
+   }
+  },
+  {
+   "from": "term_asset",
+   "to": "term_asset_system",
+   "type": "AGGREGATED_INTO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.6; 3.1.1 Note 2"
+   }
+  },
+  {
+   "from": "term_asset",
+   "to": "term_asset_portfolio",
+   "type": "AGGREGATED_INTO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.7"
+   }
+  },
+  {
+   "from": "term_critical_asset",
+   "to": "term_asset",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.8"
+   }
+  },
+  {
+   "from": "term_critical_asset",
+   "to": "term_objective",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.8"
+   }
+  },
+  {
+   "from": "term_data",
+   "to": "term_object",
+   "type": "DESCRIBES",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.10"
+   }
+  },
+  {
+   "from": "term_information",
+   "to": "term_data",
+   "type": "DERIVED_FROM",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.11"
+   }
+  },
+  {
+   "from": "term_asset_management",
+   "to": "term_management",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.4; 3.2.1"
+   }
+  },
+  {
+   "from": "term_asset_management",
+   "to": "term_value",
+   "type": "RESULTS_IN",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.1"
+   }
+  },
+  {
+   "from": "term_asset_management",
+   "to": "term_risk",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.1 Note 1"
+   }
+  },
+  {
+   "from": "term_asset_management",
+   "to": "term_opportunity",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.1 Note 1"
+   }
+  },
+  {
+   "from": "term_asset_management",
+   "to": "term_performance",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.1 Note 1"
+   }
+  },
+  {
+   "from": "term_organizational_objective",
+   "to": "term_objective",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.2"
+   }
+  },
+  {
+   "from": "term_organizational_plan",
+   "to": "term_documented_information",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.3"
+   }
+  },
+  {
+   "from": "term_organizational_plan",
+   "to": "term_organizational_objective",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.3"
+   }
+  },
+  {
+   "from": "term_asset_management_plan",
+   "to": "term_documented_information",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.5"
+   }
+  },
+  {
+   "from": "term_asset_management_plan",
+   "to": "term_strategic_asset_management_plan",
+   "type": "DERIVED_FROM",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.5 Note 2"
+   }
+  },
+  {
+   "from": "term_capability",
+   "to": "term_competence",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.6 Note 1"
+   }
+  },
+  {
+   "from": "term_capability",
+   "to": "term_asset_management_plan",
+   "type": "ENABLES",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.6 Note 1"
+   }
+  },
+  {
+   "from": "term_level_of_service",
+   "to": "term_performance",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.7 Note 1"
+   }
+  },
+  {
+   "from": "term_stakeholder",
+   "to": "term_organization",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.2"
+   }
+  },
+  {
+   "from": "term_top_management",
+   "to": "term_organization",
+   "type": "LEADS",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.3"
+   }
+  },
+  {
+   "from": "term_top_management",
+   "to": "term_policy",
+   "type": "ESTABLISHES",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.6"
+   }
+  },
+  {
+   "from": "term_asset_management_system",
+   "to": "term_management_system",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.5"
+   }
+  },
+  {
+   "from": "term_management_system",
+   "to": "term_policy",
+   "type": "ESTABLISHES",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.4"
+   }
+  },
+  {
+   "from": "term_management_system",
+   "to": "term_objective",
+   "type": "ESTABLISHES",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.4"
+   }
+  },
+  {
+   "from": "term_asset_management_system",
+   "to": "term_asset_management",
+   "type": "GOVERNS",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "4.4"
+   }
+  },
+  {
+   "from": "term_asset_management_system",
+   "to": "term_asset_portfolio",
+   "type": "GOVERNS",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.7; 4.4 Figure 1"
+   }
+  },
+  {
+   "from": "term_asset_management",
+   "to": "term_asset_portfolio",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "4.4 Figure 1"
+   }
+  },
+  {
+   "from": "term_risk",
+   "to": "term_objective",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.8"
+   }
+  },
+  {
+   "from": "term_opportunity",
+   "to": "term_continual_improvement",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.9"
+   }
+  },
+  {
+   "from": "term_conformity",
+   "to": "term_requirement",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.17"
+   }
+  },
+  {
+   "from": "term_management_system",
+   "to": "term_process",
+   "type": "ESTABLISHES",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.4"
+   }
+  },
+  {
+   "from": "term_audit",
+   "to": "term_process",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.23"
+   }
+  },
+  {
+   "from": "term_audit",
+   "to": "term_conformity",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.23"
+   }
+  },
+  {
+   "from": "term_effectiveness",
+   "to": "term_performance",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.15; 4.3 h)"
+   }
+  },
+  {
+   "from": "term_nonconformity",
+   "to": "term_requirement",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.18"
+   }
+  },
+  {
+   "from": "term_corrective_action",
+   "to": "term_nonconformity",
+   "type": "RESPONDS_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.19"
+   }
+  },
+  {
+   "from": "term_preventive_action",
+   "to": "term_nonconformity",
+   "type": "RESPONDS_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.20"
+   }
+  },
+  {
+   "from": "term_predictive_action",
+   "to": "term_asset_management",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.21 Note 1"
+   }
+  },
+  {
+   "from": "term_predictive_action",
+   "to": "term_monitoring",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.21 Note 4"
+   }
+  },
+  {
+   "from": "term_measurement",
+   "to": "term_performance",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.24; 3.3.13"
+   }
+  },
+  {
+   "from": "term_monitoring",
+   "to": "term_asset",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.25 Note 2"
+   }
+  },
+  {
+   "from": "term_knowledge",
+   "to": "term_information",
+   "type": "DERIVED_FROM",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.26"
+   }
+  },
+  {
+   "from": "term_sustainability",
+   "to": "term_objective",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.27 Note 2"
+   }
+  },
+  {
+   "from": "term_asset",
+   "to": "term_value",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.1.1"
+   }
+  },
+  {
+   "from": "term_framework",
+   "to": "term_value",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.30 Note 1"
+   }
+  },
+  {
+   "from": "term_strategic_asset_management_plan",
+   "to": "term_documented_information",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.29"
+   }
+  },
+  {
+   "from": "term_strategic_asset_management_plan",
+   "to": "term_organizational_plan",
+   "type": "DERIVED_FROM",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.29 Note 1"
+   }
+  },
+  {
+   "from": "term_strategic_asset_management_plan",
+   "to": "term_asset_portfolio",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.29"
+   }
+  },
+  {
+   "from": "term_asset_management_policy",
+   "to": "term_policy",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.6; 3.3.7 Note 4"
+   }
+  },
+  {
+   "from": "principle_am_value",
+   "to": "term_asset_management",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "4.2.2"
+   }
+  },
+  {
+   "from": "principle_am_value",
+   "to": "term_value",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "4.2.2"
+   }
+  },
+  {
+   "from": "principle_am_value",
+   "to": "term_life_cycle_management",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "4.2.2"
+   }
+  },
+  {
+   "from": "principle_am_alignment",
+   "to": "term_asset_management",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "4.2.3"
+   }
+  },
+  {
+   "from": "principle_am_alignment",
+   "to": "term_organizational_objective",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "4.2.3"
+   }
+  },
+  {
+   "from": "principle_am_leadership",
+   "to": "term_asset_management",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "4.2.4"
+   }
+  },
+  {
+   "from": "term_am_maturity",
+   "to": "term_capability",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "4.5"
+   }
+  },
+  {
+   "from": "term_am_maturity",
+   "to": "term_continual_improvement",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "4.5"
+   }
+  },
+  {
+   "from": "term_documented_information",
+   "to": "term_information_container",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55000:2024 3.3.12 and ISO 19650-1 3.3.12"
+   }
+  },
+  {
+   "from": "term_security_risk",
+   "to": "term_risk",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55000:2024 3.3.8 and ISO 19650-5 6.2"
+   }
+  },
+  {
+   "from": "term_hs_incident",
+   "to": "term_incident",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55000:2024 3.3.22 and ISO 19650-6 4.2.6"
+   }
+  },
+  {
+   "from": "term_nonconformity",
+   "to": "term_failure_mode",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55000:2024 3.3.18 Note 1 and ISO 19650-3 A.3"
+   }
+  },
+  {
+   "from": "term_preventive_action",
+   "to": "term_preventive_maintenance",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55000:2024 3.3.20 and ISO/TS 55010:2019 E.5.3"
+   }
+  },
+  {
+   "from": "term_corrective_action",
+   "to": "term_corrective_maintenance",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55000:2024 3.3.19 and ISO/TS 55010:2019 E.5.3"
+   }
+  },
+  {
+   "from": "term_predictive_action",
+   "to": "term_predictive_maintenance",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55000:2024 3.3.21 and ISO/TS 55010:2019 E.5.3"
+   }
+  },
+  {
+   "from": "term_predictive_action",
+   "to": "term_pdm_model",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55000:2024 3.3.21 Note 4 and ISO 19650-3 A.2-A.5"
+   }
+  },
+  {
+   "from": "term_monitoring",
+   "to": "term_condition_monitoring_system",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55000:2024 3.3.25 Note 2 and ISO 19650-3 A.5"
+   }
+  },
+  {
+   "from": "principle_am_alignment",
+   "to": "term_alignment",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55000:2024 4.2.3 and ISO/TS 55010:2019 3.11"
+   }
+  },
+  {
+   "from": "principle_am_leadership",
+   "to": "enabler_leadership",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55000:2024 4.2.4 and ISO/TS 55010:2019 5.2.2"
+   }
+  }
+ ],
+ "cross_references": {
+  "iso_55000_family": "Sets the context for ISO 55001 (requirements) and ISO 55002 (guidance); 0.2 positions ISO/TS 55010 (financial alignment), ISO 55011 (public policy), ISO 55012 (people), ISO 55013 (data assets) within the family.",
+  "pdm_anchor": "3.3.21 predictive action Note 4 explicitly lists modelling, monitoring, statistical analyses, algorithm development, artificial intelligence system development, digital twinning, and alarm and warning system development - normative-vocabulary cover for the PdM analytical model, the condition-monitoring stream and the Cognitive Digital Twin readiness audit."
+ }
+}

@@ -1,0 +1,882 @@
+{
+ "standard": "ISO 55013:2024",
+ "source_document": "data/ISO_55013_2024(en).pdf (ISO 55013:2024(en), First edition 2024-11, Asset management - Guidance on the management of data assets, 20 pages)",
+ "role_in_kg": "data_asset_layer: the ISO 55000 family's data dimension and the strongest 55000-family tie into the PdM spine. Its data life cycle (define-collect-store-report-decide-distribute-dispose) IS the PdM telemetry pipeline in vocabulary form: 4.4.3 sensors and urgent alerts, 4.4.5 trend extraction, 4.4.6 monitored automated decision-making, 4.2.1 data quality graded like asset condition, and 7.5 semantic interoperability via common vocabularies or ontologies - the instrument this knowledge graph itself implements. Annex B literally cites ISO/TS 55010 for register alignment and the ISO 19650 series for BIM.",
+ "depends_on": [
+  "iso19650-1_extraction_v4.json",
+  "iso19650-2_extraction_v1.json",
+  "iso19650-3_extraction_v1.2.json",
+  "iso19650-4_extraction_v1.json",
+  "iso19650-5_extraction_v1.json",
+  "iso19650-6_extraction_v2.json",
+  "iso-ts-55010_extraction_v1.json",
+  "iso-55000_extraction_v1.json",
+  "iso-55011_extraction_v1.json",
+  "iso-55012_extraction_v1.json"
+ ],
+ "extraction_notes": {
+  "registry_scope": "Reconciliation registry is the union of the ten preceding extraction files. One clause-3 term reused: metadata (55013 3.4 'data that defines and describes other data' [SOURCE ISO 24531] vs ISO 19650-5 3.3 'data about data' - same concept, different chain of source standards; reuse-first per the life cycle precedent, wording difference noted here). Reused concepts (asset, data, requirement, documented information, OIR, AIR, information model, AMS, AMP, SAMP, organizational objective, risk, risk appetite, KPI, asset register and register alignment, maintenance history, governance) receive relationships only.",
+  "id_convention": "Keeps term_<snake_case>; extends the phase_ prefix (ISO/TS 55010 asset life cycle phases) with phase_data_<snake_case> for the 4.4 data life cycle stages, named '<stage> (data life cycle stage)'. No new labels, no new relationship types.",
+  "verbatim_convention": "All definitions are verbatim ISO 55013:2024 text (inline cross-reference numbers elided; non-contiguous quotes joined by ' [...] '), asserted at build time and enforced by backend/gates/verify_verbatim.py. No exemptions needed; Figure B.1 (asset register) is informative and captured as edges.",
+  "structure_notes": "4.4.1 notes the life cycle stages may be applied in a different order; the PRECEDES chain records the presentation order, and the reporting-decide bidirectional relationship (4.4.5) is captured by the decide RESULTS_IN collect feedback edge plus notes. The known cross-standard tension between ISO 19650-6's append-only history field and disposal/purging provisions (here 4.4.8/A.8, ISO 19650-5 B.4.2) is recorded on the phase_data_dispose note, consistent with the Part 5/Part 6 conflict already documented in the KG. Annexes A (data activities) and B (data asset examples) are informative and are summarized in notes; their literal citations of ISO/TS 55010 and the ISO 19650 series (B.1) are captured as direct edges.",
+  "bsdd_mapping": "Terms checked against the buildingSMART Data Dictionary via api.bsdd.buildingsmart.org TextSearch (2026-08-05): no genuine matches for the data-management vocabulary (bSDD classifies construction entities, not data-governance concepts). Absence means checked-no-genuine-match, per backend/gates/verify_bsdd.py.",
+  "merge_note": "File name does not match the iso19650-* union glob; it is listed explicitly in the union tooling (validate_union, check_pdm_paths, export_neo4j, serve, gen_pdm_spec, evaluate_kg, verify_bsdd, verify_verbatim) and must always be loaded together with the other ten files."
+ },
+ "nodes": [
+  {
+   "id": "term_asset_data",
+   "label": "Concept",
+   "name": "asset data",
+   "definition": "data that lists and describes an asset",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "3.1"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.1",
+   "note": "Note 1 to entry: asset data can exist in a number of formats such as structured data, documented information, sensor data, etc. requiring different approaches to their management. Note 2: data supporting asset management decision-making can be considered as asset data. 5.1: asset data relates to attributes such as cost, risk, performance, condition and service levels."
+  },
+  {
+   "id": "term_data_asset",
+   "label": "Concept",
+   "name": "data asset",
+   "definition": "data that has the properties of an asset",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "3.2"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.2",
+   "note": "Note 1 to entry: data assets can be managed as an asset in accordance with ISO 55001. Note 2: asset data can be part of more than one data asset; data assets can have relationships between each other. Annex B examples: the asset register, asset history (design information, operating manuals, metadata, reports, images, work orders) and market data."
+  },
+  {
+   "id": "term_data_type",
+   "label": "Concept",
+   "name": "data type",
+   "definition": "named category of data characterized by a set of values, a syntax for denoting these values, and a set of operations that interpret, manipulate or store the values",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "3.3"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.3",
+   "note": "Preferred term: 'type'; admitted term: 'data type'. [SOURCE: ISO/IEC 1539-1:2023, 3.144, modified - 'or store' added.]"
+  },
+  {
+   "id": "term_data_quality",
+   "label": "Concept",
+   "name": "data quality",
+   "definition": "degree to which a set of inherent characteristics of data fulfils requirements",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "3.5"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.5",
+   "note": "[SOURCE: ISO 8000-2:2022, 3.8.1, modified - Note to entry deleted.] 4.2.1 (verbatim): 'Data quality can be assessed using a confidence scale similar to that of the condition scale of the underlying asset.' - the direct analogy between data confidence grading and asset condition grading that the PdM use case exploits. The ISO 8000 series provides guidance on assessing and managing data quality; ISO 8000-61 describes a process reference model for data quality management (4.2.1 NOTE, 4.2.3 NOTE)."
+  },
+  {
+   "id": "term_interoperability",
+   "label": "Concept",
+   "name": "interoperability",
+   "definition": "capability of two or more entities to exchange items in accordance with a set of rules and mechanisms implemented by an interface in each entity, in order to perform their specified tasks",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "3.6"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.6",
+   "note": "[SOURCE: ISO 18435-1:2009, 3.12, modified.] Note 1 to entry: examples of entities include devices, equipment, machines, people, processes, applications, computer firmware and application software units, data exchange systems and enterprises. 7.5: interoperability should consider processes, functions, software and data to enable complete interoperability."
+  },
+  {
+   "id": "term_governing_function",
+   "label": "Concept",
+   "name": "governing function",
+   "definition": "function responsible for the strategic guidance of the data governance programme",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "3.7"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.7",
+   "note": "Note 1 to entry: responsible for the prioritization of data governance projects and initiatives, and the approval of organization-wide data policies and standards. Note 2: can be known as the data governance committee, steering council, advisory group, data stewardship council or data owners' council. 4.4.6: the governing function remains accountable for all decisions, including automated ones."
+  },
+  {
+   "id": "term_data_requirements",
+   "label": "Concept",
+   "name": "data requirements",
+   "definition": "The organization should determine its data requirements and manage its data across its life cycle to support the scope of its asset management system to achieve both its asset management and organizational objectives [...] Quality requirements for asset data closely relate to asset data requirements.",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.2.1"
+   },
+   "pdm_relevance": "high",
+   "source_type": "body_clause",
+   "note": "4.2.1 determinations a)-g): legal requirements; data dictionaries (consistent definition of attributes, units of measurement, criticality, quality and source); data frequency; data volume; data security; data availability at critical times; data responsibility. Before data can be published or used to make asset management decisions, its quality should be understood. See ISO 55001:2024, 7.6."
+  },
+  {
+   "id": "term_master_data_source",
+   "label": "Concept",
+   "name": "master data source",
+   "definition": "one data store should be identified as the master data source that is updated first and is referred to by other data stores.",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.2.5"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "4.2.5: asset data can be transferred between data stores, potentially multiple times, with each transfer activity potentially being a source of inconsistency or quality issues; understanding how data are transferred into, across and out of an organization ensures that master data sources are understood and changes are correctly applied. 4.2.4: data dictionaries can be useful to explain synonyms and different terminology and to clearly identify preferred terms."
+  },
+  {
+   "id": "term_documented_information_protection",
+   "label": "Concept",
+   "name": "protection of documented information",
+   "definition": "Documented information can be required over the whole life of the assets that they represent. [...] Protection from deletion: Application of user-level permissions to restrict who may delete documented information.",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.3.6"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "4.3.6 factors a)-d): protection from deletion (including logical deletion prior to physical deletion), protection from alteration (retention of superseded versions allows restore), protection of unauthorized access (security permissions, restrictions on sharing), protection from technology failure (backup processes with tested restoration)."
+  },
+  {
+   "id": "phase_data_define",
+   "label": "Concept",
+   "name": "define (data life cycle stage)",
+   "definition": "The define activity includes provision of explicit guidance of the form, structure and meaning of asset data required by the organization.",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "4.4.2 (verbatim): 'The combined set of data definitions for an organization may be described as a \"data dictionary\", \"organizational information requirements\" (OIR) or \"asset information requirements\" (AIR).' - the explicit hook into the ISO 19650 requirements chain. Changes to data definitions should be agreed through change management before implementation."
+  },
+  {
+   "id": "phase_data_collect",
+   "label": "Concept",
+   "name": "collect (data life cycle stage)",
+   "definition": "The collect activity includes the data acquisition, gathering and creation process, learning from previous decisions made, and additional context extracted from other data sets (internal or external).",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.3"
+   },
+   "pdm_relevance": "high",
+   "source_type": "body_clause",
+   "note": "4.4.3 forms a)-f): data entry; transactions from other systems (EDI); sensors - (verbatim) 'Sensors cover a wide range of data acquisition devices including website logs, social media sources and so-called \"internet of things\" devices which include everyday devices from simple temperature sensors to TVs, cars, traffic lights and buildings. Data from sensors can also include potentially urgent signals such as alerts and alarms.'; new context fed back from reports and decisions; subscription to data feeds; time sensitivity."
+  },
+  {
+   "id": "phase_data_store",
+   "label": "Concept",
+   "name": "store (data life cycle stage)",
+   "definition": "The store activity includes locating the data where it can be retrieved.",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.4"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "Includes data stores owned by the organization, external devices and virtual stores (data feeds collated when needed). Controlling data does not necessarily mean owning it (intellectual property, personal or health information laws, cross-jurisdictional issues); stewardship remains with the governance function. ISO/IEC 27040 provides guidance on data storage security."
+  },
+  {
+   "id": "phase_data_reporting",
+   "label": "Concept",
+   "name": "reporting (data life cycle stage)",
+   "definition": "The reporting activity includes the manual or automated extraction and analysis of data [...] It is important to note that the reporting and deciding activities can be interchangeable in their order, as they have a bidirectional relationship.",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.5"
+   },
+   "pdm_relevance": "high",
+   "source_type": "body_clause",
+   "note": "A data feed (a structured system to provide updated data regularly) should have associated properties such as quality and currency. Combined data feeds give new context, which is itself new data fed back into collection. (Verbatim) 'data from sensors can be aggregated to extract trends'; anonymization and pseudonymization can remove personally identifiable information. Reporting and deciding are interchangeable in order - a bidirectional relationship."
+  },
+  {
+   "id": "phase_data_decide",
+   "label": "Concept",
+   "name": "decide (data life cycle stage)",
+   "definition": "The decide activity occurs when a decision is made based on the report evaluation. The decisions may be made by people within the organization or by automated means.",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.6"
+   },
+   "pdm_relevance": "high",
+   "source_type": "body_clause",
+   "note": "(Verbatim) 'Suitable agreement is required before automated decision-making takes place; it is important that the decisions and outcomes are monitored.' The governing function remains accountable for all decisions and should apply human intervention to deal with any biases, discrimination or profiling. The data maintenance and feedback loop fine-tunes reports, data feeds and ultimately the data itself, increasing the value of decisions."
+  },
+  {
+   "id": "phase_data_distribute",
+   "label": "Concept",
+   "name": "distribute (data life cycle stage)",
+   "definition": "The distribute activity involves extraction or copying of data via the reporting activity for circulation to external parties.",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.7"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause",
+   "note": "Reasons a)-e): external reporting to authorities; business-to-business exchange; sale of data; publishing business; or unauthorized distribution, which would be classified as a data breach."
+  },
+  {
+   "id": "phase_data_dispose",
+   "label": "Concept",
+   "name": "dispose/archiving (data life cycle stage)",
+   "definition": "The dispose activity usually involves identifying data for disposal via the report activity and then permanently removing that data and any duplicates from the data store.",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.8"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "Reasons for secure disposal: reducing data-leakage risk, removing irrelevant or incorrect data, contractual compliance, legal or regulatory compliance. Archiving is a deliberate activity with appropriate labelling and metadata. NOTE the standing cross-standard tension recorded in this KG: ISO 19650-6's history field is append-only ('Entries shall not be deleted') while ISO 19650-5 and this clause provide for purging/secure disposal - reconciliation is a policy decision per record category."
+  },
+  {
+   "id": "term_data_driven_decision_making",
+   "label": "Concept",
+   "name": "asset data driven decision-making",
+   "definition": "includes whole life planning, reliability analysis, risk analysis, work management optimization, demand analysis and sustainability assessment.",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "5.1"
+   },
+   "pdm_relevance": "high",
+   "source_type": "body_clause",
+   "note": "5.1: the decision-making process drives the need for and importance of data, the importance of good quality data, the timeliness and time sensitivity of data, and the accessibility of asset data to the asset management team. The main reason for asset data is to support decisions, and the value of data is how they improve the decisions that are made (4.4.6)."
+  },
+  {
+   "id": "term_asset_data_usefulness",
+   "label": "Concept",
+   "name": "usefulness of asset data",
+   "definition": "Asset data are useful if they support organizational objectives. The usefulness of asset data can be improved by data management and governance processes.",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "5.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "Degradation of usefulness can result from actions taken or failure to act; contributing factors include insufficient management controls, lack of business processes, and human factors including unauthorized use, theft or espionage. 5.4: a clear definition of asset data's useful life, retention timelines and disposal guidelines contributes to usefulness. 5.5: benefits and costs change over time and can change drastically on unexpected incidents such as disasters."
+  },
+  {
+   "id": "term_data_asset_identification",
+   "label": "Concept",
+   "name": "identifying data assets",
+   "definition": "Treating such collections of data sets as a data asset can help an organization achieve its asset management objectives requiring additional controls to align with and support these asset management objectives.",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "6.1"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "6.2 factors a)-i) suggesting data-asset treatment: high value/risk assets; externally purchased data; multiple software platforms changed at different timescales; need for accurate cross-referencing across data sets; asset lives considerably longer than the technology storing the data; regulatory change; overlapping processes risking inconsistency; format obsolescence; structural organizational change. Not all organizations identify data assets."
+  },
+  {
+   "id": "term_data_availability",
+   "label": "Concept",
+   "name": "data availability",
+   "definition": "Data asset availability can be assessed as: a) readily available, either internally or externally to the organization [...] Data that exists but is not accessible to the asset management function is considered as \"not available\".",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "7.3"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "Assessment scale: readily available; available after internal development (processing or combining existing data); available for procurement or after data gathering; not available. Additional sources should be identified, risk assessed, quality assessed, cost assessed and prioritized; the data governance function sets criteria and constraints for external source selection."
+  },
+  {
+   "id": "term_semantic_interoperability",
+   "label": "Concept",
+   "name": "semantic data interoperability",
+   "definition": "Semantic data interoperability ensures that data are interpreted in the same way by different entities. Semantic data interoperability can be supported by common vocabularies or ontologies. The use of appropriate identifiers ensures that asset data from different sources is correctly associated with the same asset.",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "7.5"
+   },
+   "pdm_relevance": "high",
+   "source_type": "body_clause",
+   "note": "The normative-guidance basis for this knowledge graph itself: a common ontology over the ISO vocabulary is exactly the 'common vocabularies or ontologies' instrument 7.5 names. Comparable data specifications and structures support the use of multiple data sets; data asset management activities encourage common approaches and integration."
+  },
+  {
+   "id": "term_digital_preservation",
+   "label": "Concept",
+   "name": "digital preservation",
+   "definition": "Data asset management activities support the development of approaches to ensure that the usefulness of the data asset is available for as long as is required.",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "7.6"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "7.6 strategies a)-f): assess consequences and likelihood of digital data loss (storage technology, format, hardware damage); calculate risk and prioritize; determine preservation strategies (secured storage, structured metadata control, regular maintenance, appropriate access tools on technology change); identify costs; select by risk and cost. Obsolescence of hardware, software or formats can lead to complete inability to access stored information."
+  },
+  {
+   "id": "term_data_culture",
+   "label": "Concept",
+   "name": "asset information culture",
+   "definition": "The organization should promote culture and behaviours relating to the management and usage of asset data and data assets.",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "7.7"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause",
+   "note": "7.7 examples a)-h) of good asset information culture: data inherent in the management system; communications explaining the value of data; weekly meetings visualizing data entered and outcomes; visible and accessible reporting of data and related key performance indicators (KPIs); recognition and incentives; mobile working to encourage data entry at the asset/on site; regular meetings between data users; an asset data governance group."
+  },
+  {
+   "id": "term_data_governance",
+   "label": "Concept",
+   "name": "data governance",
+   "definition": "Governance ensures that there is suitable oversight of the data asset and asset data related activities. [...] Approaches to governance often follow the evaluate, direct, monitor (EDM) model",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "Clause 8"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "EDM: Evaluate - the governance function evaluates proposals and plans for data asset management activities; Direct - formulates data strategies and policies and assigns responsibilities and accountabilities; Monitor - monitors performance and conformance against the set directions. ISO/IEC 38505-1 and ISO/IEC TR 38505-2 define approaches to data governance. Governance can be considered from an asset management and/or a data governance perspective."
+  }
+ ],
+ "relationships": [
+  {
+   "from": "term_asset_data",
+   "to": "term_asset",
+   "type": "DESCRIBES",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "3.1"
+   }
+  },
+  {
+   "from": "term_asset_data",
+   "to": "term_data",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "3.1"
+   }
+  },
+  {
+   "from": "term_data_asset",
+   "to": "term_asset",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "3.2"
+   }
+  },
+  {
+   "from": "term_data_asset",
+   "to": "term_asset_data",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "3.2 Note 2"
+   }
+  },
+  {
+   "from": "term_data_type",
+   "to": "term_data",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "3.3"
+   }
+  },
+  {
+   "from": "term_metadata",
+   "to": "term_data",
+   "type": "DESCRIBES",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "3.4"
+   }
+  },
+  {
+   "from": "term_data_quality",
+   "to": "term_asset_data",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "3.5; 4.2.1"
+   }
+  },
+  {
+   "from": "term_data_quality",
+   "to": "term_requirement",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "3.5"
+   }
+  },
+  {
+   "from": "term_interoperability",
+   "to": "term_data_asset",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "3.6; 7.5"
+   }
+  },
+  {
+   "from": "term_governing_function",
+   "to": "term_data_governance",
+   "type": "RESPONSIBLE_FOR",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "3.7; Clause 8"
+   }
+  },
+  {
+   "from": "term_data_requirements",
+   "to": "term_asset_management_system",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.2.1"
+   }
+  },
+  {
+   "from": "term_data_requirements",
+   "to": "term_data_quality",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.2.1"
+   }
+  },
+  {
+   "from": "term_master_data_source",
+   "to": "term_asset_data",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.2.5"
+   }
+  },
+  {
+   "from": "term_documented_information_protection",
+   "to": "term_documented_information",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.3.1; 4.3.6"
+   }
+  },
+  {
+   "from": "phase_data_define",
+   "to": "phase_data_collect",
+   "type": "PRECEDES",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.1; 4.4.2"
+   }
+  },
+  {
+   "from": "phase_data_collect",
+   "to": "phase_data_store",
+   "type": "PRECEDES",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.3; 4.4.4"
+   }
+  },
+  {
+   "from": "phase_data_store",
+   "to": "phase_data_reporting",
+   "type": "PRECEDES",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.4; 4.4.5"
+   }
+  },
+  {
+   "from": "phase_data_reporting",
+   "to": "phase_data_decide",
+   "type": "PRECEDES",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.5; 4.4.6"
+   }
+  },
+  {
+   "from": "phase_data_decide",
+   "to": "phase_data_distribute",
+   "type": "PRECEDES",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.6; 4.4.7"
+   }
+  },
+  {
+   "from": "phase_data_distribute",
+   "to": "phase_data_dispose",
+   "type": "PRECEDES",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.7; 4.4.8"
+   }
+  },
+  {
+   "from": "phase_data_define",
+   "to": "term_data_requirements",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.2"
+   }
+  },
+  {
+   "from": "phase_data_define",
+   "to": "term_oir",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.2"
+   }
+  },
+  {
+   "from": "phase_data_define",
+   "to": "term_air",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.2"
+   }
+  },
+  {
+   "from": "phase_data_decide",
+   "to": "term_governing_function",
+   "type": "GOVERNS",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.6"
+   }
+  },
+  {
+   "from": "phase_data_decide",
+   "to": "phase_data_collect",
+   "type": "RESULTS_IN",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.6"
+   }
+  },
+  {
+   "from": "phase_data_dispose",
+   "to": "term_metadata",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "4.4.8"
+   }
+  },
+  {
+   "from": "term_data_driven_decision_making",
+   "to": "term_asset_data",
+   "type": "DERIVED_FROM",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "5.1"
+   }
+  },
+  {
+   "from": "term_asset_data_usefulness",
+   "to": "term_organizational_objective",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "5.2"
+   }
+  },
+  {
+   "from": "term_data_asset_identification",
+   "to": "term_data_asset",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "6.1; 6.2"
+   }
+  },
+  {
+   "from": "term_data_asset",
+   "to": "term_asset_management_system",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "6.1; 7.1.1"
+   }
+  },
+  {
+   "from": "term_data_asset",
+   "to": "term_asset_management_plan",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "7.1.1"
+   }
+  },
+  {
+   "from": "term_data_asset",
+   "to": "term_strategic_asset_management_plan",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "7.1.1"
+   }
+  },
+  {
+   "from": "term_data_availability",
+   "to": "term_data_asset",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "7.3"
+   }
+  },
+  {
+   "from": "term_data_governance",
+   "to": "term_risk_appetite",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "7.2"
+   }
+  },
+  {
+   "from": "term_semantic_interoperability",
+   "to": "term_interoperability",
+   "type": "REFINES",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "7.5"
+   }
+  },
+  {
+   "from": "term_semantic_interoperability",
+   "to": "term_asset_unique_identifier",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "7.5"
+   }
+  },
+  {
+   "from": "term_digital_preservation",
+   "to": "term_data_asset",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "7.6"
+   }
+  },
+  {
+   "from": "term_digital_preservation",
+   "to": "term_risk",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "7.6"
+   }
+  },
+  {
+   "from": "term_data_culture",
+   "to": "term_asset_kpi",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "7.7 d)"
+   }
+  },
+  {
+   "from": "term_data_governance",
+   "to": "term_data_asset",
+   "type": "GOVERNS",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "Clause 8"
+   }
+  },
+  {
+   "from": "term_asset_register",
+   "to": "term_data_asset",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "Annex B.1"
+   }
+  },
+  {
+   "from": "term_data_asset",
+   "to": "term_asset_register_alignment",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "Annex B.1"
+   }
+  },
+  {
+   "from": "term_data_asset",
+   "to": "term_information_model",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "Annex B.1 NOTE"
+   }
+  },
+  {
+   "from": "term_maintenance_history",
+   "to": "term_data_asset",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55013:2024",
+    "clause": "Annex B.2"
+   }
+  },
+  {
+   "from": "term_data_quality",
+   "to": "term_asset_condition_duty",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55013:2024 4.2.1 (confidence scale similar to the condition scale of the underlying asset) and ISO 19650-3 5.1.3, A.4.4"
+   }
+  },
+  {
+   "from": "phase_data_collect",
+   "to": "term_condition_observation",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55013:2024 4.4.3 c) (sensors) and ISO 19650-3 A.4.2, A.5"
+   }
+  },
+  {
+   "from": "phase_data_collect",
+   "to": "term_maintenance_alert",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55013:2024 4.4.3 c) (potentially urgent signals such as alerts and alarms) and ISO 19650-3 5.1.5, A.3"
+   }
+  },
+  {
+   "from": "phase_data_reporting",
+   "to": "term_health_indicator",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55013:2024 4.4.5 (data from sensors can be aggregated to extract trends) and ISO 19650-3 A.2, A.3, A.4"
+   }
+  },
+  {
+   "from": "phase_data_decide",
+   "to": "term_information_reviewer",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55013:2024 4.4.6 (automated decision-making, monitored) and ISO 19650-4 3.2.3 Note 3"
+   }
+  },
+  {
+   "from": "phase_data_decide",
+   "to": "term_pdm_model",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55013:2024 4.4.6 and ISO 19650-3 A.2-A.5"
+   }
+  },
+  {
+   "from": "phase_data_store",
+   "to": "term_generic_information_lifecycle",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55013:2024 4.4 and ISO 19650-5 B.4.2"
+   }
+  },
+  {
+   "from": "term_master_data_source",
+   "to": "term_referential_master_data",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55013:2024 4.2.5 and ISO 19650-5 B.4.1"
+   }
+  },
+  {
+   "from": "term_documented_information_protection",
+   "to": "term_information_security_control",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55013:2024 4.3.6 and ISO 19650-5 B.4.1"
+   }
+  },
+  {
+   "from": "term_data_driven_decision_making",
+   "to": "term_pdm_model",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55013:2024 5.1 (reliability analysis, work management optimization) and ISO 19650-3 A.2-A.5"
+   }
+  },
+  {
+   "from": "term_data_driven_decision_making",
+   "to": "term_whole_life_cost",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55013:2024 5.1 (whole life planning) and ISO 19650-3 A.4.5"
+   }
+  },
+  {
+   "from": "term_semantic_interoperability",
+   "to": "term_open_schema_standard",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55013:2024 7.5 and ISO 19650-4 Annex A.1"
+   }
+  },
+  {
+   "from": "term_semantic_interoperability",
+   "to": "term_shared_granularity",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55013:2024 7.5 (identifiers associate data from different sources with the same asset) and ISO/TS 55010:2019 7.4"
+   }
+  },
+  {
+   "from": "term_data_culture",
+   "to": "term_am_culture",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55013:2024 7.7 and ISO 55012:2024 4.1"
+   }
+  },
+  {
+   "from": "term_data_governance",
+   "to": "term_governance",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55013:2024 Clause 8 and ISO 55011:2024 3.3"
+   }
+  }
+ ],
+ "cross_references": {
+  "iso_55000_family": "Normative reference: ISO 55000 (terms). Positioned by ISO 55000:2024 0.2 as the data member of the family. 7.2 NOTE cites the ISO 19650 series' OIR/AIR/PIR/EIR by name; Annex B.1 cites ISO/TS 55010 for asset register alignment and the ISO 19650 series for BIM; ISO 8000 (data quality), ISO/IEC 27040 (storage security), ISO/IEC 38505 (data governance) referenced for depth.",
+  "pdm_anchor": "The strongest 55000-family PdM tie: the 4.4 data life cycle is the telemetry pipeline (sensor collect -> store -> trend reporting -> monitored automated decide -> feedback loop), 4.2.1 grades data quality on a confidence scale explicitly analogous to the asset condition scale, and 7.5's 'common vocabularies or ontologies' is the normative-guidance basis for this knowledge graph and the Cognitive Digital Twin readiness audit built on it."
+ }
+}

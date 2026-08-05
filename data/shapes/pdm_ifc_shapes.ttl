@@ -1,0 +1,83 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix iso: <http://example.org/iso19650#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+# =================================================================
+# ISO 19650 & BIM/IFC SHACL Quality Gate Shapes
+# =================================================================
+
+# 1. Structural Integrity Shape (E1 Gate)
+iso:IsoNodeShape a sh:NodeShape ;
+    sh:targetClass iso:IsoNode ;
+    sh:property [
+        sh:path iso:nodeId ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Every ISO node must have exactly one unique nodeId string." ;
+    ] ;
+    sh:property [
+        sh:path iso:part ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Every ISO node must specify its ISO 19650 part source." ;
+    ] ;
+    sh:property [
+        sh:path rdfs:label ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Every ISO node must have a human-readable rdfs:label." ;
+    ] .
+
+# 2. Term Definition Fidelity Shape (E2 Gate)
+iso:TermClauseShape a sh:NodeShape ;
+    sh:targetClass iso:Concept ;
+    sh:property [
+        sh:path iso:definition ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Concepts and Clause-3 normative terms must have a non-empty definition string." ;
+    ] .
+
+# 3. Provenance Reference Validity Shape (E3 Gate)
+iso:ProvenanceShape a sh:NodeShape ;
+    sh:targetClass iso:IsoNode ;
+    sh:property [
+        sh:path iso:provenanceStandard ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Every node must specify its source standard in provenance (e.g., ISO 19650-1)." ;
+    ] ;
+    sh:property [
+        sh:path iso:provenanceClause ;
+        sh:minCount 1 ;
+        sh:datatype xsd:string ;
+        sh:message "Every node must specify its exact section/clause in provenance." ;
+    ] .
+
+# 4. PdM Relevance Rating Shape (E4 Gate)
+iso:PdMRelevanceShape a sh:NodeShape ;
+    sh:targetClass iso:IsoNode ;
+    sh:property [
+        sh:path iso:pdmRelevance ;
+        sh:in ("low" "medium" "high") ;
+        sh:message "PdM relevance rating must be one of: low, medium, high." ;
+    ] .
+
+# 5. IFC Audit Model Constraint Shape (E5 Gate / Audit)
+iso:IfcElementShape a sh:NodeShape ;
+    sh:targetClass iso:IfcBuildingElement ;
+    sh:property [
+        sh:path iso:ifcGlobalId ;
+        sh:minCount 1 ;
+        sh:maxCount 1 ;
+        sh:pattern "^[0-9A-Za-z_$]{22}$" ;
+        sh:message "IFC Element must have a valid 22-character GUID GlobalId." ;
+    ] ;
+    sh:property [
+        sh:path iso:containedInSpace ;
+        sh:minCount 1 ;
+        sh:message "IFC Element must be spatially assigned to an IfcSpace container." ;
+    ] .

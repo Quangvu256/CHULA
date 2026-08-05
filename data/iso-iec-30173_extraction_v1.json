@@ -1,0 +1,1190 @@
+{
+ "standard": "ISO/IEC 30173:2023",
+ "source_document": "data/ISO_IEC_30173_2023(en) Digital twin - Concepts and terminology.pdf (ISO/IEC 30173:2023(en), Digital twin - Concepts and terminology)",
+ "role_in_kg": "digital_twin_vocabulary_root: the concepts-and-terminology basis for the Cognitive Digital Twin target of the whole use case. Supplies the digital twin / target entity / synchronization / control loop / analytics vocabulary; the asset digital twin type corresponds to the ISO 19650 AIM, DT synchronization corresponds to ISO 19650-3 AIM-asset alignment, and the Clause 7 functional loop is the PdM spine stated in DT terms.",
+ "depends_on": [
+  "iso19650-1_extraction_v4.json",
+  "iso19650-2_extraction_v1.json",
+  "iso19650-3_extraction_v1.2.json",
+  "iso19650-4_extraction_v1.json",
+  "iso19650-5_extraction_v1.json",
+  "iso19650-6_extraction_v2.json",
+  "iso-ts-55010_extraction_v1.json",
+  "iso-55000_extraction_v1.json",
+  "iso-55011_extraction_v1.json",
+  "iso-55012_extraction_v1.json",
+  "iso-55013_extraction_v1.json"
+ ],
+ "extraction_notes": {
+  "registry_scope": "Reconciliation registry is the union of the eleven preceding extraction files. Reused rather than re-noded: asset (3.1.18 wording aligns with the ISO 55000/19650 asset definitions - the SUBTYPE_OF entity edge is the unifying assertion), data (3.2.1 ISO/IEC 2382 wording differs from ISO 55000 3.1.10 'facts about an object' - same concept, noted), asset data (3.2.2 vs ISO 55013 3.1 - same concept), information model (3.3.3 ISO 6707-2 source vs ISO 19650-1 - same concept family), life cycle (3.1.11 vs ISO 19650-1/ISO 55000), interoperability (3.4.3 vs ISO 55013 3.6), monitoring (3.5.5 refines ISO 55000 3.3.25 with supervision-and-alarming of the target entity - captured as edges, not a fork), object (3.1.19 vs ISO 55000 3.1.9). The ISO 19650-5 cyber-physical system node is upgraded IN PLACE with the proper 30173 3.5.10 term definition and definition_provenance (SAMP/AMP precedent).",
+  "id_convention": "Keeps term_<snake_case> and the Function label for the stakeholder node. Semiotics terms carry the '(semiotics)' qualifier (concept/symbol/phenomenon are ultra-generic names). No new labels, no new relationship types.",
+  "verbatim_convention": "All definitions are verbatim ISO/IEC 30173:2023 text (inline cross-reference numbers elided; non-contiguous quotes joined by ' [...] '), asserted at build time and enforced by backend/gates/verify_verbatim.py. The source's own typo 'entitiy' (3.1.5) is quoted as printed. Figures 1-4 are captured as edges (system context, life cycle, stakeholders, functional view), not nodeified.",
+  "structure_notes": "Terms deliberately not noded: 5.2 advantages list (note-level), Annex A definition comparison and Annex B semiotics exposition (informative), the nine individual stakeholder roles (summarized on the single Function node), and the 5.6 life cycle stage names (enumeration values, kept in the life-cycle-process node's verbatim definition).",
+  "bsdd_mapping": "Checked against the buildingSMART Data Dictionary via api.bsdd.buildingsmart.org TextSearch (2026-08-05): no genuine matches - bSDD has no digital-twin vocabulary entry. Absence means checked-no-genuine-match, per backend/gates/verify_bsdd.py.",
+  "merge_note": "File name does not match the iso19650-* union glob; it is listed explicitly in the union tooling and must always be loaded together with the other eleven files."
+ },
+ "nodes": [
+  {
+   "id": "term_digital_twin",
+   "label": "Concept",
+   "name": "digital twin",
+   "definition": "digital representation of a target entity with data connections that enable convergence between the physical and digital states at an appropriate rate of synchronization",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.1"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.1.1",
+   "abbreviation": "DTw",
+   "note": "Note 1 to entry: digital twin has some or all of the capabilities of connection, integration, analysis, simulation, visualization, optimization, collaboration, etc. Note 2: can provide an integrated view throughout the life cycle of the target entity. 5.3.5 (verbatim): 'a digital twin can combine the data collection of the IoT, the processing of big data and the modelling and analysis of AI to evaluate the current state, diagnose the problems in the past, give the analysis results, simulate various possibilities, and predict the future trend.' - the sentence the Cognitive Digital Twin use case operationalizes."
+  },
+  {
+   "id": "term_entity",
+   "label": "Concept",
+   "name": "entity",
+   "definition": "thing (physical or non-physical) having a distinct existence",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.1.2",
+   "note": "Domain qualifier <digital twin>. EXAMPLE: person, object, event, idea, process, etc. [SOURCE: ISO/IEC 20924:2021, 3.1.18, modified.]"
+  },
+  {
+   "id": "term_target_entity",
+   "label": "Concept",
+   "name": "target entity",
+   "definition": "entity providing a functional purpose in reality which is the subject of digital representation",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.3"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.1.3",
+   "note": "Note 1 to entry: the target entity, which provides some functional purpose in reality, can be either physical or digital under consideration. In the PdM use case the target entity is the maintainable asset streamed by the condition monitoring system."
+  },
+  {
+   "id": "term_physical_entity",
+   "label": "Concept",
+   "name": "physical entity",
+   "definition": "entity in the physical world that can be the subject of sensing and/or actuating",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.4"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.1.4",
+   "note": "[SOURCE: ISO/IEC 20924:2021, 3.1.27]."
+  },
+  {
+   "id": "term_digital_entity",
+   "label": "Concept",
+   "name": "digital entity",
+   "definition": "computational entitiy comprising data elements and procedural elements",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.5"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.1.5",
+   "note": "The source's own typo 'entitiy' is quoted as printed."
+  },
+  {
+   "id": "term_physical_domain",
+   "label": "Concept",
+   "name": "physical domain",
+   "definition": "classification of physical entities under consideration",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.6"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.1.6"
+  },
+  {
+   "id": "term_digital_domain",
+   "label": "Concept",
+   "name": "digital domain",
+   "definition": "classification of digital entities under consideration",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.7"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.1.7",
+   "note": "Note 1 to entry: entities in the digital domain can be embedded in a physical domain."
+  },
+  {
+   "id": "term_digital_representation",
+   "label": "Concept",
+   "name": "digital representation",
+   "definition": "digital entity representing either a set of properties or behaviours or both of one or more observable elements",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.8"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.1.8"
+  },
+  {
+   "id": "term_modelling",
+   "label": "Concept",
+   "name": "modelling",
+   "definition": "using symbolic paradigms or formal languages to create an abstract representation of a thing",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.9"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.1.9"
+  },
+  {
+   "id": "term_ecosystem",
+   "label": "Concept",
+   "name": "ecosystem",
+   "definition": "infrastructure and services based on a network of organizations and stakeholders",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.10"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.1.10",
+   "note": "Note 1 to entry: organizations can include public bodies. [SOURCE: ISO/IEC TS 27570:2021, 3.8]."
+  },
+  {
+   "id": "term_semantics",
+   "label": "Concept",
+   "name": "semantics",
+   "definition": "rules that provide the intended meaning of entities or things to construct, deploy and use",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.12"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.1.12"
+  },
+  {
+   "id": "term_semiotics",
+   "label": "Concept",
+   "name": "semiotics",
+   "definition": "study of signs and their properties including the relationships between the domains of symbols, concepts and cyber-physical phenomena",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.13"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.1.13"
+  },
+  {
+   "id": "term_control_loop",
+   "label": "Concept",
+   "name": "control loop",
+   "definition": "feedback link between digital entities and target entities whereby the digital entity receives data from the target entity and issues back to the target entity data that are used to modify the behaviour of the target entity",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.14"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.1.14",
+   "note": "Domain qualifier <digital twin>. Note 1 to entry: control loops use engineering control methods for the purpose of automation, e.g. to keep the temperature on an engine under control of a certain limit."
+  },
+  {
+   "id": "term_concept_semiotics",
+   "label": "Concept",
+   "name": "concept (semiotics)",
+   "definition": "semantic artifact that represents meaning of a symbol, a thing or a phenomenon",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.15"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.1.15"
+  },
+  {
+   "id": "term_symbol_semiotics",
+   "label": "Concept",
+   "name": "symbol (semiotics)",
+   "definition": "ontological artifact that denotes a certain meaning, a thing or a phenomenon",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.16"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.1.16"
+  },
+  {
+   "id": "term_phenomenon_semiotics",
+   "label": "Concept",
+   "name": "phenomenon (semiotics)",
+   "definition": "thing artifact that is symbolized by an ontological symbol and has implemented certain concepts",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.17"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.1.17"
+  },
+  {
+   "id": "term_synchronization",
+   "label": "Concept",
+   "name": "synchronization",
+   "definition": "action of making the states of target entity and digital entity synchronized, using network for real time system",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.20"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.1.20",
+   "note": "Domain qualifier <digital twin>."
+  },
+  {
+   "id": "term_digital_twin_system",
+   "label": "Concept",
+   "name": "digital twin system",
+   "definition": "system providing functionalities for the digital twin composed of inter-operating target entities, digital entities, data connections, and models, data and interfaces involved in the data connection process",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.21"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.1.21",
+   "note": "5.5.2: contains at least one target entity and its digital entity, with their synchronization and interaction with stakeholders to improve one or some performance indicators of the target entities in one or some life cycle stages. 5.5.5 infrastructure: sensors, actuators, networks, geographic information systems. 5.5.6 system aspects: integration, governance, security and privacy, and data ethics."
+  },
+  {
+   "id": "term_big_data",
+   "label": "Concept",
+   "name": "big data",
+   "definition": "data set(s) with characteristics (e.g. volume, velocity, variety, variability, veracity, etc.) that for a particular problem domain at a given point in time cannot be efficiently processed using traditional technologies and techniques in order to extract value",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.2.3"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.2.3",
+   "note": "[SOURCE: ISO/IEC 38505-1:2017, 3.2, modified.]"
+  },
+  {
+   "id": "term_statistics_model",
+   "label": "Concept",
+   "name": "statistics model",
+   "definition": "model that uses mathematical analysis tools to build a representation of the data for the purpose of conducting analysis to infer any relationships between variables or discover insights",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.3.1"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.3.1"
+  },
+  {
+   "id": "term_engineering_model",
+   "label": "Concept",
+   "name": "engineering model",
+   "definition": "model that includes geometry, materials, components and behaviour relevant throughout the entity life cycle",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.3.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.3.2"
+  },
+  {
+   "id": "term_verification",
+   "label": "Concept",
+   "name": "verification",
+   "definition": "confirmation, through the provision of objective evidence, that specified requirements have been fulfilled",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.4.1"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.4.1",
+   "note": "[SOURCE: ISO 9000:2015, 3.8.12, modified.]"
+  },
+  {
+   "id": "term_validation",
+   "label": "Concept",
+   "name": "validation",
+   "definition": "confirmation, through the provision of objective evidence, that the requirements for a specific intended use or application have been fulfilled",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.4.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.4.2",
+   "note": "[SOURCE: ISO 9000:2015, 3.8.13, modified.]"
+  },
+  {
+   "id": "term_visualization",
+   "label": "Concept",
+   "name": "visualization",
+   "definition": "use of computer graphics and image processing to present models or characteristics of processes or objects",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.5.1"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.5.1",
+   "note": "Note 1 to entry: visualization tools are provided to support human understanding. [SOURCE: ISO 23247-4:2021, 3.4, modified.]"
+  },
+  {
+   "id": "term_optimization",
+   "label": "Concept",
+   "name": "optimization",
+   "definition": "design and operation of a system or process to improve its efficiency or effectiveness",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.5.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.5.2"
+  },
+  {
+   "id": "term_prediction",
+   "label": "Concept",
+   "name": "prediction",
+   "definition": "process of computation used to obtain the predicted value(s) of a quantity",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.5.3"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.5.3",
+   "note": "Note 1 to entry: the term 'prediction' can also be used to denote the predicted value(s) of a quantity. [SOURCE: IEC 62059-31-1:2008, 3.27]."
+  },
+  {
+   "id": "term_simulation",
+   "label": "Concept",
+   "name": "simulation",
+   "definition": "use of a similar or equivalent system to imitate a real system, so that it behaves like or appears to be the real system",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.5.4"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.5.4",
+   "note": "Note 1 to entry: simulation serves the purpose of analysing the future behaviour of a system, i.e. making predictions, or the purpose of reasoning on the past behaviour in order to analyse failures. 5.3.3 (verbatim): 'simulation is one of the core technologies for creating and running a digital twin with predictive capabilities.'"
+  },
+  {
+   "id": "term_augmented_reality",
+   "label": "Concept",
+   "name": "augmented reality",
+   "definition": "virtual objects superimposed upon or composited with the real world",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.5.6"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.5.6",
+   "abbreviation": "AR",
+   "note": "Note 1 to entry: virtual and real-world objects co-exist in augmented reality systems. [SOURCE: ISO/IEC TR 23843:2020, 3.3]."
+  },
+  {
+   "id": "term_virtual_reality",
+   "label": "Concept",
+   "name": "virtual reality",
+   "definition": "artificial environment presented in the computer",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.5.7"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.5.7",
+   "abbreviation": "VR",
+   "note": "[SOURCE: ISO/IEC TR 18121:2015, 3.6]."
+  },
+  {
+   "id": "term_analytics",
+   "label": "Concept",
+   "name": "analytics",
+   "definition": "predicting, reasoning, and controlling the behaviour (current and future) of an asset or process via both physics and artificial intelligence or machine learning models",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.5.8"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.5.8",
+   "note": "The vocabulary-level description of what the predictive-maintenance analytical model does."
+  },
+  {
+   "id": "term_iot",
+   "label": "Concept",
+   "name": "Internet of Things",
+   "definition": "infrastructure of interconnected entities, people, systems and information resources together with services which processes and reacts to information from the physical world and digital world",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.5.9"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.5.9",
+   "abbreviation": "IoT",
+   "note": "[SOURCE: ISO/IEC 20924:2021, 3.2.4, modified.] 5.3.5 (verbatim): 'IoT is the underlying associated technology of digital twin, and it is the necessary condition for the digital twin interaction with target entities.'"
+  },
+  {
+   "id": "term_infrastructure",
+   "label": "Concept",
+   "name": "infrastructure",
+   "definition": "system of facilities, equipment and services needed for the operation of an entity",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.5.11"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.5.11",
+   "note": "[SOURCE: ISO 9000:2015, 3.5.2, modified.]"
+  },
+  {
+   "id": "term_semiotic_triangle",
+   "label": "Concept",
+   "name": "semiotic triangle",
+   "definition": "The semiotic triangle is a visualization of the relationships between the phenomenon of interest and the intended semantic concept, that is, the conceptual meaning of that phenomenon, and the intended semantics of the phenomenon of interest.",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.3.1.2"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause",
+   "note": "5.3.1.1: the explicit expression of concept, phenomenon and symbol are necessary to define structure and behaviour of a target entity by using tools such as semantics + engineering + ontologies; if these tools are not utilized, the life cycle of the target entity has unavoidable gaps. Annex B expands on semiotics."
+  },
+  {
+   "id": "term_dt_life_cycle_process",
+   "label": "Concept",
+   "name": "digital twin life cycle process",
+   "definition": "The life cycle of a digital entity shall include inception, design and development, verification and validation, deployment, operation and monitoring, re-evaluation and retirement.",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.6"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "The life cycle of a target entity shall include development, verification and validation, deployment, operation and monitoring, re-evaluation and recycling; the two life cycles are distinct and do not align at all milestones. Changes in the digital entity can be iteratively fed back to design and development; the flow between digital and target entity does not have to be fully automatic and can include a human-in-the-loop sometimes (5.6)."
+  },
+  {
+   "id": "term_component_digital_twin",
+   "label": "Concept",
+   "name": "component digital twin",
+   "definition": "The component digital twin is typically a major element that has a significant impact on the performance of the target entity to which it belongs.",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.7.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "EXAMPLE: a component digital twin can relate to a complex motor or pump within a system, where the system itself has a separate system-level digital twin."
+  },
+  {
+   "id": "term_asset_digital_twin",
+   "label": "Concept",
+   "name": "asset digital twin",
+   "definition": "Asset digital twin can be collections of component digital twins and can consist of component digital twins. Asset digital twins provide visibility at the unit level.",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.7.3"
+   },
+   "pdm_relevance": "high",
+   "source_type": "body_clause",
+   "note": "NOTE (5.7.3): where an asset consists of a single component, it can be considered both an asset digital twin and a component digital twin. The Cognitive Digital Twin readiness audit in this repo checks whether an IFC model can seed exactly this: an asset digital twin over the maintainable plant."
+  },
+  {
+   "id": "term_system_digital_twin",
+   "label": "Concept",
+   "name": "system digital twin",
+   "definition": "A system digital twin is a collection of target entities and digital entities that together perform a system- or network-wide function. A system digital twin provides visibility into a set of interconnected or interdependent target entities.",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.7.4"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause"
+  },
+  {
+   "id": "term_process_digital_twin",
+   "label": "Concept",
+   "name": "process digital twin",
+   "definition": "A process digital twin is a digital twin that provides a view into a set of activities or operations.",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.7.5"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "Can consist of a set of physical entities or system digital twins, but focuses more on the process itself rather than the physical entities."
+  },
+  {
+   "id": "function_dt_stakeholder",
+   "label": "Function",
+   "name": "digital twin stakeholder",
+   "definition": "stakeholders that play distinct organizational roles in the digital twin value chain, including digital twin system stakeholders (6.2) and ecosystem partners (6.3)",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "6.1"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause",
+   "note": "6.2 system stakeholders: developers (requirements analysis, planning and design, development, testing and verification), resource providers, integrators, users, operators (problem discovery, fault resolution, maintenance, and the establishment of a fault knowledge base). 6.3 ecosystem partners: infrastructure provider, service provider, standards development organization, government and community."
+  },
+  {
+   "id": "term_dt_functional_loop",
+   "label": "Concept",
+   "name": "digital twin functional loop",
+   "definition": "Digital twin systems can be created by digitalizing and simulating target entities in the digital domain, establishing connections between the target entities and digital entities, and forming a closed or open loop by gathering data from the physical domain, integrating optimization in the digital domain, then making decisions, and applying adjustments to the physical domain based on those decisions.",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "Clause 7"
+   },
+   "pdm_relevance": "high",
+   "source_type": "body_clause",
+   "note": "The functional view of the digital twin - and, term for term, the PdM spine: gather condition data from the physical domain, analyse in the digital domain, decide, and apply maintenance adjustments back to the asset."
+  }
+ ],
+ "relationships": [
+  {
+   "from": "term_digital_twin",
+   "to": "term_digital_representation",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.1"
+   }
+  },
+  {
+   "from": "term_digital_twin",
+   "to": "term_target_entity",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.1"
+   }
+  },
+  {
+   "from": "term_digital_twin",
+   "to": "term_synchronization",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.1"
+   }
+  },
+  {
+   "from": "term_target_entity",
+   "to": "term_entity",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.3"
+   }
+  },
+  {
+   "from": "term_physical_entity",
+   "to": "term_entity",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.4"
+   }
+  },
+  {
+   "from": "term_digital_entity",
+   "to": "term_entity",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.5"
+   }
+  },
+  {
+   "from": "term_physical_domain",
+   "to": "term_physical_entity",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.6"
+   }
+  },
+  {
+   "from": "term_digital_domain",
+   "to": "term_digital_entity",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.7"
+   }
+  },
+  {
+   "from": "term_digital_representation",
+   "to": "term_digital_entity",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.8"
+   }
+  },
+  {
+   "from": "term_modelling",
+   "to": "term_digital_representation",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.9; 3.1.8"
+   }
+  },
+  {
+   "from": "term_ecosystem",
+   "to": "term_organization",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.10"
+   }
+  },
+  {
+   "from": "term_semiotics",
+   "to": "term_semantics",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.13; 3.1.12"
+   }
+  },
+  {
+   "from": "term_control_loop",
+   "to": "term_digital_entity",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.14"
+   }
+  },
+  {
+   "from": "term_control_loop",
+   "to": "term_target_entity",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.14"
+   }
+  },
+  {
+   "from": "term_asset",
+   "to": "term_entity",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.18"
+   }
+  },
+  {
+   "from": "term_synchronization",
+   "to": "term_target_entity",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.20"
+   }
+  },
+  {
+   "from": "term_target_entity",
+   "to": "term_digital_twin_system",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.21; 5.5.2"
+   }
+  },
+  {
+   "from": "term_digital_entity",
+   "to": "term_digital_twin_system",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.21; 5.5.2"
+   }
+  },
+  {
+   "from": "term_semiotic_triangle",
+   "to": "term_concept_semiotics",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.3.1.2; 3.1.15"
+   }
+  },
+  {
+   "from": "term_semiotic_triangle",
+   "to": "term_symbol_semiotics",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.3.1.2; 3.1.16"
+   }
+  },
+  {
+   "from": "term_semiotic_triangle",
+   "to": "term_phenomenon_semiotics",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.3.1.2; 3.1.17"
+   }
+  },
+  {
+   "from": "term_semiotic_triangle",
+   "to": "term_semiotics",
+   "type": "DERIVED_FROM",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.3.1.1; Annex B"
+   }
+  },
+  {
+   "from": "term_big_data",
+   "to": "term_data",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.2.3"
+   }
+  },
+  {
+   "from": "term_statistics_model",
+   "to": "term_digital_representation",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.3.3; 3.3.1"
+   }
+  },
+  {
+   "from": "term_engineering_model",
+   "to": "term_digital_representation",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.3.3; 3.3.2"
+   }
+  },
+  {
+   "from": "term_engineering_model",
+   "to": "term_life_cycle",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.3.2"
+   }
+  },
+  {
+   "from": "term_information_model",
+   "to": "term_asset_data",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.3.2"
+   }
+  },
+  {
+   "from": "term_verification",
+   "to": "term_requirement",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.4.1"
+   }
+  },
+  {
+   "from": "term_validation",
+   "to": "term_requirement",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.4.2"
+   }
+  },
+  {
+   "from": "term_visualization",
+   "to": "term_digital_twin",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.1 Note 1; 3.5.1"
+   }
+  },
+  {
+   "from": "term_optimization",
+   "to": "term_digital_twin",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.1 Note 1; 3.5.2"
+   }
+  },
+  {
+   "from": "term_simulation",
+   "to": "term_digital_twin",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.3.3"
+   }
+  },
+  {
+   "from": "term_simulation",
+   "to": "term_prediction",
+   "type": "RESULTS_IN",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.5.4 Note 1"
+   }
+  },
+  {
+   "from": "term_monitoring",
+   "to": "term_target_entity",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.5.5"
+   }
+  },
+  {
+   "from": "term_analytics",
+   "to": "term_asset",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.5.8"
+   }
+  },
+  {
+   "from": "term_analytics",
+   "to": "term_prediction",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.5.8"
+   }
+  },
+  {
+   "from": "term_iot",
+   "to": "term_digital_twin",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.3.5"
+   }
+  },
+  {
+   "from": "term_augmented_reality",
+   "to": "term_visualization",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.5.6; Clause 7"
+   }
+  },
+  {
+   "from": "term_virtual_reality",
+   "to": "term_visualization",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.5.7; Clause 7"
+   }
+  },
+  {
+   "from": "term_cyber_physical_system",
+   "to": "term_digital_twin",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.3.4"
+   }
+  },
+  {
+   "from": "term_infrastructure",
+   "to": "term_digital_twin_system",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.5.5; 3.5.11"
+   }
+  },
+  {
+   "from": "term_dt_life_cycle_process",
+   "to": "term_digital_twin",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.6"
+   }
+  },
+  {
+   "from": "term_dt_life_cycle_process",
+   "to": "term_life_cycle",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "3.1.11; 5.6"
+   }
+  },
+  {
+   "from": "term_component_digital_twin",
+   "to": "term_digital_twin",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.7.1; 5.7.2"
+   }
+  },
+  {
+   "from": "term_asset_digital_twin",
+   "to": "term_digital_twin",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.7.1; 5.7.3"
+   }
+  },
+  {
+   "from": "term_system_digital_twin",
+   "to": "term_digital_twin",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.7.1; 5.7.4"
+   }
+  },
+  {
+   "from": "term_process_digital_twin",
+   "to": "term_digital_twin",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.7.1; 5.7.5"
+   }
+  },
+  {
+   "from": "term_component_digital_twin",
+   "to": "term_asset_digital_twin",
+   "type": "AGGREGATED_INTO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.7.3"
+   }
+  },
+  {
+   "from": "term_asset_digital_twin",
+   "to": "term_asset",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "5.7.3"
+   }
+  },
+  {
+   "from": "function_dt_stakeholder",
+   "to": "term_digital_twin_system",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "Clause 6"
+   }
+  },
+  {
+   "from": "term_dt_functional_loop",
+   "to": "term_digital_twin_system",
+   "type": "DESCRIBES",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "Clause 7"
+   }
+  },
+  {
+   "from": "term_dt_functional_loop",
+   "to": "term_control_loop",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC 30173:2023",
+    "clause": "Clause 7; 3.1.14"
+   }
+  },
+  {
+   "from": "term_synchronization",
+   "to": "term_aim_asset_alignment",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC 30173:2023 3.1.20 and ISO 19650-3 5.1.12 Note 2"
+   }
+  },
+  {
+   "from": "term_asset_digital_twin",
+   "to": "term_aim",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC 30173:2023 5.7.3 and ISO 19650-1 3.3.9"
+   }
+  },
+  {
+   "from": "term_analytics",
+   "to": "term_pdm_model",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC 30173:2023 3.5.8 and ISO 19650-3 A.2-A.5"
+   }
+  },
+  {
+   "from": "term_remaining_useful_life_prediction",
+   "to": "term_prediction",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC 30173:2023 3.5.3 and ISO 19650-3 A.2"
+   }
+  },
+  {
+   "from": "term_prediction",
+   "to": "term_predictive_action",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC 30173:2023 3.5.3 and ISO 55000:2024 3.3.21"
+   }
+  },
+  {
+   "from": "term_control_loop",
+   "to": "term_maintenance_work_order",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC 30173:2023 3.1.14 and ISO 19650-3 A.3"
+   }
+  },
+  {
+   "from": "term_iot",
+   "to": "term_condition_monitoring_system",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC 30173:2023 5.3.5 and ISO 19650-3 A.5"
+   }
+  },
+  {
+   "from": "term_iot",
+   "to": "phase_data_collect",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC 30173:2023 3.5.9 and ISO 55013:2024 4.4.3 c)"
+   }
+  },
+  {
+   "from": "term_iot",
+   "to": "term_iot_security_assessment",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC 30173:2023 3.5.9 and ISO 19650-5 B.3.4"
+   }
+  },
+  {
+   "from": "term_verification",
+   "to": "term_information_verification_validation",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC 30173:2023 3.4.1 and ISO 19650-1 6.3.3"
+   }
+  },
+  {
+   "from": "term_validation",
+   "to": "term_information_verification_validation",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC 30173:2023 3.4.2 and ISO 19650-1 6.3.3"
+   }
+  },
+  {
+   "from": "term_semantics",
+   "to": "term_semantic_interoperability",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC 30173:2023 3.1.12 and ISO 55013:2024 7.5"
+   }
+  },
+  {
+   "from": "term_ecosystem",
+   "to": "term_enabling_environment",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC 30173:2023 3.1.10 and ISO 55011:2024 3.2"
+   }
+  },
+  {
+   "from": "term_infrastructure",
+   "to": "term_gis_system",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC 30173:2023 5.5.5 and ISO 19650-3 A.5"
+   }
+  },
+  {
+   "from": "term_dt_functional_loop",
+   "to": "term_pdm_model",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC 30173:2023 Clause 7 and ISO 19650-3 A.2-A.5"
+   }
+  },
+  {
+   "from": "term_monitoring",
+   "to": "term_maintenance_alert",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC 30173:2023 3.5.5 (supervision and alarming of the status of the target entity) and ISO 19650-3 5.1.5, A.3"
+   }
+  }
+ ],
+ "cross_references": {
+  "series": "Companion document: ISO/IEC TR 30172 (Digital twin - Use cases). The functional view (Clause 7) is elaborated by the Digital Twin reference architecture standard. AAS (asset administration shell) is named as an interoperable manifestation of a digital twin in manufacturing (5.4.2.1).",
+  "pdm_anchor": "The CDT chain is now closed in vocabulary: IFC model -> ISO 19650 AIM -> (CORRESPONDS_TO) asset digital twin; condition telemetry -> synchronization (CORRESPONDS_TO AIM-asset alignment); PdM analytical model -> analytics (3.5.8, physics + AI/ML); RUL prediction -> prediction (3.5.3); alert/work-order feedback -> control loop (3.1.14); the whole spine -> the Clause 7 functional loop."
+ }
+}

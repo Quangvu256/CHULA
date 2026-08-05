@@ -1,0 +1,677 @@
+{
+ "standard": "ISO/IEC TR 30172:2023",
+ "source_document": "data/ISO_IEC_TR_30172_2023(en)_Internet of things (loT) - Digital twin - Use cases.pdf (ISO/IEC TR 30172:2023(en), Internet of Things (IoT) - Digital twin - Use cases)",
+ "role_in_kg": "digital_twin_use_case_evidence: the published evidence base that digital twins of the kind this repo's PdM/CDT use case builds are being deployed - fourteen collected use cases incl. an engineering-and-maintenance rail twin (B.11) whose scope literally layers asset data, fault notifications and work orders over a point-cloud foundation. Also supplies the DT quality vocabulary (conformity, reliability, fidelity, robustness, traceability) - conformity (3.6) being the vocabulary-level description of the CDT-readiness audit verdict.",
+ "depends_on": [
+  "iso19650-1_extraction_v4.json",
+  "iso19650-2_extraction_v1.json",
+  "iso19650-3_extraction_v1.2.json",
+  "iso19650-4_extraction_v1.json",
+  "iso19650-5_extraction_v1.json",
+  "iso19650-6_extraction_v2.json",
+  "iso-ts-55010_extraction_v1.json",
+  "iso-55000_extraction_v1.json",
+  "iso-55011_extraction_v1.json",
+  "iso-55012_extraction_v1.json",
+  "iso-55013_extraction_v1.json",
+  "iso-iec-30173_extraction_v1.json"
+ ],
+ "extraction_notes": {
+  "registry_scope": "Reconciliation registry is the union of the twelve preceding extraction files. Nine of the fifteen clause-3 terms are reused from ISO/IEC 30173 or earlier files (digital twin, entity, physical entity, digital entity - 30172 3.4 says 'computational element' where 30173 3.1.5 says 'computational entitiy', same concept - life cycle, verification, validation, synchronization, interoperability). Six are new: conformity (digital twin) - a deliberate qualified fork against ISO 55000's conformity, different referent, joined by CORRESPONDS_TO - reliability, robustness, fidelity, traceability, reconfigurability.",
+  "id_convention": "Keeps term_<snake_case>; adds usecase_<snake_case> for the fourteen Annex B collected use cases, in the same spirit as the existing specialized prefixes. Use case definitions are their verbatim Annex B headings (the P2/P3 heading-chain precedent); names equal the headings.",
+  "verbatim_convention": "All definitions are verbatim ISO/IEC TR 30172:2023 text (segments joined by ' [...] '), asserted at build time and enforced by backend/gates/verify_verbatim.py. Two text-layer artifacts quoted as extracted: 'welldefined' (3.11, line-break hyphen dropped by pdftotext). The use case template node quotes the Annex A heading chain.",
+  "structure_notes": "The fourteen Annex B use case narratives (8-15 pages each, with figures) are represented as one node each: verbatim heading as definition, PdM-relevant verbatim quotes in notes (B.11 objectives and scope), and targeted edges to existing graph concepts. Clause 6 statistics and Annex B diagrams are not nodeified.",
+  "bsdd_mapping": "Checked against the buildingSMART Data Dictionary (2026-08-05): no genuine matches for DT quality vocabulary. Absence means checked-no-genuine-match.",
+  "merge_note": "File name does not match the iso19650-* union glob; it is listed explicitly in the union tooling and must always be loaded together with the other twelve files."
+ },
+ "nodes": [
+  {
+   "id": "term_conformity_dt",
+   "label": "Concept",
+   "name": "conformity (digital twin)",
+   "definition": "process of analysis to determine whether a digital twin meets the specified requirements and to form a judgement as to whether the digital entity is fit for its corresponding physical entity",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "3.6"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.6",
+   "note": "Distinct referent from ISO 55000:2024 3.3.17 conformity (fulfilment of a requirement): here it is the DT-specific fitness-judgement process. This is the vocabulary-level description of the CDT-readiness audit in this repo - the CDT-READY / NOT-READY verdict is a conformity judgement on whether the digital entity (IFC-seeded twin) is fit for its physical asset."
+  },
+  {
+   "id": "term_reliability",
+   "label": "Concept",
+   "name": "reliability",
+   "definition": "ability of an item to perform a required function under given conditions for a given time interval",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "3.7"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.7",
+   "note": "[SOURCE: IEC 62657-1:2017, 3.1.12, modified.] The quantity predictive maintenance protects: RUL prediction and condition monitoring exist to keep this ability above target."
+  },
+  {
+   "id": "term_robustness",
+   "label": "Concept",
+   "name": "robustness",
+   "definition": "degree to which a system or component can function correctly in the presence of invalid inputs or stressful environmental conditions",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "3.10"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.10",
+   "note": "[SOURCE: ISO/IEC/IEEE 24765:2017, 3.3555]."
+  },
+  {
+   "id": "term_fidelity",
+   "label": "Concept",
+   "name": "fidelity",
+   "definition": "ability to accurately describe the relevant aspects of the physical counterpart within a welldefined set of conditions by its digital model",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "3.11"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.11",
+   "note": "The source text hyphenates 'well-defined' across a line break, rendered as 'welldefined' in the text layer - quoted as extracted."
+  },
+  {
+   "id": "term_traceability",
+   "label": "Concept",
+   "name": "traceability",
+   "definition": "ability to trace the history, application or location of an object",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "3.12"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.12",
+   "note": "[SOURCE: ISO 9000:2015, 3.6.13, modified.]"
+  },
+  {
+   "id": "term_reconfigurability",
+   "label": "Concept",
+   "name": "reconfigurability",
+   "definition": "ability of an artefact to be changed through configuration changes rather than having to modify its underlying structure or its code or both",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "3.14"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.14"
+  },
+  {
+   "id": "term_dt_application_domain",
+   "label": "Concept",
+   "name": "digital twin application domain",
+   "definition": "DTw application domains can be classified into industry-based categories, and specific use cases can serve as examples for each category.",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "5.1"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause",
+   "note": "Domains listed for use-case collection include building or construction, manufacturing, energy, transport and cities; 5.2 records life cycle stage coverage; 6.3 gives basic statistics of the collected use cases by domain and life cycle status."
+  },
+  {
+   "id": "term_dt_use_case_template",
+   "label": "Concept",
+   "name": "digital twin use case template",
+   "definition": "Use case template [...] Description of use case [...] Drawings or diagrams depicting the use case",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex A"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "informative_annex",
+   "note": "Template fields A.2.1-A.2.19: name; application area or context; version management; basic information; scope; objectives; narrative; entities to be modelled as digital entities; actors (people, organizations or systems); life cycle of the digital twin system; key performance indicators (KPIs); digital infrastructures; referenced standards and committees; referenced papers or patents; relations with other use cases; general remarks; challenges and issues; data security, privacy and trustworthiness; user requirements and interactions. A.3: use case drawing plus optional data flow, sequence and deployment diagrams. A structured intake form for specifying a digital twin use case - directly reusable for specifying the PdM/CDT use case."
+  },
+  {
+   "id": "usecase_smart_building_operation",
+   "label": "Concept",
+   "name": "Smart building - Smart building operation based on digital twins",
+   "definition": "Smart building - Smart building operation based on digital twins",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.1"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "informative_annex",
+   "note": "Collected use case of the JTC 1/AG 11 report (Annex B), documented with the Annex A template."
+  },
+  {
+   "id": "usecase_industrial_smart_park",
+   "label": "Concept",
+   "name": "Industrial smart park - Digital twin based industrial smart park design and construction",
+   "definition": "Industrial smart park - Digital twin based industrial smart park design and construction",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.2"
+   },
+   "pdm_relevance": "low",
+   "source_type": "informative_annex",
+   "note": "Collected use case of the JTC 1/AG 11 report (Annex B), documented with the Annex A template."
+  },
+  {
+   "id": "usecase_smart_city_management",
+   "label": "Concept",
+   "name": "Smart city - Digital twin based smart city management system",
+   "definition": "Smart city - Digital twin based smart city management system",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.3"
+   },
+   "pdm_relevance": "low",
+   "source_type": "informative_annex",
+   "note": "Collected use case of the JTC 1/AG 11 report (Annex B), documented with the Annex A template."
+  },
+  {
+   "id": "usecase_oil_gas_facility",
+   "label": "Concept",
+   "name": "Smart energy - Construction and application of digital twins for a large oil and gas processing facility",
+   "definition": "Smart energy - Construction and application of digital twins for a large oil and gas processing facility",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.4"
+   },
+   "pdm_relevance": "high",
+   "source_type": "informative_annex",
+   "note": "Process-plant digital twin covering construction and operation of a large oil and gas processing facility. Collected use case of the JTC 1/AG 11 report (Annex B), documented with the Annex A template."
+  },
+  {
+   "id": "usecase_water_monitoring",
+   "label": "Concept",
+   "name": "Smart building - Monitoring of water",
+   "definition": "Smart building - Monitoring of water",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.5"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "informative_annex",
+   "note": "Sensor-based monitoring of water within a smart building context. Collected use case of the JTC 1/AG 11 report (Annex B), documented with the Annex A template."
+  },
+  {
+   "id": "usecase_smart_grid_operation",
+   "label": "Concept",
+   "name": "Smart Power Grid - Smart grid operation based on a digital twin",
+   "definition": "Smart Power Grid - Smart grid operation based on a digital twin",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.6"
+   },
+   "pdm_relevance": "high",
+   "source_type": "informative_annex",
+   "note": "Collected use case of the JTC 1/AG 11 report (Annex B), documented with the Annex A template."
+  },
+  {
+   "id": "usecase_construction_phase_dt",
+   "label": "Concept",
+   "name": "Smart construction life cycle - Construction-phase digital twin model",
+   "definition": "Smart construction life cycle - Construction-phase digital twin model",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.7"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "informative_annex",
+   "note": "Construction-phase twin: safety-prevention geometric analysis, proximity events between heavy machinery, defect prediction and on-site defect visualization (Figures B.1-B.6). Collected use case of the JTC 1/AG 11 report (Annex B), documented with the Annex A template."
+  },
+  {
+   "id": "usecase_demand_response_dt",
+   "label": "Concept",
+   "name": "Smart building - Residential explicit demand response - Consumer behavioural digital twin for energy demand prediction",
+   "definition": "Smart building - Residential explicit demand response - Consumer behavioural digital twin for energy demand prediction",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.8"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "informative_annex",
+   "note": "Collected use case of the JTC 1/AG 11 report (Annex B), documented with the Annex A template."
+  },
+  {
+   "id": "usecase_greater_hobart_dt",
+   "label": "Concept",
+   "name": "Smart city - Greater Hobart Digital Twin",
+   "definition": "Smart city - Greater Hobart Digital Twin",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.9"
+   },
+   "pdm_relevance": "low",
+   "source_type": "informative_annex",
+   "note": "Collected use case of the JTC 1/AG 11 report (Annex B), documented with the Annex A template."
+  },
+  {
+   "id": "usecase_nsw_spatial_dt",
+   "label": "Concept",
+   "name": "Smart city - NSW Spatial Digital Twin",
+   "definition": "Smart city - NSW Spatial Digital Twin",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.10"
+   },
+   "pdm_relevance": "low",
+   "source_type": "informative_annex",
+   "note": "Collected use case of the JTC 1/AG 11 report (Annex B), documented with the Annex A template."
+  },
+  {
+   "id": "usecase_sydney_trains_maintenance_dt",
+   "label": "Concept",
+   "name": "Transport - Sydney Trains Engineering and Maintenance Digital Twin",
+   "definition": "Transport - Sydney Trains Engineering and Maintenance Digital Twin",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.11"
+   },
+   "pdm_relevance": "high",
+   "source_type": "informative_annex",
+   "note": "Objectives (verbatim): 'To provide asset managers, planners, engineers and infrastructure workers with a holistic, self-selecting, filterable view of all elements of planning and executing work in the rail corridor to reduce safety risks and to optimize their maintenance planning activities.' Scope layers include a LiDAR point cloud as the twin foundation, asset data for linear and non-linear assets, and - verbatim - 'Fault Notifications and work orders'. The closest published analogue to this repo's PdM/CDT use case. Collected use case of the JTC 1/AG 11 report (Annex B), documented with the Annex A template."
+  },
+  {
+   "id": "usecase_tfnsw_delivery_dt",
+   "label": "Concept",
+   "name": "Transport - TfNSW Infrastructure Delivery Digital Twin",
+   "definition": "Transport - TfNSW Infrastructure Delivery Digital Twin",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.12"
+   },
+   "pdm_relevance": "low",
+   "source_type": "informative_annex",
+   "note": "Collected use case of the JTC 1/AG 11 report (Annex B), documented with the Annex A template."
+  },
+  {
+   "id": "usecase_grid_planning_om_dt",
+   "label": "Concept",
+   "name": "Smart energy - From grid planning to grid operation and maintenance, based on grid digital twin(s)",
+   "definition": "Smart energy - From grid planning to grid operation and maintenance, based on grid digital twin(s)",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.13"
+   },
+   "pdm_relevance": "high",
+   "source_type": "informative_annex",
+   "note": "Collected use case of the JTC 1/AG 11 report (Annex B), documented with the Annex A template."
+  },
+  {
+   "id": "usecase_electrical_subsystem_dt",
+   "label": "Concept",
+   "name": "Smart energy - Electrical field level subsystem digital twin, as the basis for its specification, commissioning, operation and maintenance",
+   "definition": "Smart energy - Electrical field level subsystem digital twin, as the basis for its specification, commissioning, operation and maintenance",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.14"
+   },
+   "pdm_relevance": "high",
+   "source_type": "informative_annex",
+   "note": "Collected use case of the JTC 1/AG 11 report (Annex B), documented with the Annex A template."
+  }
+ ],
+ "relationships": [
+  {
+   "from": "term_conformity_dt",
+   "to": "term_digital_twin",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "3.6"
+   }
+  },
+  {
+   "from": "term_reliability",
+   "to": "term_performance",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "3.7"
+   }
+  },
+  {
+   "from": "term_robustness",
+   "to": "term_digital_twin_system",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "3.10"
+   }
+  },
+  {
+   "from": "term_fidelity",
+   "to": "term_digital_twin",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "3.11"
+   }
+  },
+  {
+   "from": "term_traceability",
+   "to": "term_object",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "3.12"
+   }
+  },
+  {
+   "from": "term_reconfigurability",
+   "to": "term_digital_twin_system",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "3.14"
+   }
+  },
+  {
+   "from": "term_dt_application_domain",
+   "to": "term_digital_twin",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "5.1"
+   }
+  },
+  {
+   "from": "term_dt_use_case_template",
+   "to": "term_digital_twin",
+   "type": "DESCRIBES",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex A"
+   }
+  },
+  {
+   "from": "term_dt_use_case_template",
+   "to": "term_asset_kpi",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "A.2.11"
+   }
+  },
+  {
+   "from": "term_conformity_dt",
+   "to": "term_conformity",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC TR 30172:2023 3.6 and ISO 55000:2024 3.3.17"
+   }
+  },
+  {
+   "from": "term_conformity_dt",
+   "to": "term_exchange_review_criteria",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC TR 30172:2023 3.6 and ISO 19650-4 6.3, Clause 7"
+   }
+  },
+  {
+   "from": "term_reliability",
+   "to": "term_remaining_useful_life_prediction",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC TR 30172:2023 3.7 and ISO 19650-3 A.2"
+   }
+  },
+  {
+   "from": "term_fidelity",
+   "to": "term_data_quality",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC TR 30172:2023 3.11 and ISO 55013:2024 3.5"
+   }
+  },
+  {
+   "from": "term_traceability",
+   "to": "term_master_data_source",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC TR 30172:2023 3.12 and ISO 55013:2024 4.2.5"
+   }
+  },
+  {
+   "from": "usecase_smart_building_operation",
+   "to": "term_digital_twin",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.1"
+   }
+  },
+  {
+   "from": "usecase_industrial_smart_park",
+   "to": "term_digital_twin",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.2"
+   }
+  },
+  {
+   "from": "usecase_smart_city_management",
+   "to": "term_digital_twin",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.3"
+   }
+  },
+  {
+   "from": "usecase_oil_gas_facility",
+   "to": "term_digital_twin",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.4"
+   }
+  },
+  {
+   "from": "usecase_water_monitoring",
+   "to": "term_digital_twin",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.5"
+   }
+  },
+  {
+   "from": "usecase_smart_grid_operation",
+   "to": "term_digital_twin",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.6"
+   }
+  },
+  {
+   "from": "usecase_construction_phase_dt",
+   "to": "term_digital_twin",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.7"
+   }
+  },
+  {
+   "from": "usecase_demand_response_dt",
+   "to": "term_digital_twin",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.8"
+   }
+  },
+  {
+   "from": "usecase_greater_hobart_dt",
+   "to": "term_digital_twin",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.9"
+   }
+  },
+  {
+   "from": "usecase_nsw_spatial_dt",
+   "to": "term_digital_twin",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.10"
+   }
+  },
+  {
+   "from": "usecase_sydney_trains_maintenance_dt",
+   "to": "term_digital_twin",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.11"
+   }
+  },
+  {
+   "from": "usecase_tfnsw_delivery_dt",
+   "to": "term_digital_twin",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.12"
+   }
+  },
+  {
+   "from": "usecase_grid_planning_om_dt",
+   "to": "term_digital_twin",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.13"
+   }
+  },
+  {
+   "from": "usecase_electrical_subsystem_dt",
+   "to": "term_digital_twin",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.14"
+   }
+  },
+  {
+   "from": "usecase_sydney_trains_maintenance_dt",
+   "to": "term_maintenance_work_order",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.11"
+   }
+  },
+  {
+   "from": "usecase_sydney_trains_maintenance_dt",
+   "to": "term_asset_digital_twin",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.11"
+   }
+  },
+  {
+   "from": "usecase_sydney_trains_maintenance_dt",
+   "to": "term_hs_risk",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/IEC TR 30172:2023 Annex B.11 (reduce safety risks) and ISO 19650-6 4.2.2"
+   }
+  },
+  {
+   "from": "usecase_oil_gas_facility",
+   "to": "phase_operation_maintenance",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.4"
+   }
+  },
+  {
+   "from": "usecase_grid_planning_om_dt",
+   "to": "phase_operation_maintenance",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.13"
+   }
+  },
+  {
+   "from": "usecase_electrical_subsystem_dt",
+   "to": "phase_operation_maintenance",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.14"
+   }
+  },
+  {
+   "from": "usecase_water_monitoring",
+   "to": "term_monitoring",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.5"
+   }
+  },
+  {
+   "from": "usecase_demand_response_dt",
+   "to": "term_prediction",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.8"
+   }
+  },
+  {
+   "from": "usecase_construction_phase_dt",
+   "to": "term_pim",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.7"
+   }
+  },
+  {
+   "from": "usecase_nsw_spatial_dt",
+   "to": "term_gis_system",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.10"
+   }
+  },
+  {
+   "from": "usecase_greater_hobart_dt",
+   "to": "term_gis_system",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/IEC TR 30172:2023",
+    "clause": "Annex B.9"
+   }
+  }
+ ],
+ "cross_references": {
+  "series": "Companion of ISO/IEC 30173 (concepts and terminology; several terms sourced from it as ISO/IEC 30173:-). Use cases collected from the JTC 1/AG 11 report.",
+  "pdm_anchor": "B.11 (Sydney Trains Engineering and Maintenance Digital Twin) is the closest published analogue to this repo's use case: an asset digital twin for rail maintenance layering asset data, fault notifications and work orders - the same spine this KG formalizes. The conformity term (3.6) names the CDT-readiness judgement the checker renders."
+ }
+}

@@ -1,0 +1,1845 @@
+{
+ "standard": "ISO/TS 55010:2019",
+ "source_document": "data/559238037-ISO-TS-55010-2019.pdf (ISO/TS 55010:2019(E), First edition 2019-09, Asset management - Guidance on the alignment of financial and non-financial functions in asset management, 40 pages)",
+ "role_in_kg": "financial_alignment_layer: bridges the ISO 55000-family financial and non-financial asset management vocabulary into the ISO 19650 PdM knowledge graph. Supplies the financial context (asset registers, CapEx/OpEx, useful life, valuation, financial planning, performance management) that the operational PdM spine (condition observation -> model -> alert -> work order -> outcome) feeds and is funded by.",
+ "depends_on": [
+  "iso19650-1_extraction_v4.json",
+  "iso19650-2_extraction_v1.json",
+  "iso19650-3_extraction_v1.2.json",
+  "iso19650-4_extraction_v1.json",
+  "iso19650-5_extraction_v1.json",
+  "iso19650-6_extraction_v2.json"
+ ],
+ "extraction_notes": {
+  "registry_scope": "Reconciliation registry is the union of the six ISO 19650 extraction files at extraction time. Concepts already present there (asset, asset management, life cycle, the ISO 19650-3 Annex A systems and PdM extension nodes, the ISO 19650-1 purposes) get no new node - only relationships pointing at the original ids with fresh provenance. Recount from disk before trusting any figure quoted here.",
+  "id_convention": "Keeps term_<snake_case>. Adds two specialized prefixes in the spirit of the existing ones: enabler_<snake_case> for the Clause 5.2 alignment enablers, and phase_<snake_case> for the Annex E asset life cycle phases. No numbered process activities, so the Activity label is not used; all nodes are Concept.",
+  "new_labels": "None. No new relationship types.",
+  "name_conventions": "Two forks against near-duplicates in the union, both marked with CORRESPONDS_TO edges: 'asset register (asset data record)' (3.7, a data record) vs ISO 19650-1's purpose_asset_register (an information purpose); 'remaining useful life' (D.7, the estimated period) vs ISO 19650-3's term_remaining_useful_life_prediction (the PdM model output).",
+  "bsdd_mapping": "Per the extraction brief, terms were checked against the buildingSMART Data Dictionary (bSDD, https://www.buildingsmart.org/users/services/buildingsmart-data-dictionary/) via the TextSearch API (api.bsdd.buildingsmart.org, queried 2026-08-04). Matches are recorded as flat node properties bsdd_uri / bsdd_dictionary / bsdd_code (flat because Neo4j cannot store nested maps). bSDD is construction-domain (IFC, Uniclass), so most purely financial terms (financial accounting, book value, depreciation, fair value, liability, etc.) have no bSDD entry - absence of the properties means 'checked, no genuine match'. Two false friends were rejected: IfcAlignment (road/rail geometry, not organizational alignment) and the IFC property InternalControl (device modulation control, not COSO internal control).",
+  "external_code_tables": "External financial reporting standards named in Annex C (IFRS, US GAAP, IPSAS) and the accounting pronouncements in the Bibliography (IAS 1/8/16/36, IFRS 13, COSO) are references to external code tables and are deliberately NOT nodeified, following the ISO 19650-6 Annex B classification-system precedent. They are cited in the note fields of the nodes that invoke them.",
+  "figures": "Figure 1 (5.2.3, key elements of a framework to achieve alignment) and Figure E.1 (asset life cycle activities) were not enumerated element-by-element; Figure E.1's phase sequence is captured by the PRECEDES chain sourced from the Annex E subclause order. Tables B.1/B.2 (long-term financial planning stages) are summarized in the term_long_term_financial_planning and term_asset_management_plan notes, not nodeified per field, since they are worked examples rather than schema tables.",
+  "merge_note": "File name deliberately does not match the iso19650-*_extraction_*.json union glob; it is listed explicitly in the union tooling instead, because its relationships reference ISO 19650 node ids and it must always be loaded together with the six ISO 19650 files.",
+  "verbatim_convention": "All definitions in this file are verbatim ISO text: clause-3 terms verbatim per the E2 convention (inline cross-reference numbers elided), and body/annex concept definitions are verbatim sentences quoted from the cited clause, with non-contiguous quotes joined by ' [...] '. Machine-enforced by backend/gates/verify_verbatim.py."
+ },
+ "nodes": [
+  {
+   "id": "term_financial_accounting",
+   "label": "Concept",
+   "name": "financial accounting",
+   "definition": "process of recording, summarizing and reporting the transactions resulting from an organization's operations over a period of time",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.1"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.1",
+   "note": "Note 1 to entry: these transactions are summarized in the preparation of financial statements (including the balance sheet, income statement and cash-flow statement) that communicate the organization's operating performance over a specified period. Clause 9.1 characterizes financial accounting as historical, versus management accounting as predictive."
+  },
+  {
+   "id": "term_management_accounting",
+   "label": "Concept",
+   "name": "management accounting",
+   "definition": "accounting to assist management in the formulation and implementation of an organization's strategy",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.2"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.2",
+   "note": "Note 1 to entry: usually requires partnering across different functions for management decision-making, devising planning and performance management systems, and providing expertise in financial reporting and control. 9.4 lists management accounting reporting items: sustainability ratios (renewal actually spent / renewal required in the asset management plan), long-term funding requirements for renewal and replacement, and other key performance indicators."
+  },
+  {
+   "id": "term_managerial_costing",
+   "label": "Concept",
+   "name": "managerial costing",
+   "definition": "costing used internally by an organization to ensure that information for decisions reflects the characteristics of the organization's resources and operations",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.3"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.3"
+  },
+  {
+   "id": "term_financial_function",
+   "label": "Concept",
+   "name": "financial function",
+   "definition": "work, or portions of work, that pertain to financial management",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.4"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.4",
+   "note": "Note 1 to entry: examples include financial reporting, budgeting, financing, valuation, financial planning and analysis, management accounting and tax accounting."
+  },
+  {
+   "id": "term_non_financial_function",
+   "label": "Concept",
+   "name": "non-financial function",
+   "definition": "work, or portions of work, that combine with the organization's financial functions in delivering its services or products",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.5"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.5",
+   "note": "Note 1 to entry: examples include asset planning, acquisition, marketing, operations and maintenance. D.1: non-financial functions can be deemed to be everything else pertaining to managing the life cycle of the assets. Annex E details the non-financial functions across the asset life cycle phases."
+  },
+  {
+   "id": "term_internal_control",
+   "label": "Concept",
+   "name": "internal control",
+   "definition": "process(es) used by an organization's managers to help it achieve its objectives",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.6"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.6",
+   "note": "Notes to entry: helps an organization run its operations efficiently and effectively, report reliable information and comply with applicable laws and regulations; applies to all activities, financial or non-financial; supports sound decision-making by reducing risks to acceptable levels through cost-effective controls. Definition derived from the COSO (Committee of Sponsoring Organizations of the Treadway Commission) definition. bSDD note: the IFC property 'InternalControl' is internal modulation control of a device - a false friend, deliberately NOT mapped."
+  },
+  {
+   "id": "term_asset_register",
+   "label": "Concept",
+   "name": "asset register (asset data record)",
+   "definition": "record of asset data and information considered worthy of separate identification and accountability",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.7"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.7",
+   "bsdd_uri": "https://identifier.buildingsmart.org/uri/nbs/uniclass2015/1/class/PM_80_10_10",
+   "bsdd_dictionary": "Uniclass 2015",
+   "bsdd_code": "PM_80_10_10",
+   "note": "Verbatim term is 'asset register'; name suffixed because ISO 19650-1 already contributes the node purpose_asset_register (information purpose) with the same name - the two are joined by CORRESPONDS_TO. Note 1 to entry: financial or accounting asset registers are databases or systems used to describe and manage the organization's financial accounts and management accounting. Note 2 to entry: non-financial asset registers (technical or operational) are databases or systems in which relevant technical or operational data and information of an asset are kept. 7.1: registers range from simple spreadsheet ledgers to ERP, CMMS, GIS and FIS applications."
+  },
+  {
+   "id": "term_capital_expenditure",
+   "label": "Concept",
+   "name": "capital expenditure (CapEx)",
+   "definition": "expenditure on acquisitions of, or improvements to, assets",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.8"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.8",
+   "abbreviation": "CapEx",
+   "note": "Note 1 to entry: based upon accounting standards and organization policy, CapEx usually relates to relatively large (material) expenditure, which has benefits that are expected to last for more than 12 months. 8.2 identifies three types: creation/purchase of new assets or upgrade/expansion; renewal or rehabilitation of existing assets; investment assets held in their own right."
+  },
+  {
+   "id": "term_operational_expenditure",
+   "label": "Concept",
+   "name": "operational expenditure (OpEx)",
+   "definition": "recurrent expenditures required to provide a service or product",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.9"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.9",
+   "abbreviation": "OpEx",
+   "note": "E.5.3: maintenance costs, whether minor or major, are usually OpEx; capital expenditures are for major replacements or upgrades usually extending the useful life of the asset."
+  },
+  {
+   "id": "term_total_expenditure",
+   "label": "Concept",
+   "name": "total expenditure (TotEx)",
+   "definition": "sum of capital expenditure and operational expenditure over a period",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.10"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.10",
+   "abbreviation": "TotEx",
+   "note": "8.1: TotEx balances short-term spend against longer-term spend; of increasing significance in investment planning in some jurisdictions (not used in accounting reports). E.5.2: the aim of operations is to minimize the TotEx over the whole of life of the assets."
+  },
+  {
+   "id": "term_alignment",
+   "label": "Concept",
+   "name": "alignment (financial and non-financial functions)",
+   "definition": "deliberate arrangement, relationship and mutual understanding of common concerns within a particular activity or among activities",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.11"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.11",
+   "note": "Verbatim term is 'alignment'; name qualified for graph clarity. The central concept of ISO/TS 55010: alignment of financial and non-financial functions in asset management, responding to ISO 55001:2014, 7.5 d). Clause 4.2 lists benefits a) to q), including improved expression of asset criticality and risk in financial terms, integrated investment planning, and better alignment of long-term financial planning with asset life cycle planning. bSDD note: IFC 'IfcAlignment' is road/rail geometric alignment - a false friend, deliberately NOT mapped."
+  },
+  {
+   "id": "term_valuation",
+   "label": "Concept",
+   "name": "valuation",
+   "definition": "process of determining the current value of an asset",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.12"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.12",
+   "bsdd_uri": "https://identifier.buildingsmart.org/uri/nbs/uniclass2015/1/class/FI_90_94",
+   "bsdd_dictionary": "Uniclass 2015",
+   "bsdd_code": "FI_90_94",
+   "note": "Notes to entry: valuation methods and bases are numerous and varied and may be expressed quantitatively and in monetary terms; application may be made to a single asset, a group of assets, or an entire enterprise. D.3 expands on valuation/revaluation situations a) to h), including impairment and functional or technological changes."
+  },
+  {
+   "id": "term_book_value",
+   "label": "Concept",
+   "name": "book value",
+   "definition": "monetary expression at which an asset or group of assets are carried on a balance sheet",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.13"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.13",
+   "note": "Admitted term: carrying value. D.3: at acquisition the cost is registered as acquisition cost; this cost is subsequently depreciated and the cost of acquisition net of depreciation is usually called book value."
+  },
+  {
+   "id": "term_residual_value",
+   "label": "Concept",
+   "name": "residual value",
+   "definition": "estimated financial amount that an organization would expect to obtain from disposal of an asset, after deducting the estimated costs of disposal, if the asset were already of the age and in the condition expected at the end of its useful life",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.14"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.14",
+   "note": "D.8: can be equivalent to open market value, scrap or salvage value; can be negative when the asset requires significant disposal cost (e.g. demolition of a chemical plant); assessment requires advice from both financial and non-financial functional areas."
+  },
+  {
+   "id": "term_useful_life",
+   "label": "Concept",
+   "name": "useful life",
+   "definition": "period over which an asset or class of assets are expected to be available for use by an organization",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.15"
+   },
+   "pdm_relevance": "high",
+   "source_type": "terms_clause",
+   "term_no": "3.15",
+   "bsdd_uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/class/Pset_ServiceLife",
+   "bsdd_dictionary": "IFC",
+   "bsdd_code": "Pset_ServiceLife",
+   "note": "Note 1 to entry: determined by factors such as the economic, technological, physical and functional performance of the assets, which demands an understanding between financial and non-financial functions. Note 2 to entry: the applicable period can be elapsed time, operating hours, number of cycles, number of units of production, etc. D.7: for long-term infrastructure and equipment, useful life is determined by obsolescence, lack of maintenance support, decrease in reliability/availability, degradation in performance capability and economic replacement feasibility. bSDD: IFC models this as service life (Pset_ServiceLife, property ExpectedServiceLife)."
+  },
+  {
+   "id": "term_depreciation",
+   "label": "Concept",
+   "name": "depreciation",
+   "definition": "systematic allocation of the depreciable amount of an asset over its useful life",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.16"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.16",
+   "note": "Note 1 to entry: while 'depreciation' can be used for both tangible and intangible assets, 'amortization' is normally used for intangible assets only. D.5: the depreciation charge for each period is recognized in a profit and loss statement."
+  },
+  {
+   "id": "term_fair_value",
+   "label": "Concept",
+   "name": "fair value",
+   "definition": "price that would be received to sell an asset, or paid to transfer a liability, in an orderly transaction between market participants at the measurement date",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.17"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.17",
+   "note": "D.3: defined identically by IFRS 13 and US GAAP (an exit price); where a market price does not exist, IFRS 13 applies the depreciated replacement cost. D.3: for meaningful asset management decision-making, fair value should be used rather than historical cost."
+  },
+  {
+   "id": "term_liability",
+   "label": "Concept",
+   "name": "liability",
+   "definition": "present obligation of the organization arising from past events, the settlement of which is expected to result in an out-flow of resources from the organization",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.18"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.18",
+   "note": "E.8: a disused pipeline abandoned in place carries ongoing residual liabilities, such as a risk of collapse, that need to be managed by the organization."
+  },
+  {
+   "id": "enabler_processes",
+   "label": "Concept",
+   "name": "process enabler for alignment",
+   "definition": "Defined processes can be significant enablers for the alignment of financial and non-financial asset management functions. Processes should be properly supported by documented information and opportunities identified to link tasks across different levels, functions and processes.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "5.2.1"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "Example: the process used by an asset manager to bring a new asset online (non-financial) should contain a task to capture total installed cost and send/link this to the accounting function (financial), so that asset cost, installation date and expected useful life are captured in both the financial and non-financial asset registers. Processes should use common terminology and focus on the end-to-end need rather than being governed solely by function."
+  },
+  {
+   "id": "enabler_leadership",
+   "label": "Concept",
+   "name": "leadership enabler for alignment",
+   "definition": "To achieve alignment between the financial and non-financial asset management functions within the organization, top management should demonstrate leadership and commitment",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "5.2.2"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause",
+   "note": "Items a) to h): promoting collaboration and transparency; aligning objectives of functions with organizational objectives; facilitating training at intersecting processes; resourcing cross-functional collaborative teams; ensuring both functions have adequate influence in decision-making; ensuring consistency of policies; maintaining inter-departmental shared granularity for how an asset is recorded; aligning risk management with the overall risk management framework."
+  },
+  {
+   "id": "enabler_governance",
+   "label": "Concept",
+   "name": "governance enabler for alignment",
+   "definition": "Governance should provide a framework to align financial and non-financial asset management functions. This is demonstrated by a governance process and policies designed to establish alignment relationships between stakeholders that can address any conflicting interests regarding how assets are managed.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "5.2.3"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause",
+   "note": "Figure 1 suggests key elements of a framework to achieve alignment. The governance framework should address alignment of financial and non-financial functions in relation to risk management (particularly financial risk) within the common overall risk management framework; ISO 55002:2018 Annex E and the COSO framework are cited as further references."
+  },
+  {
+   "id": "term_asset_management_policy",
+   "label": "Concept",
+   "name": "asset management policy",
+   "definition": "Top management, through the asset management policy, should acknowledge and endorse the role of alignment between the financial and non-financial functions. Top management should provide commitment to the provision of the information, knowledge and capabilities required to achieve, maintain and continually improve alignment.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "5.3.1"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "Such information should be available for use within the organization's non-financial decision-making functions, e.g. replacement, renewal, maintenance, training, inspection, so decisions balance financial needs and wider performance requirements."
+  },
+  {
+   "id": "term_strategic_asset_management_plan",
+   "label": "Concept",
+   "name": "strategic asset management plan (SAMP)",
+   "definition": "documented information that contains and aligns asset management policy, objectives, strategies and approaches for developing and managing the asset portfolio and the asset management system",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "5.3.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "abbreviation": "SAMP",
+   "note": "Definition upgraded in place to the verbatim ISO 55000:2024 wording (3.3.29) when that file joined the graph; provenance keeps the ISO/TS 55010 usage anchor (5.3.2). ISO 55000:2024 3.3.29 Note 1: a SAMP is derived from, may be contained in, or may be a subsidiary plan of, the organizational plan. ISO 55002:2018 Annex C provides guidance on the format and content of a SAMP. ISO/TS 55010 9.3: KPIs should relate directly to the SAMP objectives.",
+   "definition_provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.3.29"
+   }
+  },
+  {
+   "id": "enabler_data_information",
+   "label": "Concept",
+   "name": "data and information enabler for alignment",
+   "definition": "Accurate, reliable and current data and the resulting information are key elements of asset management. When data are processed, interpreted, organized, structured or presented so as to make them meaningful or useful, they are called information. Data and information management is of utmost importance to facilitate and ensure the collection, accuracy, availability, integrity and completeness of data and information.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "5.3.3"
+   },
+   "pdm_relevance": "high",
+   "source_type": "body_clause",
+   "note": "When data are processed, interpreted, organized, structured or presented so as to make them meaningful or useful, they are called information. Data management should cover data generated within the organization as well as data coming from outsourced or contracted functions. Both financial and non-financial areas are likely sources of the required data."
+  },
+  {
+   "id": "term_common_terminology",
+   "label": "Concept",
+   "name": "common terminology for financial and non-financial alignment",
+   "definition": "Physical-asset-holding organizations should embrace the development of common terminology within their organization. This is to ensure that all stakeholders have a clear understanding and agreement in relation to the meaning of various terms commonly employed in differing professional sectors such as finance, operations, information and communications technology (ICT), etc.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "5.5"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "Provides a means of addressing ISO 55001:2014, 7.5 d): 'the organization shall determine the requirements for alignment of financial and non-financial terminology relevant to asset management throughout the organization'. Example: a 'repair' may be expensed in the period it was made, while a 'betterment' or 'improvement' should be treated as CapEx."
+  },
+  {
+   "id": "term_information_system",
+   "label": "Concept",
+   "name": "information system (asset data)",
+   "definition": "Organizations use their information systems to register, manage, analyse and report on asset data and activities. These systems may comprise computer hardware, computer software, databases and data warehouses, telecommunications to connect hardware to form a network, and people to operate the systems (human resources and procedures).",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "6.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "Departments have different granularity needs: financial accounting groups assets and identifies components with different useful lives for depreciation; plant maintenance breaks independent functional units down into components with different maintenance schedules. 6.2 a) to c): agree common levels of asset detail, implement them in the asset management system, and maintain the linkage between financial and non-financial information systems. Technologically advanced organizations integrate asset datasets through analytics and decision support software without duplicating data."
+  },
+  {
+   "id": "term_data_management",
+   "label": "Concept",
+   "name": "data management",
+   "definition": "Data management is a subset of information management. It comprises all disciplines related to managing data that are used by the organization in both financial and non-financial functions.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "6.3"
+   },
+   "pdm_relevance": "high",
+   "source_type": "body_clause",
+   "note": "6.3 a) to d): define and communicate processes for data capture, dissemination and maintenance; ensure end users understand and deploy them; establish performance measures monitoring how current, complete and accurate the data are; maintain data quality when changing systems. Registration of data should ensure each data element has the same meaning for all users; a registration based on an asset transaction should trigger the necessary transactions in the relevant databases, e.g. an investment registered in the non-financial asset register should have a counterpart in the financial accounting database."
+  },
+  {
+   "id": "term_financial_asset_register",
+   "label": "Concept",
+   "name": "financial asset register",
+   "definition": "Financial asset registers are used for managing the organization's financial functions. They are used for financial reporting purposes, as well as for other activities, including accounting, taxation, insurance, valuation and legal requirements.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "7.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "Referred to as the 'fixed asset register' (FAR) in some organizations (D.2). D.2 data fields: acquisition date, acquisition cost, useful life, depreciation percentage, accumulated depreciation, accumulated impairment, book value. Should be continuously maintained throughout all phases of the asset life cycle to reflect the accurate book value of assets; disposals noted in the non-financial asset register should be reflected in the corresponding financial asset register records. C.2 d): the CEAVOP assertions (completeness, existence, accuracy, valuation, obligations and rights, presentation) apply to its registration of transactions."
+  },
+  {
+   "id": "term_non_financial_asset_register",
+   "label": "Concept",
+   "name": "non-financial asset register",
+   "definition": "The non-financial asset registers are the organization's definitive key source of information for all the assets it manages and operates (tangible and intangible).",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "7.3"
+   },
+   "pdm_relevance": "high",
+   "source_type": "body_clause",
+   "note": "Operational level asset information systems, including maintenance management, telemetry/supervisory control and data acquisition, and modelling systems, link to the non-financial asset registers. More complex non-financial asset registers use asset hierarchical modelling to define asset components, their physical locations and their role in specific processes. Should be continuously maintained throughout all phases of the asset life cycle to reflect a complete and current asset inventory."
+  },
+  {
+   "id": "term_shared_granularity",
+   "label": "Concept",
+   "name": "shared asset granularity",
+   "definition": "In order to collaborate, there needs to be an organization-wide consensus on shared granularity, i.e. the asset breakdown detail at which financial and non-financial data will be shared. That consensus needs to be formalized in a dictionary of standard descriptions of the assets in the shared granularity and complied with across all departmental asset register platforms. Assets at that level of granularity need to share the same identification code to ensure integrity, so that data in the different departmental asset registers can be reported together for completeness.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "7.4"
+   },
+   "pdm_relevance": "high",
+   "source_type": "body_clause",
+   "note": "Organizations using a hierarchical register determine which level of the hierarchy is the 'asset' level: items higher are 'asset systems', items below are 'components', 'sub-components', etc. Assets at the shared granularity need to share the same identification code to ensure integrity, so that data in the different departmental asset registers can be reported together for completeness. This is the join key that lets financial records and operational/PdM records refer to the same asset."
+  },
+  {
+   "id": "term_asset_register_alignment",
+   "label": "Concept",
+   "name": "asset register alignment",
+   "definition": "Facilitating alignment between financial and non-financial asset management processes requires a common aspect/tag to be contained within each register. Without such commonality, full alignment will be difficult to achieve.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "7.4"
+   },
+   "pdm_relevance": "high",
+   "source_type": "body_clause",
+   "note": "Achieved when criteria a) to d) are met: a common understanding of asset data capture, reporting and analysis requirements across each functional area; shared data and information identified and defined; a single key source for each specific data element identified and agreed; data quality standards, business processes, responsibilities and timelines for maintaining the register data defined and agreed by the different stakeholders. Critical to the successful development of asset management plans (as required by ISO 55001:2014, 6.2.2)."
+  },
+  {
+   "id": "term_financial_planning",
+   "label": "Concept",
+   "name": "financial planning for asset management",
+   "definition": "Financial planning for asset management is an integral part of the overarching asset management process. Asset management planning aims to achieve both financial and non-financial objectives while balancing performance, cost and risk over the total life cycle of the asset systems.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.1"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "Starts with the objectives the organization wants to achieve for its stakeholders; concerns design, acquisition or construction, operation, maintenance, renewal and decommissioning phases. Long-term planning includes capacity planning, asset life cycle planning, capital investment planning and long-term financial planning; short-term planning includes budgets and operational planning."
+  },
+  {
+   "id": "term_capital_investment_planning",
+   "label": "Concept",
+   "name": "capital investment planning",
+   "definition": "Capital investment planning identifies the capital investment requirements of the organization over a specified period of time, (e.g. typically a 5 to 10 year forward-planning horizon or longer, depending on the organization's circumstances).",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "mixed_normative_informative",
+   "note": "Assessment issues include future demand and trends, technology changes, utilization and function change, obsolescence, costs of ongoing operations, age and condition of existing assets, risk rating, and costing and funding options. There is a trade-off between operation/maintenance costs and capital investments: increasing maintenance activity can allow deferral of capital investment for renewal, and the optimal intervention point is where overall life cycle costs are minimized; the weighted average cost of capital (WACC) informs debt/equity funding levels. Annex A lists objectives a) to j) of capital investment plans."
+  },
+  {
+   "id": "term_long_term_financial_planning",
+   "label": "Concept",
+   "name": "long-term financial planning",
+   "definition": "Long-term financial planning builds on the outputs from the asset management planning and capital investment planning. It includes all annual operation and maintenance costs over the planning timeframe. It is the process of aligning financial capacity with long-term service or product delivery objectives.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.3"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "mixed_normative_informative",
+   "note": "Builds on the outputs from asset management planning and capital investment planning and includes all annual operation and maintenance costs over the planning timeframe. Annex B: predicated on a robust and current SAMP and asset management plans, which provide the expenditure projections fed into the financial planning process; B.2 describes a mobilization phase, a decision-making phase and an execution phase; Table B.1 gives the typical stages (asset management planning, expenditure projections, financial planning)."
+  },
+  {
+   "id": "term_budgeting",
+   "label": "Concept",
+   "name": "budgeting",
+   "definition": "The budgeting process is more efficient when informed by a long-term financial plan that has been developed collaboratively with financial and non-financial staff input. [...] When financial and non-financial areas understand the asset conditions and objectives required, they can collaboratively prepare the asset management plan and associated costs using zero-based budgeting or activity-based budgeting",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.4"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "bsdd_uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/class/IfcCostScheduleBUDGET",
+   "bsdd_dictionary": "IFC",
+   "bsdd_code": "IfcCostScheduleBUDGET",
+   "note": "Methods include zero-based budgeting and activity-based budgeting. The annual budget should recognize the consumption of asset service potential (depreciation or amortization) and appropriately fund it. Inadequate budget provisions can lead to higher life cycle costs, inequitable charging and financial shocks. Uniclass 2015 also classifies 'Budget' as PM_60_50_10."
+  },
+  {
+   "id": "term_capitalization_threshold",
+   "label": "Concept",
+   "name": "capitalization threshold",
+   "definition": "use of capitalization threshold: some accounting standards allow the organization to capitalize only the cost of assets above a certain threshold; this threshold is then part of the valuation rule of the organization and should be applied consistently",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.4"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "C.2 c) 2): the threshold is part of the valuation rule of the organization and should be applied consistently. 8.4: when aligning financial and non-financial functions it is important to set criteria such as a capitalization threshold for categorizing OpEx and CapEx."
+  },
+  {
+   "id": "term_performance_management",
+   "label": "Concept",
+   "name": "performance management",
+   "definition": "Performance management is an essential element in asset management to achieve the organizational objectives. [...] A balance has to be sought when addressing performance, cost and risk. Therefore, these three elements should be measured in relation to each other.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "9.1"
+   },
+   "pdm_relevance": "high",
+   "source_type": "body_clause",
+   "note": "A balance has to be sought when addressing performance, cost and risk; these three elements should be measured in relation to each other. Responds to ISO 55001:2014, 4.2: the organization shall determine the stakeholder requirements for recording financial and non-financial information relevant to asset management and for reporting on it both internally and externally."
+  },
+  {
+   "id": "term_performance_measurement",
+   "label": "Concept",
+   "name": "performance measurement",
+   "definition": "Performance evaluation should be carried out in many layers against specific, measurable, achievable, relevant and time-based (SMART) objectives aligned to each layer. [...] Performance measurement involves both financial and non-financial measures.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "9.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "Layers: self-evaluation by every employee or team; regular performance reporting (e.g. balanced scorecard reporting financial and non-financial measurements to test the balance between performance, costs and risks); internal and external audits. Financial audit advice items a) to h) include whether the asset register is complete and accurate, whether valuations are up to date, and whether the organization is monitoring the health and condition of its assets and their remaining useful life and understands the relationship between asset condition and current value."
+  },
+  {
+   "id": "term_performance_reporting",
+   "label": "Concept",
+   "name": "performance reporting",
+   "definition": "Performance reporting addresses internal policies, procedures and processes, including risks, costs, value generated, asset health, life cycle performance, etc. The purpose of such reports is to recognize actual costs, to validate prior decisions, to recognize changes in value and to assess possible future value enhancements.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "9.3"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "The organization should consider the information needed for decision-making relative to the cost of collecting it, the participation and skills mix of financial and non-financial staff, and the need for both lead and lag indicators. Key performance indicators should relate directly to the SAMP objectives; indicators defined at different granularity (e.g. finance per asset, maintenance per production line) need to be combined so they produce coherent information."
+  },
+  {
+   "id": "term_financial_reporting",
+   "label": "Concept",
+   "name": "financial reporting in asset management",
+   "definition": "Accounting standards are used by the financial function for the organization's financial reporting. These standards contain specific guidelines regarding the definition of an asset, when to record an asset, and how to report financial information about an asset.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "9.4"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "Annex C examples of external financial reporting: annual reports, tax reporting, statutory accounts, group reporting, statistical reporting, regulatory reporting, insurable values. External reporting standards and principles (IFRS, US GAAP, IPSAS) are external code tables and are deliberately not nodeified, following the Part 6 Annex B classification-system precedent. C.2 principles: fair presentation, accrual basis, IFRS valuation rules (fair value, capitalization threshold), and CEAVOP assertions."
+  },
+  {
+   "id": "term_valuation_technique",
+   "label": "Concept",
+   "name": "valuation technique",
+   "definition": "An organization should use valuation techniques that are appropriate in the circumstances and for which sufficient data are available to measure fair value, maximizing the use of relevant observable inputs and minimizing the use of unobservable inputs. [...] The objective of using a valuation technique is to estimate the fair value of the asset including the cost to replace its service capacity.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "D.4"
+   },
+   "pdm_relevance": "low",
+   "source_type": "informative_annex",
+   "note": "Three techniques are widely used: market approach (comparison with identical or comparable assets); cost approach (current replacement or reproduction cost less deductions for physical deterioration and obsolescence); income approach (converting future cash flow to a single current value). Where assets such as infrastructure have no market value or future revenue stream, the cost approach is the most appropriate. All three techniques must be considered and only inapplicable ones discarded."
+  },
+  {
+   "id": "term_depreciation_method",
+   "label": "Concept",
+   "name": "depreciation method",
+   "definition": "IFRS and US GAAP (or other GAAPs) require that the depreciation method used reflect the pattern in which the asset's future economic benefits are expected to be consumed by the organization. The organization should select the method that most closely reflects the expected pattern of consumption of the future economic benefits embodied in the asset and based on what is allowed from local jurisdictions.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "D.5"
+   },
+   "pdm_relevance": "low",
+   "source_type": "informative_annex",
+   "note": "Examples: linear (straight-line) depreciation or amortization; diminishing balance method; units of production method; useful life residual value depreciation for very long-lived assets. Close collaboration between financial and non-financial staff should be encouraged to arrive at an agreed pattern of consumption and the depreciation method."
+  },
+  {
+   "id": "term_impairment",
+   "label": "Concept",
+   "name": "impairment",
+   "definition": "decline in the future economic benefits service potential due to extrinsic or intrinsic conditions on an asset over and above the consumption reported through depreciation",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "D.6"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "informative_annex",
+   "note": "An asset is impaired when its carrying amount exceeds the recoverable amount. Applied when an event has an immediate negative impact on the fair value of the assets of a cash generating unit. Determining whether an asset is impaired needs to involve the non-financial staff who manage the asset day-to-day; an indication of impairment could instead mean the remaining useful life, depreciation method or residual value should be reviewed and adjusted. If an asset is found not to exist, that is a deferred recognition of a disposal, not an impairment."
+  },
+  {
+   "id": "term_remaining_useful_life",
+   "label": "Concept",
+   "name": "remaining useful life",
+   "definition": "The remaining useful life can be estimated from the condition of an asset, when reliable condition deterioration profiles are available. Remaining useful life can increase when an asset's total useful life is extended by rehabilitation work.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "D.7"
+   },
+   "pdm_relevance": "high",
+   "source_type": "informative_annex",
+   "note": "Remaining useful life can increase when an asset's total useful life is extended by rehabilitation work. When condition deterioration profiles are not available, the organization can use local knowledge and experience of similar assets. Useful life determination considers physical (failure rates, wear and tear), technological (obsolescence), functional (market demand) and economic (exploitable period) aspects; the operational user's estimate is often more reliable than the accounting class default, which highlights the need for financial and non-financial functions to work together."
+  },
+  {
+   "id": "phase_concept",
+   "label": "Concept",
+   "name": "concept phase (asset life cycle)",
+   "definition": "The decision to create a new infrastructure asset is typically triggered by some change in the need for the service provided by the assets. At this early stage of the life cycle of the assets, non-financial functions in asset management usually involve an analysis of",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.2"
+   },
+   "pdm_relevance": "low",
+   "source_type": "informative_annex",
+   "note": "Typically triggered by a change in the need for the service provided by the assets. A business case compares competing options against the asset management objectives; total cost of ownership calculations inform asset creation decisions, factored together with non-financial aspects (cost/benefit analyses, multi-criteria analysis). Steps (conceptual formulation, evaluation of alternatives, determination of needed technology, final selection) are all treated as operational expenses."
+  },
+  {
+   "id": "phase_planning_design",
+   "label": "Concept",
+   "name": "planning and design phase",
+   "definition": "Where there is a need for a new service involving new assets having been approved at the concept stage, the following phase involves confirming the service required to meet customer needs and ensuring that the most effective solution is found to meet that need.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.3"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "informative_annex",
+   "note": "Staff involved in operations and maintenance should be involved at this stage: decisions made at the design stage lock in future costs for operation and maintenance and hence the total cost of ownership of the proposed assets. Funding options range from user fees, rates or levies, subsidies or grants, developer contributions, reserve funds or borrowings, to public/private partnerships."
+  },
+  {
+   "id": "phase_asset_creation",
+   "label": "Concept",
+   "name": "asset creation phase",
+   "definition": "The asset creation phase involves procuring the assets and putting them into service. It typically involves significant CapEx for which financial staff need to be involved.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.4"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "informative_annex",
+   "note": "Procurement questions: in-house or outsourced delivery; constructed internally or contracted out; owned or leased; contract form; risk transfer through public/private partnership or alliancing. At this stage it is important to populate data into both the financial and non-financial asset registers at appropriate levels of detail with componentization reflecting how the assets will be managed once operational, and to capitalize associated costs to allow future recording of valuation and depreciation."
+  },
+  {
+   "id": "phase_operation_maintenance",
+   "label": "Concept",
+   "name": "operation and maintenance phase",
+   "definition": "Operation and maintenance (O&M) costs often represent a significant portion of an asset's life cycle costs. O&M directly and indirectly influence costs, level of service, risk, performance, reputation, etc. [...] The organization's operational functions should run the assets to produce the product and/or service to be delivered at the required level of service and acceptable level of risk.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.5"
+   },
+   "pdm_relevance": "high",
+   "source_type": "informative_annex",
+   "note": "Operation and maintenance costs often represent a significant portion of an asset's life cycle costs and directly and indirectly influence costs, level of service, risk, performance and reputation. Failure to carry out appropriate maintenance can reduce performance, lower reliability, shorten useful life, lead to downtime and loss of production, damage reputation, increase overall life cycle costs and cause safety or environmental issues."
+  },
+  {
+   "id": "phase_asset_monitoring",
+   "label": "Concept",
+   "name": "asset monitoring phase",
+   "definition": "The organization can use condition and performance monitoring for assets to demonstrate they are delivering the agreed levels of service, to predict failures and, where necessary, propose intervention before a functional failure occurs.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.6"
+   },
+   "pdm_relevance": "high",
+   "source_type": "informative_annex",
+   "note": "Monitoring should only be employed where justified, e.g. where the cost of the monitoring technique is less than the cost of the asset failure; an alternative is run-to-failure with replacement. Condition and performance assessments and their trends over time support operational planning, maintenance scheduling, improving reliability, predicting rehabilitation and refurbishment timing, and deciding on interventions, informing the balance between CapEx and OpEx over the asset life cycle."
+  },
+  {
+   "id": "phase_rehabilitation_refurbishment",
+   "label": "Concept",
+   "name": "rehabilitation and refurbishment phase",
+   "definition": "It is important for the financial and non-financial functions to collaborate when planning for asset refurbishment or replacement in order to agree on the most appropriate time in the asset life cycle to conduct these activities. [...] The economic value of assets decreases over time, while the cost of owning the asset (e.g. operation and maintenance) often increases over time. Hence, the optimum point for refurbishment and replacement needs to be mutually agreed to balance financial and non-financial requirements and constraints.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.7"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "informative_annex",
+   "note": "The economic value of assets decreases over time while the cost of owning the asset often increases; non-financial functions can be driven by asset condition and performance whereas financial functions can be driven by budget constraints. Predictive modelling techniques are commonly applied to address risk and forecast renewals requirements. Optimal renewals timing is a key input to the capital investment strategy and long-term financial plan."
+  },
+  {
+   "id": "phase_disposal",
+   "label": "Concept",
+   "name": "disposal phase",
+   "definition": "The disposal phase is typically the last stage of an asset's life cycle and it commences at the time when the asset no longer fulfils the organization's needs. For example, the asset reaches the end of its useful life, which can be manifested in low or unstable reliability, a high running cost or low product/service quality being delivered or obsolescence.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.8"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "informative_annex",
+   "bsdd_uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/class/IfcTaskDISPOSAL",
+   "bsdd_dictionary": "IFC",
+   "bsdd_code": "IfcTaskDISPOSAL",
+   "note": "Approaches include abandon in place, scrapping, or selling if the asset is of value to another organization. Projected disposal costs must be included in the whole life cycle cost analysis; some assets incur large costs for scrapping and site remediation, and abandoned assets can carry ongoing residual liabilities."
+  },
+  {
+   "id": "term_preventive_maintenance",
+   "label": "Concept",
+   "name": "preventive maintenance",
+   "definition": "Preventive maintenance can imply somewhat larger maintenance costs, but it is designed to increase reliability and availability without necessarily extending the useful life of the asset, while reducing total life cycle costs. Preventive maintenance aims to slow asset deterioration or failure risk whereas corrective maintenance restores serviceability by correcting failures.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.5.3"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "informative_annex",
+   "bsdd_uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/class/Pset_MaintenanceStrategy",
+   "bsdd_dictionary": "IFC",
+   "bsdd_code": "Pset_MaintenanceStrategy",
+   "note": "Can imply somewhat larger maintenance costs. The maintenance plan should seek to optimize the balance between the costs of preventive and corrective maintenance activities."
+  },
+  {
+   "id": "term_predictive_maintenance",
+   "label": "Concept",
+   "name": "predictive maintenance",
+   "definition": "predictive maintenance, including condition monitoring",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.5.3"
+   },
+   "pdm_relevance": "high",
+   "source_type": "informative_annex",
+   "bsdd_uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/class/Pset_MaintenanceStrategy",
+   "bsdd_dictionary": "IFC",
+   "bsdd_code": "Pset_MaintenanceStrategy",
+   "note": "E.5.3 lists 'predictive maintenance, including condition monitoring' among the activities of an appropriate approach to managing assets; E.6 describes the monitoring basis. This is the concept the PdM use case implements - the graph's predictive-maintenance analytical model (ISO 19650-3 extension) is an implementation of it. bSDD: IFC Pset_MaintenanceStrategy carries the AssetMaintenanceStrategy property (e.g. CONDITIONBASED)."
+  },
+  {
+   "id": "term_corrective_maintenance",
+   "label": "Concept",
+   "name": "corrective maintenance",
+   "definition": "corrective maintenance restores serviceability by correcting failures",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.5.3"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "informative_annex",
+   "bsdd_uri": "https://identifier.buildingsmart.org/uri/buildingsmart/ifc/4.3/class/Pset_MaintenanceStrategy",
+   "bsdd_dictionary": "IFC",
+   "bsdd_code": "Pset_MaintenanceStrategy",
+   "note": "Contrasted with preventive maintenance, which aims to slow asset deterioration or failure risk. 5.4: the balance between preventive and corrective maintenance is an issue on which non-financial asset life cycle teams should collaborate with financial teams."
+  },
+  {
+   "id": "term_maintenance_plan",
+   "label": "Concept",
+   "name": "maintenance plan",
+   "definition": "A maintenance plan should meet the organization's objective, purpose and policy, and align with the organization's asset management plan. The maintenance plan should be developed with agreement by both the financial and non-financial functional areas to reach an agreed solution.",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.5.3"
+   },
+   "pdm_relevance": "high",
+   "source_type": "informative_annex",
+   "note": "Developed with agreement by both the financial and non-financial functional areas. Maintenance staff implement the technical activities established in the plan; managers fund it; financial staff oversee expenditure at the appropriate amount and timing within the long-term financial plan. Maintenance expenditure is usually incurred throughout the year, taking seasonal fluctuations into account, and should be determined in annual budgets."
+  },
+  {
+   "id": "term_asset_management_plan",
+   "label": "Concept",
+   "name": "asset management plan",
+   "definition": "documented information that specifies the activities, resources, costs and timescales required for an individual asset, or a grouping of assets, to achieve an organization's asset management objectives",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "B.1"
+   },
+   "pdm_relevance": "high",
+   "source_type": "informative_annex",
+   "note": "Definition upgraded in place to the verbatim ISO 55000:2024 wording (3.2.5) when that file joined the graph; provenance keeps the ISO/TS 55010 usage anchor (B.1). ISO 55000:2024 3.2.5 Note 2: an asset management plan is derived from the strategic asset management plan. ISO 55000:2024 3.2.5 Note 2: an asset management plan is derived from the strategic asset management plan. ISO 55000:2024 3.2.5 Note 2: an asset management plan is derived from the strategic asset management plan. 7.4: asset register alignment is critical to the successful development of asset management plans for the various asset classes (as required by ISO 55001:2014, 6.2.2). Table B.1 stage 1: prepare asset management plans for all services/asset categories and develop projected expenditures over a 10-year planning period for operations, maintenance, capital renewals, capital upgrade/expansion and new assets, and asset disposals.",
+   "definition_provenance": {
+    "standard": "ISO 55000:2024",
+    "clause": "3.2.5"
+   },
+   "abbreviation": "AMP"
+  },
+  {
+   "id": "term_total_cost_of_ownership",
+   "label": "Concept",
+   "name": "total cost of ownership (TCO)",
+   "definition": "Total cost of ownership (TCO) calculations are desirably performed to inform asset creation decisions. Ideally, TCO should be factored together with non-financial aspects of the decision-making process (e.g. cost/benefit analyses, multi-criteria analysis).",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.2"
+   },
+   "pdm_relevance": "high",
+   "source_type": "informative_annex",
+   "abbreviation": "TCO",
+   "note": "4.1 poses 'How can I know the total cost of ownership (TCO) of my assets?' as a top-management question. E.2: TCO calculations are desirably performed to inform asset creation decisions, ideally factored together with non-financial aspects of decision-making. E.3: decisions made at the design stage lock in future operation and maintenance costs and hence the TCO of the proposed assets."
+  }
+ ],
+ "relationships": [
+  {
+   "from": "term_financial_function",
+   "to": "term_valuation",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.4 Note 1"
+   }
+  },
+  {
+   "from": "term_financial_function",
+   "to": "term_management_accounting",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.4 Note 1"
+   }
+  },
+  {
+   "from": "term_financial_function",
+   "to": "term_budgeting",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.4 Note 1"
+   }
+  },
+  {
+   "from": "term_non_financial_function",
+   "to": "term_financial_function",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.5"
+   }
+  },
+  {
+   "from": "term_managerial_costing",
+   "to": "term_financial_function",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "Introduction; D.1"
+   }
+  },
+  {
+   "from": "term_financial_asset_register",
+   "to": "term_managerial_costing",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "7.2"
+   }
+  },
+  {
+   "from": "term_asset",
+   "to": "term_asset_register",
+   "type": "RECORDED_IN",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.7"
+   }
+  },
+  {
+   "from": "term_financial_asset_register",
+   "to": "term_asset_register",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.7 Note 1; 7.2"
+   }
+  },
+  {
+   "from": "term_non_financial_asset_register",
+   "to": "term_asset_register",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.7 Note 2; 7.3"
+   }
+  },
+  {
+   "from": "term_capital_expenditure",
+   "to": "term_total_expenditure",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.10"
+   }
+  },
+  {
+   "from": "term_operational_expenditure",
+   "to": "term_total_expenditure",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.10"
+   }
+  },
+  {
+   "from": "term_valuation",
+   "to": "term_asset",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.12"
+   }
+  },
+  {
+   "from": "term_fair_value",
+   "to": "term_valuation",
+   "type": "DERIVED_FROM",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.17; D.3"
+   }
+  },
+  {
+   "from": "term_fair_value",
+   "to": "term_liability",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.17"
+   }
+  },
+  {
+   "from": "term_book_value",
+   "to": "term_depreciation",
+   "type": "DERIVED_FROM",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "D.3"
+   }
+  },
+  {
+   "from": "term_book_value",
+   "to": "term_financial_asset_register",
+   "type": "RECORDED_IN",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "D.2 g)"
+   }
+  },
+  {
+   "from": "term_residual_value",
+   "to": "term_useful_life",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.14"
+   }
+  },
+  {
+   "from": "term_depreciation",
+   "to": "term_useful_life",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.16"
+   }
+  },
+  {
+   "from": "term_useful_life",
+   "to": "term_asset",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.15"
+   }
+  },
+  {
+   "from": "term_depreciation_method",
+   "to": "term_depreciation",
+   "type": "REFINES",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "D.5"
+   }
+  },
+  {
+   "from": "term_impairment",
+   "to": "term_depreciation",
+   "type": "REFINES",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "D.6"
+   }
+  },
+  {
+   "from": "term_impairment",
+   "to": "term_fair_value",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "D.6"
+   }
+  },
+  {
+   "from": "term_valuation_technique",
+   "to": "term_valuation",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "D.4"
+   }
+  },
+  {
+   "from": "term_remaining_useful_life",
+   "to": "term_useful_life",
+   "type": "REFINES",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "D.7"
+   }
+  },
+  {
+   "from": "term_residual_value",
+   "to": "phase_disposal",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "3.14; D.8"
+   }
+  },
+  {
+   "from": "term_alignment",
+   "to": "term_financial_function",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "Clause 1; 4.1"
+   }
+  },
+  {
+   "from": "term_alignment",
+   "to": "term_non_financial_function",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "Clause 1; 4.1"
+   }
+  },
+  {
+   "from": "term_alignment",
+   "to": "term_internal_control",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "Clause 1; 4.2 i)"
+   }
+  },
+  {
+   "from": "term_alignment",
+   "to": "term_asset_management",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "Clause 1; 4.1"
+   }
+  },
+  {
+   "from": "enabler_processes",
+   "to": "term_alignment",
+   "type": "ENABLES",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "5.2.1"
+   }
+  },
+  {
+   "from": "enabler_leadership",
+   "to": "term_alignment",
+   "type": "ENABLES",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "5.2.2"
+   }
+  },
+  {
+   "from": "enabler_governance",
+   "to": "term_alignment",
+   "type": "ENABLES",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "5.2.3"
+   }
+  },
+  {
+   "from": "term_asset_management_policy",
+   "to": "term_alignment",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "5.3.1"
+   }
+  },
+  {
+   "from": "term_strategic_asset_management_plan",
+   "to": "term_alignment",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "5.3.2"
+   }
+  },
+  {
+   "from": "enabler_data_information",
+   "to": "term_alignment",
+   "type": "ENABLES",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "5.3.3"
+   }
+  },
+  {
+   "from": "term_common_terminology",
+   "to": "term_alignment",
+   "type": "ENABLES",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "5.5"
+   }
+  },
+  {
+   "from": "enabler_processes",
+   "to": "term_financial_asset_register",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "5.2.1"
+   }
+  },
+  {
+   "from": "enabler_processes",
+   "to": "term_non_financial_asset_register",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "5.2.1"
+   }
+  },
+  {
+   "from": "term_common_terminology",
+   "to": "term_data_management",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "6.3"
+   }
+  },
+  {
+   "from": "term_data_management",
+   "to": "term_information_system",
+   "type": "GOVERNS",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "6.1; 6.3"
+   }
+  },
+  {
+   "from": "term_shared_granularity",
+   "to": "term_information_system",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "6.2 a)-c)"
+   }
+  },
+  {
+   "from": "term_shared_granularity",
+   "to": "term_asset",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "7.4"
+   }
+  },
+  {
+   "from": "term_shared_granularity",
+   "to": "term_asset_register_alignment",
+   "type": "ENABLES",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "7.4"
+   }
+  },
+  {
+   "from": "term_asset_register_alignment",
+   "to": "term_alignment",
+   "type": "REFINES",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "Clause 7"
+   }
+  },
+  {
+   "from": "term_asset_register_alignment",
+   "to": "term_financial_asset_register",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "7.4"
+   }
+  },
+  {
+   "from": "term_asset_register_alignment",
+   "to": "term_non_financial_asset_register",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "7.4"
+   }
+  },
+  {
+   "from": "term_asset_register_alignment",
+   "to": "term_asset_management_plan",
+   "type": "ENABLES",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "7.4"
+   }
+  },
+  {
+   "from": "term_information_system",
+   "to": "term_asset_register",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "7.1"
+   }
+  },
+  {
+   "from": "term_financial_planning",
+   "to": "term_asset_management",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.1"
+   }
+  },
+  {
+   "from": "term_capital_investment_planning",
+   "to": "term_financial_planning",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.1"
+   }
+  },
+  {
+   "from": "term_long_term_financial_planning",
+   "to": "term_financial_planning",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.1"
+   }
+  },
+  {
+   "from": "term_budgeting",
+   "to": "term_financial_planning",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.1"
+   }
+  },
+  {
+   "from": "term_capital_investment_planning",
+   "to": "term_long_term_financial_planning",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.2; 8.3"
+   }
+  },
+  {
+   "from": "term_capital_investment_planning",
+   "to": "term_budgeting",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.2"
+   }
+  },
+  {
+   "from": "term_long_term_financial_planning",
+   "to": "term_budgeting",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.4"
+   }
+  },
+  {
+   "from": "term_asset_management_plan",
+   "to": "term_long_term_financial_planning",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.3; B.1"
+   }
+  },
+  {
+   "from": "term_strategic_asset_management_plan",
+   "to": "term_asset_management_plan",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "B.1"
+   }
+  },
+  {
+   "from": "term_capital_investment_planning",
+   "to": "term_capital_expenditure",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.2"
+   }
+  },
+  {
+   "from": "term_budgeting",
+   "to": "term_capitalization_threshold",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.4"
+   }
+  },
+  {
+   "from": "term_capitalization_threshold",
+   "to": "term_capital_expenditure",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.4; C.2 c) 2)"
+   }
+  },
+  {
+   "from": "term_capitalization_threshold",
+   "to": "term_operational_expenditure",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.4; C.2 c) 2)"
+   }
+  },
+  {
+   "from": "term_performance_measurement",
+   "to": "term_performance_management",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "9.1 a); 9.2"
+   }
+  },
+  {
+   "from": "term_performance_reporting",
+   "to": "term_performance_management",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "9.1; 9.3"
+   }
+  },
+  {
+   "from": "term_financial_reporting",
+   "to": "term_performance_management",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "9.4"
+   }
+  },
+  {
+   "from": "term_financial_accounting",
+   "to": "term_financial_reporting",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "9.4; D.1"
+   }
+  },
+  {
+   "from": "term_management_accounting",
+   "to": "term_performance_reporting",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "9.4"
+   }
+  },
+  {
+   "from": "term_performance_measurement",
+   "to": "term_remaining_useful_life",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "9.2 h)"
+   }
+  },
+  {
+   "from": "term_performance_reporting",
+   "to": "term_asset_kpi",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "9.3"
+   }
+  },
+  {
+   "from": "phase_concept",
+   "to": "term_life_cycle",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.1"
+   }
+  },
+  {
+   "from": "phase_planning_design",
+   "to": "term_life_cycle",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.1"
+   }
+  },
+  {
+   "from": "phase_asset_creation",
+   "to": "term_life_cycle",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.1"
+   }
+  },
+  {
+   "from": "phase_operation_maintenance",
+   "to": "term_life_cycle",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.1"
+   }
+  },
+  {
+   "from": "phase_asset_monitoring",
+   "to": "term_life_cycle",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.1"
+   }
+  },
+  {
+   "from": "phase_rehabilitation_refurbishment",
+   "to": "term_life_cycle",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.1"
+   }
+  },
+  {
+   "from": "phase_disposal",
+   "to": "term_life_cycle",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.1"
+   }
+  },
+  {
+   "from": "phase_concept",
+   "to": "phase_planning_design",
+   "type": "PRECEDES",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.1 Figure E.1"
+   }
+  },
+  {
+   "from": "phase_planning_design",
+   "to": "phase_asset_creation",
+   "type": "PRECEDES",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.1 Figure E.1"
+   }
+  },
+  {
+   "from": "phase_asset_creation",
+   "to": "phase_operation_maintenance",
+   "type": "PRECEDES",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.1 Figure E.1"
+   }
+  },
+  {
+   "from": "phase_operation_maintenance",
+   "to": "phase_rehabilitation_refurbishment",
+   "type": "PRECEDES",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.1 Figure E.1"
+   }
+  },
+  {
+   "from": "phase_rehabilitation_refurbishment",
+   "to": "phase_disposal",
+   "type": "PRECEDES",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.1 Figure E.1"
+   }
+  },
+  {
+   "from": "phase_asset_monitoring",
+   "to": "phase_operation_maintenance",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.6"
+   }
+  },
+  {
+   "from": "phase_asset_monitoring",
+   "to": "phase_rehabilitation_refurbishment",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.6"
+   }
+  },
+  {
+   "from": "term_preventive_maintenance",
+   "to": "phase_operation_maintenance",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.5.3"
+   }
+  },
+  {
+   "from": "term_predictive_maintenance",
+   "to": "phase_operation_maintenance",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.5.3"
+   }
+  },
+  {
+   "from": "term_corrective_maintenance",
+   "to": "phase_operation_maintenance",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.5.3"
+   }
+  },
+  {
+   "from": "term_predictive_maintenance",
+   "to": "term_condition_monitoring_system",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.5.3"
+   }
+  },
+  {
+   "from": "term_maintenance_plan",
+   "to": "phase_operation_maintenance",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.5.3"
+   }
+  },
+  {
+   "from": "term_maintenance_plan",
+   "to": "term_asset_management_plan",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.5.3"
+   }
+  },
+  {
+   "from": "phase_asset_creation",
+   "to": "term_financial_asset_register",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.4"
+   }
+  },
+  {
+   "from": "phase_asset_creation",
+   "to": "term_non_financial_asset_register",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.4"
+   }
+  },
+  {
+   "from": "phase_concept",
+   "to": "term_total_cost_of_ownership",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.2"
+   }
+  },
+  {
+   "from": "phase_planning_design",
+   "to": "term_total_cost_of_ownership",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "E.3"
+   }
+  },
+  {
+   "from": "term_scada_system",
+   "to": "term_non_financial_asset_register",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "7.3"
+   }
+  },
+  {
+   "from": "trigger_maintenance_work",
+   "to": "term_capital_investment_planning",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.2"
+   }
+  },
+  {
+   "from": "term_capital_investment_planning",
+   "to": "term_asset_condition_duty",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "8.2"
+   }
+  },
+  {
+   "from": "term_gis_system",
+   "to": "term_asset_register",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO/TS 55010:2019",
+    "clause": "7.1"
+   }
+  },
+  {
+   "from": "purpose_asset_register",
+   "to": "term_asset_register",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 3.7 and ISO 19650-1 5.1"
+   }
+  },
+  {
+   "from": "term_total_cost_of_ownership",
+   "to": "term_whole_life_cost",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 4.1, E.2 and ISO 19650-3 A.4.5"
+   }
+  },
+  {
+   "from": "term_remaining_useful_life",
+   "to": "term_remaining_useful_life_prediction",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 D.7 and ISO 19650-3 A.2, 5.2.2 Note 1"
+   }
+  },
+  {
+   "from": "term_remaining_useful_life",
+   "to": "term_condition_observation",
+   "type": "DERIVED_FROM",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 D.7 (condition deterioration profiles) and ISO 19650-3 A.4.2, A.5"
+   }
+  },
+  {
+   "from": "term_predictive_maintenance",
+   "to": "term_pdm_model",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 E.5.3, E.6 and ISO 19650-3 A.2-A.5"
+   }
+  },
+  {
+   "from": "phase_asset_monitoring",
+   "to": "term_condition_observation",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 E.6 and ISO 19650-3 A.4.2, A.5"
+   }
+  },
+  {
+   "from": "phase_asset_monitoring",
+   "to": "term_maintenance_alert",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 E.6 (propose intervention before a functional failure occurs) and ISO 19650-3 5.1.5, A.3"
+   }
+  },
+  {
+   "from": "phase_operation_maintenance",
+   "to": "purpose_maintenance_repair",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 E.5 and ISO 19650-1 5.1"
+   }
+  },
+  {
+   "from": "phase_disposal",
+   "to": "trigger_end_of_life_works",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 E.8 and ISO 19650-3 A.3"
+   }
+  },
+  {
+   "from": "term_maintenance_plan",
+   "to": "trigger_maintenance_work",
+   "type": "RESULTS_IN",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 E.5.3 and ISO 19650-3 A.3"
+   }
+  },
+  {
+   "from": "term_work_planning_scheduling_system",
+   "to": "term_non_financial_asset_register",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 7.3 (maintenance management systems) and ISO 19650-3 A.5"
+   }
+  },
+  {
+   "from": "term_performance_reporting",
+   "to": "term_performance_reporting_system",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 9.3 and ISO 19650-3 A.5"
+   }
+  },
+  {
+   "from": "term_performance_measurement",
+   "to": "term_health_indicator",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 9.2 h) and ISO 19650-3 A.2, A.3, A.4"
+   }
+  },
+  {
+   "from": "term_performance_measurement",
+   "to": "trigger_performance_evaluation",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 9.2 and ISO 19650-3 A.3"
+   }
+  },
+  {
+   "from": "term_fair_value",
+   "to": "term_asset_condition_duty",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 9.2 h) (relationship between the asset condition and its current value) and ISO 19650-3 5.1.3, A.4.4"
+   }
+  },
+  {
+   "from": "enabler_leadership",
+   "to": "purpose_risk_management",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 5.2.2 h) and ISO 19650-1 5.1"
+   }
+  },
+  {
+   "from": "term_data_management",
+   "to": "term_metadata",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO/TS 55010:2019 6.3 (properly maintained metadata) and ISO 19650-5 3.3"
+   }
+  }
+ ],
+ "cross_references": {
+  "iso_55000_series": "ISO 55000 (terms basis, normative reference), ISO 55001:2014 (requirements: 4.2 recording financial and non-financial information; 6.2.2 asset management plans; 7.5 d) terminology alignment), ISO 55002:2018 (Annex A value, Annex C SAMP, Annex E risk, Annex F alignment).",
+  "iso_19650_bridge": "The USE-CASE EXTENSION edges join this file to the PdM spine: predictive maintenance (E.5.3) to the PdM analytical model, remaining useful life (D.7) to the RUL prediction and condition observations, asset monitoring (E.6) to condition observations and maintenance alerts, disposal (E.8) to end-of-life works, and the financial register chain to the ISO 19650-3 operational systems (SCADA, work planning, GIS, performance reporting)."
+ }
+}

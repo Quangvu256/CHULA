@@ -1,0 +1,702 @@
+{
+ "standard": "ISO 55011:2024",
+ "source_document": "data/ISO_55011_2024(en).pdf (ISO 55011:2024(en), First edition 2024-11, Asset management - Guidance for the development of public policy to enable asset management, 34 pages)",
+ "role_in_kg": "public_policy_enabling_layer: the outermost context ring of the graph. Describes how governments create the enabling environment (public policy instruments, participants, good practices) within which asset-owning organizations adopt the asset management that ISO 55000/55001/55002 define, ISO/TS 55010 finances, and the ISO 19650 PdM spine operationalizes.",
+ "depends_on": [
+  "iso19650-1_extraction_v4.json",
+  "iso19650-2_extraction_v1.json",
+  "iso19650-3_extraction_v1.2.json",
+  "iso19650-4_extraction_v1.json",
+  "iso19650-5_extraction_v1.json",
+  "iso19650-6_extraction_v2.json",
+  "iso-ts-55010_extraction_v1.json",
+  "iso-55000_extraction_v1.json"
+ ],
+ "extraction_notes": {
+  "registry_scope": "Reconciliation registry is the union of the eight preceding extraction files at extraction time. All 13 clause-3 terms are new nodes (clause 3 states the ISO 55000 terms apply, and this file's own terms do not collide with any existing node name); reused concepts (asset management, competence, objective, process, organization, policy, alignment, capital investment planning, level of service, stakeholder, appointing party) receive relationships only.",
+  "id_convention": "Keeps term_<snake_case>; reuses ISO 19650-1's function_ prefix (label Function) for the four enabling-environment participant types, and adds practice_<snake_case> for the Clause 6.2 good practices, in the same spirit as the existing specialized prefixes. No new labels, no new relationship types.",
+  "name_conventions": "Participant names carry an '(enabling environment)' qualifier where the bare word is generic (government participant, non-government participant, society). 'governance' (3.3) is a distinct referent from ISO/TS 55010's governance enabler node (a system of directing and controlling vs an alignment enabler) - joined by CORRESPONDS_TO, no fork needed since names differ.",
+  "bsdd_mapping": "All 13 clause-3 terms were checked against the buildingSMART Data Dictionary via api.bsdd.buildingsmart.org TextSearch (2026-08-04): ZERO genuine matches - public-policy vocabulary is absent from the construction-domain bSDD dictionaries. This file therefore carries no bsdd_* properties; absence means checked-no-genuine-match, per the convention in backend/gates/verify_bsdd.py.",
+  "structure_notes": "Figure 1 (4.1, key elements and relationships in the enabling environment) is captured as the CONTRIBUTES_TO/ESTABLISHES/ENABLES edges among participants, instruments and asset management. Table 1 (6.2.2, recommended practices for effective public investment) is summarized in the term_public_investment and practice_participant_relationships notes. Annexes A-E are informative (participant catalogues, good practices per instrument, example actions, case studies) and are summarized in node notes, not nodeified - the 5.2.1 instrument categories and 5.2.2 instrument forms are enumerations kept in the term_public_policy_instrument note, following the Part 6 Annex B precedent for delegated code tables. The Introduction benefit lists (0.5) are context only.",
+  "merge_note": "File name does not match the iso19650-* union glob; it is listed explicitly in the union tooling (validate_union, check_pdm_paths, export_neo4j, serve, gen_pdm_spec, evaluate_kg, verify_bsdd) and must always be loaded together with the other eight files.",
+  "verbatim_convention": "All definitions in this file are verbatim ISO text: clause-3 terms verbatim per the E2 convention (inline cross-reference numbers elided), and body/annex concept definitions are verbatim sentences quoted from the cited clause, with non-contiguous quotes joined by ' [...] '. Machine-enforced by backend/gates/verify_verbatim.py."
+ },
+ "nodes": [
+  {
+   "id": "term_capacity_building",
+   "label": "Concept",
+   "name": "capacity building",
+   "definition": "provision of relevant competencies, skills, knowledge, experience, and the associated funding, technology and other resources that enable individuals or organizations to accomplish new tasks to achieve asset management objectives",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.1"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.1",
+   "note": "[SOURCE: Federation of Canadian Municipalities, 2019, p.19, modified]."
+  },
+  {
+   "id": "term_enabling_environment",
+   "label": "Concept",
+   "name": "enabling environment for asset management",
+   "definition": "set of circumstances, objects or conditions, external to organizations managing the assets, that positively affect their adoption of asset management and the achievement of government objectives",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.2"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.2",
+   "note": "Note 2 to entry: commonly agreed aspects typically fit into five categories: economic, political, administrative, socio-cultural and resources. Note 3: public policies are developed and issued by different levels of government, each of which can have its own enabling environment. Note 4: this document focuses on the conditions in the external context created by non-government participants and the strategic directions of government participants which can be modified by public policies. [SOURCE: Amjad et al. 2015; Ojomo 2016, modified]. Formed from the interactions of government and non-government participants, conditions, and the legal, regulatory and policy frameworks (4.1); dynamic, changing constantly in response to the actions of its participants."
+  },
+  {
+   "id": "term_governance",
+   "label": "Concept",
+   "name": "governance",
+   "definition": "system of directing and controlling",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.3"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.3",
+   "note": "[SOURCE: ISO/IEC TR 29110-5-3:2018, 3.12]."
+  },
+  {
+   "id": "term_government",
+   "label": "Concept",
+   "name": "government",
+   "definition": "act of, or responsibility for, managing, governing and promoting the development of a jurisdiction, including responsibilities for the definition, design, development and institutionalization of public policies expressed in the provision of products and services to its stakeholders",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.4"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.4",
+   "note": "Note 1 to entry: 'government' can refer to the act of governing as well as to the institutions responsible for governing. Note 2: the term refers to all levels of government. Note 3: states can have several levels or spheres of government, such as local or municipal, regional or state, and national or federal."
+  },
+  {
+   "id": "term_local_government",
+   "label": "Concept",
+   "name": "local government",
+   "definition": "organization that is responsible for the governance of a local area and for providing services, etc.",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.5"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.5",
+   "note": "Note 1 to entry: local government can be a level of subnational government in non-federal countries and a sub-regional level of government in federal countries."
+  },
+  {
+   "id": "term_public_investment",
+   "label": "Concept",
+   "name": "public investment",
+   "definition": "investment spending by the government on physical infrastructure (e.g. roads, public buildings) and intangible infrastructure (e.g. human capital development, innovation, research and development) with a long-term productive life",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.6"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.6",
+   "note": "Note 1 to entry: statistics generally capture direct public investment as measured by gross fixed capital formation. Table 1 (6.2.2) gives recommended practices for effective public investment: coordinated investment between levels of government, increased capacity and consistency of public policies, and a sound investment framework including a future-focused budgetary framework that considers the total cost of assets over their complete life cycles, including operating costs."
+  },
+  {
+   "id": "term_public_policy",
+   "label": "Concept",
+   "name": "public policy",
+   "definition": "principled guide to a course of actions taken by the government as a response to a perceived need, formulated by a specific political process, and adopted, implemented and enforced by a specific public agency that expects results",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.7"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.7",
+   "note": "Note 1 to entry: public policy is different from the term 'policy' used in ISO 55000 - there, top management issues policies that provide intention and direction of the organization; here, government organizations issue public policies that provide a 'principled guide' to be followed by organizations within their jurisdictions."
+  },
+  {
+   "id": "term_public_policy_instrument",
+   "label": "Concept",
+   "name": "public policy instrument",
+   "definition": "intervention made by the government which is intended to support the achievement of public policy objectives",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.8"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "terms_clause",
+   "term_no": "3.8",
+   "note": "5.2.1 identifies instrument categories a)-g): promotion and facilitation (strategic planning, legal/regulatory framework); governance models; governance policies (tax, investment, trade, competition); sector-specific rules and standards; human capital development (education, training, capacity building, research partnerships); financial and economic instruments (including alignment of financial and non-financial information, see ISO/TS 55010); success measurement (performance metrics, benchmarking, public communication). 5.2.2 forms, as a hierarchy of policy authorities: laws, national guidance or executive directives, regulations, policies, guidelines and manuals. Interventions range from mandatory to voluntary to incentive-based (5.1)."
+  },
+  {
+   "id": "term_public_policy_maker",
+   "label": "Concept",
+   "name": "public policy-maker",
+   "definition": "representative of the government who is responsible for developing, administering or influencing public policies",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.9"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.9",
+   "note": "Note 1 to entry: a public policy-maker is not necessarily responsible for implementing public policies. Note 2: can include regulators, elected officials and their delegates, and public administrators."
+  },
+  {
+   "id": "term_public_policy_objectives",
+   "label": "Concept",
+   "name": "public policy objectives",
+   "definition": "result to be achieved by a public policy",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.10"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.10"
+  },
+  {
+   "id": "term_public_policy_process",
+   "label": "Concept",
+   "name": "public policy process",
+   "definition": "set of interrelated or interacting activities through which a public policy is formed, implemented and evaluated",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.11"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.11"
+  },
+  {
+   "id": "term_service_delivery",
+   "label": "Concept",
+   "name": "service delivery",
+   "definition": "act of providing a service to customers",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.12"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.12"
+  },
+  {
+   "id": "term_subnational_government",
+   "label": "Concept",
+   "name": "subnational government",
+   "definition": "level of government below national (regional and local) governments",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.13"
+   },
+   "pdm_relevance": "low",
+   "source_type": "terms_clause",
+   "term_no": "3.13",
+   "note": "Note 1 to entry: 'regional government' or 'region' refers to the level of government immediately below the national level in federal countries (federated states) or in unitary countries with a specific regional level."
+  },
+  {
+   "id": "function_government_participant",
+   "label": "Function",
+   "name": "government participant (enabling environment)",
+   "definition": "Government organizations and officials, at all levels of government and regulatory agencies, are the most significant participants in developing and improving public policies. They generally have the authority to develop and improve public policy, for example, through the creation of formal rules, delegations, mandates, inducements and capacity building that directly affect the outcomes of the enabling environment for asset management.",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "4.2.1"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause",
+   "note": "The most significant participants in developing and improving public policies, but they do not necessarily have the asset management expertise that exists in asset owning or managing organizations. Annex A types: legislative agencies (issue laws), executive policy offices (issue executive guidance), administrative agencies (implement laws, issue regulations), intergovernmental associations (coordinate policy proposals and training)."
+  },
+  {
+   "id": "function_non_government_participant",
+   "label": "Function",
+   "name": "non-government participant (enabling environment)",
+   "definition": "Non-government participants in the enabling environment can promote asset management through public policy by engaging with government agencies and officials in the development of their public policy instruments. Non-government participants can include asset owners, asset management advocacy groups, industry organizations and individuals that support asset owners or operators, professional associations, academia, the media, and other potential institutions and organizations (including, but not limited to, lenders, investors and insurers).",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "4.2.2"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause",
+   "note": "Annex B types: asset management advocacy groups, professional associations, individual asset-owning organizations, organizations and individuals supporting asset owners or operators, academia, media, and industry and manufacturers (who develop the life cycle management properties used in asset management planning). Non-government standards bodies issue voluntary standards that can inform public policy."
+  },
+  {
+   "id": "function_asset_owner_operator",
+   "label": "Function",
+   "name": "asset owner, operator or custodian",
+   "definition": "Organizations that own, operate or are otherwise responsible for assets are the target audiences of other International Standards on asset management (e.g. ISO 55001, ISO 55002, ISO/TS 55010) and the ones to which those asset management requirements are addressed. Asset owners and operators are found among both government and non-government participants in the enabling environment for asset management.",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "4.2.3.1"
+   },
+   "pdm_relevance": "medium",
+   "source_type": "body_clause",
+   "note": "Creates organizational policies and support tools unique to its own organizational context: organization-specific strategic plans, asset management policies as required by ISO 55001, and asset management training programmes."
+  },
+  {
+   "id": "function_society",
+   "label": "Function",
+   "name": "society (enabling environment)",
+   "definition": "Society represents the entire population of a jurisdiction and is ultimately impacted by good or poor asset management practices. Members of society are uniquely positioned as the recipients of services and products enabled through the application of asset management by asset owners and service providers.",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "4.2.3.2"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause",
+   "note": "Members of society can seek to influence other participants in the development of public policy instruments; government should communicate the need for expenditure on asset management and gain societal acceptance by explaining the value obtained; conversely, society has a role in communicating to the government the need for expenditure on asset management (6.2.4)."
+  },
+  {
+   "id": "practice_expertise_in_policy_making",
+   "label": "Concept",
+   "name": "bringing asset management expertise into policy-making",
+   "definition": "Good practices in government policy-making processes engage participants impacted by the prospective policy elements and give them an opportunity to comment and possibly affect the policies being developed. [...] Bringing asset management expertise and the holistic, integrative approach of asset management into applicable policy-making processes can make a significant contribution to the likelihood that the policies will achieve their intended outcomes",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "6.2.1"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause",
+   "note": "Examples from advocacy groups and professional associations: establishing periodic contacts with officials involved in policy-making; being aware of upcoming policy-making activities that impact asset management and providing input; showcasing asset management activities of key policy-makers in conferences and publications."
+  },
+  {
+   "id": "practice_participant_relationships",
+   "label": "Concept",
+   "name": "defining participant actions and relationships",
+   "definition": "To advance asset management for specific public purposes, the participants in the enabling environment should be aware of those purposes and know how to work together to achieve them. For example, effective public and private investments in assets and infrastructure, within a country or other political jurisdiction, require the necessary relationships among participants so that actions can be appropriately understood, coordinated and executed.",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "6.2.2"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause",
+   "note": "Table 1 outlines a framework for effective public investment (coordinated investment, increased capacity and consistency, sound investment framework); Annexes A and B present specific government and non-government participant actions; Annex D presents example actions and considerations by government in the development and application of public policy instruments."
+  },
+  {
+   "id": "practice_instrument_mix",
+   "label": "Concept",
+   "name": "leveraging a range of public policy instruments",
+   "definition": "A good practice also involves the strategic development, and sometimes concurrent coordination, of the public policy instruments to enable asset management. In almost every area of policy-making, there are a range of policy instruments that can be used to achieve desired policy outcomes. It is common that several policy instruments are used in conjunction with each other, depending on the complexity of the issue to be addressed.",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "6.2.3"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause",
+   "note": "Example policy mix: a government mandates conformity with an asset management standard such as ISO 55001 via regulation while also allowing multi-year funding models to support better long-term planning as part of asset management."
+  },
+  {
+   "id": "practice_sustain_enabling_environment",
+   "label": "Concept",
+   "name": "sustaining or improving the enabling environment",
+   "definition": "Good practice for improving the enabling environment for asset management is not limited to the government participants in the enabling environment [...] Good practices to achieve this result also include sharing expertise and strengthening the capabilities and credibility of the non-government participants in the enabling environment.",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "6.2.4"
+   },
+   "pdm_relevance": "low",
+   "source_type": "body_clause",
+   "note": "Standards bodies, academia and professional associations can offer global best practices; society communicates to government the need for improvement, as it inherits the outputs of public policy as services, products or programmes."
+  }
+ ],
+ "relationships": [
+  {
+   "from": "term_capacity_building",
+   "to": "term_competence",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.1"
+   }
+  },
+  {
+   "from": "term_capacity_building",
+   "to": "term_asset_management",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.1"
+   }
+  },
+  {
+   "from": "term_enabling_environment",
+   "to": "term_government",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.2"
+   }
+  },
+  {
+   "from": "term_enabling_environment",
+   "to": "term_asset_management",
+   "type": "ENABLES",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.2"
+   }
+  },
+  {
+   "from": "term_government",
+   "to": "term_governance",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.4"
+   }
+  },
+  {
+   "from": "term_government",
+   "to": "term_public_policy",
+   "type": "ESTABLISHES",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.4; 3.7"
+   }
+  },
+  {
+   "from": "term_local_government",
+   "to": "term_organization",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.5"
+   }
+  },
+  {
+   "from": "term_local_government",
+   "to": "term_governance",
+   "type": "RESPONSIBLE_FOR",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.5"
+   }
+  },
+  {
+   "from": "term_local_government",
+   "to": "term_subnational_government",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.5 Note 1"
+   }
+  },
+  {
+   "from": "term_subnational_government",
+   "to": "term_government",
+   "type": "PART_OF",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.13"
+   }
+  },
+  {
+   "from": "term_public_investment",
+   "to": "term_government",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.6"
+   }
+  },
+  {
+   "from": "term_public_policy",
+   "to": "term_policy",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.7 Note 1"
+   }
+  },
+  {
+   "from": "term_government",
+   "to": "term_public_policy_instrument",
+   "type": "ESTABLISHES",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.8; 5.2.2"
+   }
+  },
+  {
+   "from": "term_public_policy_instrument",
+   "to": "term_public_policy_objectives",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.8"
+   }
+  },
+  {
+   "from": "term_public_policy_maker",
+   "to": "term_public_policy",
+   "type": "RESPONSIBLE_FOR",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.9"
+   }
+  },
+  {
+   "from": "term_public_policy_objectives",
+   "to": "term_objective",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.10"
+   }
+  },
+  {
+   "from": "term_public_policy_process",
+   "to": "term_process",
+   "type": "SUBTYPE_OF",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.11"
+   }
+  },
+  {
+   "from": "term_public_policy_process",
+   "to": "term_public_policy",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.11"
+   }
+  },
+  {
+   "from": "function_government_participant",
+   "to": "term_enabling_environment",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "4.2.1"
+   }
+  },
+  {
+   "from": "function_non_government_participant",
+   "to": "term_enabling_environment",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "4.2.2"
+   }
+  },
+  {
+   "from": "function_asset_owner_operator",
+   "to": "term_enabling_environment",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "4.2.3.1"
+   }
+  },
+  {
+   "from": "function_society",
+   "to": "term_enabling_environment",
+   "type": "CONTRIBUTES_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "4.2.3.2"
+   }
+  },
+  {
+   "from": "function_government_participant",
+   "to": "term_public_policy_instrument",
+   "type": "ESTABLISHES",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "4.2.1; A.1.1"
+   }
+  },
+  {
+   "from": "term_public_policy_maker",
+   "to": "function_government_participant",
+   "type": "MEMBER_OF",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "3.9 Note 2; 4.2.1"
+   }
+  },
+  {
+   "from": "function_asset_owner_operator",
+   "to": "term_asset_management",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "4.2.3.1"
+   }
+  },
+  {
+   "from": "function_asset_owner_operator",
+   "to": "term_asset_management_policy",
+   "type": "ESTABLISHES",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "4.2.3.1"
+   }
+  },
+  {
+   "from": "function_society",
+   "to": "term_service_delivery",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "4.2.3.2"
+   }
+  },
+  {
+   "from": "term_public_policy_instrument",
+   "to": "term_asset_management",
+   "type": "ENABLES",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "5.1"
+   }
+  },
+  {
+   "from": "term_public_policy_instrument",
+   "to": "term_capacity_building",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "5.2.1 e)"
+   }
+  },
+  {
+   "from": "term_public_policy_instrument",
+   "to": "term_alignment",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "5.2.1 f) 3)"
+   }
+  },
+  {
+   "from": "practice_expertise_in_policy_making",
+   "to": "term_public_policy_process",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "6.2.1"
+   }
+  },
+  {
+   "from": "practice_participant_relationships",
+   "to": "term_enabling_environment",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "6.2.2"
+   }
+  },
+  {
+   "from": "practice_participant_relationships",
+   "to": "term_public_investment",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "6.2.2 Table 1"
+   }
+  },
+  {
+   "from": "practice_instrument_mix",
+   "to": "term_public_policy_instrument",
+   "type": "APPLIES_TO",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "6.2.3"
+   }
+  },
+  {
+   "from": "practice_sustain_enabling_environment",
+   "to": "term_enabling_environment",
+   "type": "SUPPORTS",
+   "provenance": {
+    "standard": "ISO 55011:2024",
+    "clause": "6.2.4"
+   }
+  },
+  {
+   "from": "term_governance",
+   "to": "enabler_governance",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55011:2024 3.3 and ISO/TS 55010:2019 5.2.3"
+   }
+  },
+  {
+   "from": "term_service_delivery",
+   "to": "term_level_of_service",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55011:2024 3.12 and ISO 55000:2024 3.2.7"
+   }
+  },
+  {
+   "from": "function_asset_owner_operator",
+   "to": "term_appointing_party",
+   "type": "CORRESPONDS_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55011:2024 4.2.3.1 and ISO 19650-1 3.2.4"
+   }
+  },
+  {
+   "from": "function_society",
+   "to": "term_stakeholder",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55011:2024 4.2.3.2 and ISO 55000:2024 3.3.2"
+   }
+  },
+  {
+   "from": "term_public_investment",
+   "to": "term_capital_investment_planning",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55011:2024 6.2.2 Table 1 and ISO/TS 55010:2019 8.2"
+   }
+  },
+  {
+   "from": "term_public_policy_instrument",
+   "to": "term_life_cycle_management",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55011:2024 5.2.2 d) and ISO 55000:2024 3.1.4"
+   }
+  },
+  {
+   "from": "term_public_policy_instrument",
+   "to": "term_performance_measurement",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55011:2024 5.2.1 g) and ISO/TS 55010:2019 9.2"
+   }
+  },
+  {
+   "from": "practice_instrument_mix",
+   "to": "term_asset_management_system",
+   "type": "LINKED_TO",
+   "provenance": {
+    "standard": "USE-CASE EXTENSION",
+    "clause": "mapped from ISO 55011:2024 6.2.3 and ISO 55000:2024 3.3.5"
+   }
+  }
+ ],
+ "cross_references": {
+  "iso_55000_family": "Normative reference: ISO 55000 (terms). 0.2 of ISO 55000:2024 positions this document as the public-policy member of the family; 5.2.1 f) 3) cites ISO/TS 55010 for alignment of financial and non-financial information; 6.2.3's example instrument mandates conformity with ISO 55001.",
+  "pdm_tie": "Deliberately thin: this layer enables rather than performs predictive maintenance. Its value to the use case is provenance for WHY an asset owner adopts the asset management system (public policy instruments - mandates, funding conditioned on asset management competence, multi-year funding models) that the PdM spine presupposes."
+ }
+}

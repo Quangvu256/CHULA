@@ -1,0 +1,27 @@
+services:
+  # Web UI: IFC readiness checker + requirements explainer + RDF graph explorer.
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - SPARQL_ENDPOINT=${SPARQL_ENDPOINT:-http://fuseki:3030/ds/query}
+      - FUSEKI_SERVER=${FUSEKI_SERVER:-http://fuseki:3030}
+    restart: unless-stopped
+    depends_on:
+      - fuseki
+
+  # W3C RDF Triple Store & SPARQL Endpoint (Apache Jena Fuseki)
+  fuseki:
+    image: stain/jena-fuseki
+    ports:
+      - "3030:3030"
+    environment:
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+    volumes:
+      - fuseki_data:/fuseki
+      - ./data/generated:/fuseki/extra:ro
+    restart: unless-stopped
+
+volumes:
+  fuseki_data:
