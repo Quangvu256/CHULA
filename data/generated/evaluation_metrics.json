@@ -1,23 +1,23 @@
 {
   "E1_structural_pass": true,
-  "nodes": 388,
-  "edges": 1094,
-  "E2_terms_total": 62,
-  "E2_terms_verbatim": 61,
-  "E2_terms_near": 1,
-  "E2_terms_failed": 0,
-  "E3_provenances_checked": 1486,
-  "E3_unresolved": 0,
+  "nodes": 618,
+  "edges": 1535,
+  "E2_terms_total": 182,
+  "E2_terms_verbatim": 0,
+  "E2_terms_near": 0,
+  "E2_terms_failed": 182,
+  "E3_provenances_checked": 2160,
+  "E3_unresolved": 1535,
   "E4_traversability_pass": true,
   "E4_spine": "16/16",
   "E4_high_pdm_reachable": "196/196",
-  "E5_term_coverage": "67/67",
+  "E5_term_coverage": "0/0",
   "E5_by_part": {
-    "ISO 19650-1": "34/34",
-    "ISO 19650-2": "7/7",
-    "ISO 19650-3": "2/2",
-    "ISO 19650-4": "4/4",
-    "ISO 19650-5": "15/15",
-    "ISO 19650-6": "5/5"
+    "ISO 19650-1": "0/0",
+    "ISO 19650-2": "0/0",
+    "ISO 19650-3": "0/0",
+    "ISO 19650-4": "0/0",
+    "ISO 19650-5": "0/0",
+    "ISO 19650-6": "0/0"
   }
 }

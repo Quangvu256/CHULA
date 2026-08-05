@@ -10,6 +10,7 @@ export class Api {
   kg()     { return firstValueFrom(this.http.get<any>('/api/kg')); }
   spec()   { return firstValueFrom(this.http.get<any>('/api/spec')); }
   graph()  { return firstValueFrom(this.http.get<any>('/api/graph')); }
+  graphRdf() { return firstValueFrom(this.http.get<any>('/api/graph/rdf')); }
   method() { return firstValueFrom(this.http.get<any>('/api/method')); }
   check(file: File) {
     const headers = new HttpHeaders({ 'X-Filename': encodeURIComponent(file.name) });

@@ -1,12 +1,16 @@
 import { AfterViewInit, Component, ElementRef, HostListener, OnDestroy, ViewChild,
          effect, inject, signal } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Api } from '../../core/api';
 import { AppState } from '../../core/state';
 
-/** Canvas graph explorer. The physics is the deterministic settle engine ported
- *  verbatim from the previous UI: phyllotaxis seed (no Math.random), monotonic
- *  alpha decay rendered over ~90 frames, then a dead stop - so the same filter
- *  always produces the same picture and nothing wobbles at rest. */
+/** W3C RDF Triples (.ttl) Canvas Graph Explorer.
+ *  Visual layout matches the W3C RDF Triple Store diagram:
+ *  Subject (Circle Node with double rim) ---> [ Predicate Box ] ---> Object (Resource / Literal Node).
+ *  The physics engine is the deterministic settle engine ported verbatim from BIMLab_KG:
+ *  phyllotaxis seed (no Math.random), monotonic alpha decay rendered over ~90 frames, then a dead stop.
+ */
 const USECASE = ['term_condition_monitoring_system','term_scada_system','term_condition_observation',
  'term_asset_operational_data','term_pdm_model','term_health_indicator','term_anomaly_event',
  'term_remaining_useful_life_prediction','term_maintenance_alert','term_maintenance_work_order',
@@ -16,21 +20,31 @@ const USECASE = ['term_condition_monitoring_system','term_scada_system','term_co
  'term_level_of_risk','term_likelihood','term_consequence','term_risk_urgency_prioritization',
  'term_hs_register','term_hs_properties','term_foreseen_trigger_event','trigger_maintenance_work',
  'term_security_information_requirements','term_asset','term_aim'];
-const PCOL: Record<string, string> = {'ISO 19650-1':'--p1','ISO 19650-2':'--p2','ISO 19650-3':'--p3',
- 'ISO 19650-4':'--p4','ISO 19650-5':'--p5','ISO 19650-6':'--p6'};
-const SIM = {CH:-1500, LD:95, LS:0.09, GR:0.035, VD:0.62, VMAX:28};
+
+const PCOL: Record<string, string> = {
+  'ISO 19650-1': '--p1',
+  'ISO 19650-2': '--p2',
+  'ISO 19650-3': '--p3',
+  'ISO 19650-4': '--p4',
+  'ISO 19650-5': '--p5',
+  'ISO 19650-6': '--p6'
+};
+
+const SIM = { CH: -1500, LD: 120, LS: 0.09, GR: 0.035, VD: 0.62, VMAX: 28 };
 
 @Component({
   selector: 'graph-tab',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   template: `
   <div class="gbar">
-    <strong style="font-size:13px">View:</strong>
+    <strong style="font-size:13px; color: var(--acc)">W3C RDF Triple Store:</strong>
     <button class="b" [class.on]="view()==='usecase'" (click)="preset('usecase')">PdM use case</button>
     <button class="b" [class.on]="view()==='high'" (click)="preset('high')">High-PdM only</button>
     <button class="b" [class.on]="view()==='all'" (click)="preset('all')">Everything</button>
   </div>
   <div class="gbar">
-    <input type="search" placeholder="Search name or id&hellip;" [value]="q()"
+    <input type="search" placeholder="Search Subject, Predicate, or Object&hellip;" [value]="q()"
            (input)="q.set($any($event.target).value); rebuild(false)">
     <span>
       @for (p of partKeys; track p) {
@@ -60,29 +74,38 @@ const SIM = {CH:-1500, LD:95, LS:0.09, GR:0.035, VD:0.62, VMAX:28};
         <button class="pclose" (click)="hidePanel()" title="close">&#x2715;</button>
         <h3>{{n.name}}</h3>
         <div class="src"><span class="dot" [style.background]="'var('+(pcol[n.part]||'--mut')+')'"></span>
-          {{n.part}} &middot; {{n.label}} &middot; PdM {{n.pdm}} &middot; <code>{{n.id}}</code></div>
+          {{n.part}} &middot; {{n.label}} &middot; <code>{{n.id}}</code></div>
+        
+        <div class="k" style="color: #38bdf8">W3C RDF Turtle (.ttl)</div>
+        <div class="src" style="font-family: monospace; background: rgba(15,23,42,0.6); padding: 6px; border-radius: 4px; overflow-x: auto; color: #38bdf8">
+          iso:{{n.id}} a iso:{{n.label}} ;<br>
+          &nbsp;&nbsp;rdfs:label "{{n.name}}" ;<br>
+          &nbsp;&nbsp;iso:part "{{n.part}}" .
+        </div>
+
         <div class="row" style="margin-top:10px">
-          <button class="b" (click)="focusOn(n.id)">Show only this neighbourhood</button></div>
-        <div class="k">Definition</div><div>{{n.def}}</div>
+          <button class="b" (click)="focusOn(n.id)">Show only this neighbourhood</button>
+        </div>
+        <div class="k">Definition / RDF Literal</div><div>{{n.def}}</div>
         <div class="k">Provenance</div><div>{{n.std}} &mdash; clause {{n.cl}}</div>
         @if (n.note) {<div class="k">Note</div><div class="src" style="font-size:12px">{{n.note}}</div>}
-        <div class="k">Outgoing ({{outEdges().length}})</div>
+        <div class="k">Outgoing RDF Predicates (Subject &rarr; Predicate &rarr; Object) ({{outEdges().length}})</div>
         @for (e of outEdges(); track $index) {
           <div class="nb" (click)="jump(e.t)">
             <span class="dot" [style.background]="'var('+(pcol[nodeOf(e.t)?.part]||'--mut')+')'"></span>
-            &rarr; <b>{{e.type}}</b> {{nodeOf(e.t)?.name}}
+            &rarr; <b>[{{e.type}}]</b> {{nodeOf(e.t)?.name || e.t}}
             <div class="src">{{e.std}} {{e.cl}}</div></div>
         } @empty {<div class="src">none</div>}
-        <div class="k">Incoming ({{inEdges().length}})</div>
+        <div class="k">Incoming RDF Predicates (Subject &rarr; Predicate &rarr; Object) ({{inEdges().length}})</div>
         @for (e of inEdges(); track $index) {
           <div class="nb" (click)="jump(e.s)">
             <span class="dot" [style.background]="'var('+(pcol[nodeOf(e.s)?.part]||'--mut')+')'"></span>
-            &larr; <b>{{e.type}}</b> {{nodeOf(e.s)?.name}}
+            &larr; <b>[{{e.type}}]</b> {{nodeOf(e.s)?.name || e.s}}
             <div class="src">{{e.std}} {{e.cl}}</div></div>
         } @empty {<div class="src">none</div>}
       } @else if (!fs()) {
-        <p class="hint">Click a node to read its definition, its clause, and its neighbours.
-        Drag to move a node, scroll to zoom, drag the background to pan.</p>
+        <p class="hint">Click a Subject or Object node to read its W3C Turtle triples, Predicates, and Literals.
+        Drag to move a node, scroll to zoom, drag background to pan.</p>
       }
     </div>
   </div>
@@ -90,7 +113,8 @@ const SIM = {CH:-1500, LD:95, LS:0.09, GR:0.035, VD:0.62, VMAX:28};
     @for (p of partKeys; track p) {
       <span><span class="dot" [style.background]="'var('+pcol[p]+')'"></span>{{p}}</span>
     }
-    <span>node size = number of connections</span>
+    <span>node size = connections</span>
+    <span style="margin-left: auto; color: var(--acc)">Format: Subject &rarr; [Predicate Box] &rarr; Object (W3C RDF Triples)</span>
   </div>`,
 })
 export class GraphTab implements AfterViewInit, OnDestroy {
@@ -122,7 +146,6 @@ export class GraphTab implements AfterViewInit, OnDestroy {
   private ro?: ResizeObserver;
 
   constructor() {
-    // other tabs can ask us to focus a node
     effect(() => {
       const id = this.st.pendingFocus();
       if (id && this.G) { this.st.pendingFocus.set(null); this.showNode(id); }
@@ -131,33 +154,45 @@ export class GraphTab implements AfterViewInit, OnDestroy {
 
   ngAfterViewInit() {
     this.ctx = this.cvRef.nativeElement.getContext('2d')!;
-    // The component boots while its tab is display:none, so the first resize()
-    // sees a 0x0 rect and every subsequent clearRect() clears nothing - frames
-    // of the settle animation stack up as flicker. A ResizeObserver fires the
-    // moment the canvas actually gets layout (tab opened, window resized,
-    // fullscreen in/out) and re-establishes correct W/H before the next draw.
     this.ro = new ResizeObserver(() => {
       const r = this.cvRef.nativeElement.getBoundingClientRect();
-      if (r.width < 5 || r.height < 5) return;   // still hidden
+      if (r.width < 5 || r.height < 5) return;
       this.resize();
       if (!this.userMoved) this.fit(); else this.draw();
     });
     this.ro.observe(this.cvRef.nativeElement);
-    this.api.graph().then(g => {
-      this.G = g;
-      g.nodes.forEach((n: any) => this.byId[n.id] = n);
-      this.resize(); this.rebuild(true);
-      const id = this.st.pendingFocus();
-      if (id) { this.st.pendingFocus.set(null); this.showNode(id); }
-    });
+    this.loadGraphData();
     document.addEventListener('fullscreenchange', this.onFsChange);
     (document as any).addEventListener('webkitfullscreenchange', this.onFsChange);
   }
+
   ngOnDestroy() {
     this.ro?.disconnect();
     cancelAnimationFrame(this.anim);
     document.removeEventListener('fullscreenchange', this.onFsChange);
     (document as any).removeEventListener('webkitfullscreenchange', this.onFsChange);
+  }
+
+  private loadGraphData() {
+    const handleData = (g: any) => {
+      if (!g || !g.nodes || !g.nodes.length) return false;
+      this.G = g;
+      this.byId = {};
+      g.nodes.forEach((n: any) => this.byId[n.id] = n);
+      this.resize();
+      this.rebuild(true);
+      const id = this.st.pendingFocus();
+      if (id) { this.st.pendingFocus.set(null); this.showNode(id); }
+      return true;
+    };
+
+    this.api.graphRdf().then(g => {
+      if (!handleData(g)) {
+        this.api.graph().then(handleData);
+      }
+    }).catch(() => {
+      this.api.graph().then(handleData);
+    });
   }
 
   private cssv(v: string) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
@@ -210,7 +245,7 @@ export class GraphTab implements AfterViewInit, OnDestroy {
     this.E = this.G.edges.filter((e: any) => ids.has(e.s) && ids.has(e.t))
       .map((e: any) => ({ ...e, a: pos[e.s], b: pos[e.t] }));
     this.E.forEach(e => { e.a.deg++; e.b.deg++; });
-    this.count.set(`${this.N.length} nodes, ${this.E.length} relationships`
+    this.count.set(`${this.N.length} RDF nodes, ${this.E.length} triples`
       + (focusId ? ` (focused on ${this.byId[focusId].name})` : ''));
     if (relayout) { this.seed(); this.userMoved = false;
       this.selected.set(focusId ? this.N.find(n => n.id === focusId) || null : null);
@@ -251,7 +286,7 @@ export class GraphTab implements AfterViewInit, OnDestroy {
     let left = ticks;
     const per = Math.max(1, Math.ceil(ticks / 90));
     const go = () => {
-      if (this.W < 5) { this.anim = requestAnimationFrame(go); return; }  // tab hidden: wait
+      if (this.W < 5) { this.anim = requestAnimationFrame(go); return; }
       for (let k = 0; k < per && left > 0; k++) { this.tickOnce(); this.simAlpha *= decay; left--; }
       if (!this.userMoved) this.fit(); else this.draw();
       if (left > 0) this.anim = requestAnimationFrame(go);
@@ -276,42 +311,107 @@ export class GraphTab implements AfterViewInit, OnDestroy {
     this.ty = this.H / 2 - (y0 + y1) / 2 * this.scale;
     this.draw();
   }
-  private rad(n: any) { return 4 + Math.min(9, Math.sqrt(n.deg || 1) * 2.1); }
+  private rad(n: any) { return 5 + Math.min(9, Math.sqrt(n.deg || 1) * 2.1); }
   private draw() {
     const ctx = this.ctx; if (!ctx) return;
+    const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
     ctx.clearRect(0, 0, this.W, this.H);
     const sel = this.selected();
     const nbr = sel ? new Set(this.E.filter(e => e.s === sel.id || e.t === sel.id)
-                                    .flatMap(e => [e.s, e.t])) : null;
-    ctx.lineWidth = 1;
+      .flatMap(e => [e.s, e.t])) : null;
+
+    // 1. Draw RDF Directed Arrows & Predicate Label Boxes in the Center of Arrows
     for (const e of this.E) {
       const on = sel && (e.s === sel.id || e.t === sel.id);
+      const x1 = e.a.x * this.scale + this.tx;
+      const y1 = e.a.y * this.scale + this.ty;
+      const x2 = e.b.x * this.scale + this.tx;
+      const y2 = e.b.y * this.scale + this.ty;
+
+      ctx.lineWidth = on ? 2.2 : 1.2;
       ctx.strokeStyle = on ? this.cssv('--acc') : this.cssv('--edge');
-      ctx.globalAlpha = sel ? (on ? 0.95 : 0.13) : 0.5;
+      ctx.globalAlpha = sel ? (on ? 0.95 : 0.15) : 0.55;
+
+      // Arrow Edge Line
       ctx.beginPath();
-      ctx.moveTo(e.a.x * this.scale + this.tx, e.a.y * this.scale + this.ty);
-      ctx.lineTo(e.b.x * this.scale + this.tx, e.b.y * this.scale + this.ty); ctx.stroke();
+      ctx.moveTo(x1, y1);
+      ctx.lineTo(x2, y2);
+      ctx.stroke();
+
+      // Arrowhead pointing to Object Node
+      const nodeR = this.rad(e.b) * Math.min(1.5, Math.max(0.6, this.scale));
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      const arrowX = x2 - (nodeR + 4) * Math.cos(angle);
+      const arrowY = y2 - (nodeR + 4) * Math.sin(angle);
+      const headlen = 7;
+
+      ctx.beginPath();
+      ctx.moveTo(arrowX, arrowY);
+      ctx.lineTo(arrowX - headlen * Math.cos(angle - Math.PI / 6), arrowY - headlen * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(arrowX - headlen * Math.cos(angle + Math.PI / 6), arrowY - headlen * Math.sin(angle + Math.PI / 6));
+      ctx.fillStyle = on ? this.cssv('--acc') : this.cssv('--edge');
+      ctx.fill();
+
+      // RDF Predicate Label Box in the center of the arrow line
+      if (this.scale > 0.55 || on || e.a === sel || e.b === sel) {
+        const mx = (x1 + x2) / 2;
+        const my = (y1 + y2) / 2;
+        ctx.font = '10px ui-sans-serif, -apple-system, sans-serif';
+        const txt = e.type || 'predicate';
+        const tw = ctx.measureText(txt).width;
+        const pw = tw + 10;
+        const ph = 14;
+
+        ctx.globalAlpha = sel ? (on ? 1.0 : 0.2) : 0.92;
+        ctx.fillStyle = isDark ? '#1e1e23' : '#ffffff';
+        ctx.fillRect(mx - pw / 2, my - ph / 2, pw, ph);
+        ctx.strokeStyle = on ? this.cssv('--acc') : (isDark ? '#3a3a42' : '#c8c8c2');
+        ctx.lineWidth = 1;
+        ctx.strokeRect(mx - pw / 2, my - ph / 2, pw, ph);
+
+        ctx.fillStyle = on ? this.cssv('--acc') : (isDark ? '#e8e8e4' : '#1a1a18');
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(txt, mx, my);
+      }
     }
+
+    // 2. Draw Subject & Object Nodes with Double Rim (Matching RDF Triple Store Diagram)
     ctx.globalAlpha = 1;
     for (const a of this.N) {
       const X = a.x * this.scale + this.tx, Y = a.y * this.scale + this.ty;
       const r = this.rad(a) * Math.min(1.5, Math.max(0.6, this.scale));
       const dim = sel && nbr && !nbr.has(a.id);
       ctx.globalAlpha = dim ? 0.2 : 1;
+
+      // Outer Rim Ring (RDF Node Outline as shown in diagram)
+      ctx.beginPath();
+      ctx.arc(X, Y, r + 3.5, 0, 6.284);
+      ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.15)';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Main Circle Fill
       ctx.beginPath(); ctx.arc(X, Y, r, 0, 6.284);
-      ctx.fillStyle = this.cssv(PCOL[a.part] || '--mut'); ctx.fill();
+      ctx.fillStyle = a.kind === 'literal' ? '#f59e0b' : this.cssv(PCOL[a.part] || '--mut');
+      ctx.fill();
+
       if (a === sel || a === this.hover) {
-        ctx.lineWidth = 2.5; ctx.strokeStyle = this.cssv('--fg'); ctx.stroke(); ctx.lineWidth = 1; }
-      if (a.pin) { ctx.globalAlpha = dim ? 0.2 : 0.6; ctx.beginPath(); ctx.arc(X, Y, r + 3.5, 0, 6.284);
+        ctx.lineWidth = 2.5; ctx.strokeStyle = this.cssv('--acc'); ctx.stroke(); }
+      if (a.pin) {
+        ctx.globalAlpha = dim ? 0.2 : 0.6; ctx.beginPath(); ctx.arc(X, Y, r + 5.5, 0, 6.284);
         ctx.strokeStyle = this.cssv('--mut'); ctx.stroke(); }
-      if (!dim && (this.scale > 0.7 || a === sel || a === this.hover || this.N.length < 50)) {
-        ctx.globalAlpha = 0.93; ctx.fillStyle = this.cssv('--fg');
+
+      if (!dim && (this.scale > 0.6 || a === sel || a === this.hover || this.N.length < 50)) {
+        ctx.globalAlpha = 0.95; ctx.fillStyle = this.cssv('--fg');
         ctx.font = '11px ui-sans-serif,-apple-system,sans-serif'; ctx.textAlign = 'center';
+        ctx.textBaseline = 'alphabetic';
         const t = a.name.length > 30 ? a.name.slice(0, 29) + '...' : a.name;
-        ctx.fillText(t, X, Y - r - 4); }
+        ctx.fillText(t, X, Y - r - 6); }
     }
     ctx.globalAlpha = 1;
   }
+
   private at(ev: MouseEvent) {
     const r = this.cvRef.nativeElement.getBoundingClientRect();
     const mx = ev.clientX - r.left, my = ev.clientY - r.top;
@@ -383,7 +483,7 @@ export class GraphTab implements AfterViewInit, OnDestroy {
   }
   private onFsChange = () => {
     this.fs.set(this.isFS());
-    if (!this.isFS()) this.selected.set(this.selected()); // keep selection, panel reverts to sidebar
+    if (!this.isFS()) this.selected.set(this.selected());
     setTimeout(() => { this.resize(); this.fit(); }, 80);
   };
 }

@@ -5,8 +5,15 @@
 # they do not travel through git.
 1. ISO 19650 Series/
 iso19650-*_extraction*.json
+data/*_extraction*.json
+data/iso-*.json
 *.superseded
 data/generated/load_iso19650_kg.cypher
+
+# Python bytecode
+__pycache__/
+*.pyc
+
 
 # ---- OS / editor noise -----------------------------------------------------
 .DS_Store

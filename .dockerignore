@@ -17,3 +17,4 @@
 node_modules
 frontend/dist
 frontend/.angular
+**/node_modules

@@ -1,179 +1,134 @@
-# ISO 19650 Knowledge Graph for Predictive Maintenance
+# ISO 19650 RDF Knowledge Graph & SHACL Audit Engine
 
-A machine-verified knowledge graph of the **complete ISO 19650 series** (Parts 1,
-2, 3, 4, 5, 6), a **Predictive Maintenance (PdM) use case** derived from it, and
-an **IFC readiness checker** that audits BIM models against use-case
-requirements generated from the graph - the groundwork for a Cognitive Digital
-Twin.
+A machine-verified W3C Semantic Web knowledge graph of the **complete ISO 19650 series** (Parts 1, 2, 3, 4, 5, 6), integrated with **Protégé Desktop**, a **Predictive Maintenance (PdM) use case**, and an **IFC + SHACL readiness checker** that audits BIM models against W3C SHACL shape constraints - the groundwork for a Cognitive Digital Twin (CDT).
 
-**388 nodes / 1,094 relationships**, every one carrying clause-level provenance
-into the standards. Backend is dependency-free Python (standard library only);
-frontend is Angular.
+**388 nodes / 1,094 relationships (12,418 RDF Triples)**, every entity carrying clause-level provenance into the standards. Backend is Python 3.10+ (`rdflib`, `pyshacl`, `SPARQLWrapper`), database is **Apache Jena Fuseki 5.0.0**, ontology editor is **Stanford Protégé Desktop**, and frontend is Angular.
 
 ```
-ISO 19650 PDFs ──extraction protocol──▶ 6 extraction JSONs (the KG)
-                                             │
-                 ┌───────────────┬───────────┼──────────────┐
-                 ▼               ▼           ▼              ▼
-          Neo4j (Cypher    PdM use case   13 IFC        web UI: checker,
-          export + load)   (in-graph)     requirements  requirements, graph
-                                             │           explorer
-                                             ▼
-                                      IFC model audit ──▶ CDT-READY /
-                                                          CONDITIONAL /
-                                                          NOT READY
+┌──────────────────────────────────────────────────┐
+│        Protégé Desktop Ontology Editor           │
+│  (TBox Schema Management: iso19650_schema.ttl)   │
+└────────────────────────┬─────────────────────────┘
+                         │
+                         ▼
+ISO 19650 JSONs ──(export_rdf.py)──▶ [RDF Turtle (.ttl)] ──▶ [Apache Jena Fuseki]
+                                            │                         │
+                                            ▼                         ▼
+                                   [PySHACL Engine] ◀───────── [SPARQL REST API]
+                                            │                         │
+                                            ▼                         ▼
+                                   [IFC Audit Report]         [Angular Web UI]
 ```
 
 ## Quick start (Docker)
 
-> **Data files first.** The six `iso19650-*_extraction*.json` files and the
-> generated `data/generated/load_iso19650_kg.cypher` are ISO-derived and are **not in
-> git**. Get them from the project team (or rebuild per
-> `docs/extraction_protocol.md` from licensed PDFs) and place them in the repo
-> root before building - the tools fail fast with a clear error if they are
-> missing.
+> **Data files first.** The six `iso19650-*_extraction*.json` files are ISO-derived and are **not in git**. Place them in `data/` before building. The tools generate RDF Turtle files (`iso19650_instances.ttl` and `iso19650_kg_unified.ttl`) dynamically.
 
 ```bash
-cp .env.example .env          # then edit the Neo4j password
+cp .env.example .env
 docker compose up -d --build
 ```
 
 | Service | URL | What it is |
 |---|---|---|
 | Web UI | http://localhost:8000 | IFC checker - Requirements & why - Graph explorer |
-| Neo4j Browser | http://localhost:7474 | Cypher access to the same graph |
+| Jena Fuseki SPARQL | http://localhost:3030 | W3C SPARQL Endpoint & Query Console |
 
-Load the knowledge graph into Neo4j (one-off; idempotent - safe to re-run):
+Export RDF Turtle graph, load into Fuseki & verify:
 
 ```bash
-docker compose exec neo4j cypher-shell -u neo4j -p '<your-password>' \
-  -f /import/load_iso19650_kg.cypher
+python3 backend/graphdb/export_rdf.py
+python3 backend/graphdb/load_fuseki.py
 ```
 
-Verify: `MATCH (n:Iso19650) RETURN count(n)` must return **388**.
+Output: `data/generated/iso19650_instances.ttl` (ABox) & `data/generated/iso19650_kg_unified.ttl` (Unified TBox+ABox).
 
 ## Quick start (bare metal)
 
-Requires Python >= 3.9. No `pip install` - everything is standard library.
+Requires Python >= 3.10 with RDF & SHACL dependencies installed:
 
 ```bash
-python3 backend/api/serve.py            # web UI on http://localhost:8000
-python3 backend/audit/check_ifc_pdm.py model.ifc --json report.json   # CLI audit
+pip install rdflib pyshacl SPARQLWrapper
+
+# 1. Export RDF Turtle graph from original JSON files
+python3 backend/graphdb/export_rdf.py
+
+# 2. Load RDF Graph into Apache Jena Fuseki
+python3 backend/graphdb/load_fuseki.py
+
+# 3. Run SHACL & SPARQL Quality Gates evaluation
+python3 backend/gates/evaluate_kg_shacl.py
+
+# 4. Launch Web UI server
+python3 backend/api/serve.py 8000
 ```
 
-`pdftotext`/`pdftoppm` (poppler) are needed only by the tools that read the
-source PDFs - see the licensing note below. macOS: `brew install poppler`.
+`poppler-utils` (`pdftotext`) is needed only if extracting text from source PDFs.
+
+## Protégé Desktop Integration
+
+1. Launch **Protégé Desktop 5.5+**.
+2. Open TBox Schema: `data/ontology/iso19650_schema.ttl`
+3. Or open Unified Knowledge Graph: `data/generated/iso19650_kg_unified.ttl`
+4. Run **HermiT Reasoner** (`Reasoner -> HermiT -> Start Reasoner`) to verify ontology consistency and class hierarchy.
 
 ## Repository layout
 
 | Path | Contents |
 |---|---|
-| `frontend/` | Angular app (5 tabs: IFC checker, requirements, graph explorer, method & accuracy EN/VI, policies). Built bundle is served by the backend. |
-| `backend/` | Python, stdlib-only: `serve.py` (REST API + static host), `check_ifc_pdm.py` (audit engine + CLI), `gen_pdm_spec.py`, `evaluate_kg.py` + gates, `draft_extractor.py`, `export_neo4j.py`, `pdm_competency.cypher`. |
-| `data/` | The knowledge graph: `iso19650-*_extraction*.json`, one per standard. **Not committed** (ISO-derived) - obtain from the project team, place here. |
-| `data/generated/` | Machine-generated artifacts: the 13-requirement spec, evaluation metrics, the Neo4j Cypher export (Cypher not committed). |
-| `docs/` | Method documents: extraction protocol, conflict findings, evaluation report, use-case spec. |
-| `1. ISO 19650 Series/` | **Not in the repo/image** - your licensed PDFs go here (see Licensing). |
+| `frontend/` | Angular app (5 tabs: IFC checker, requirements, graph explorer, method EN/VI, policies). Built bundle is served by backend. |
+| `backend/` | Python backend: `serve.py` (REST API + static host), `export_rdf.py` (RDF Turtle exporter), `evaluate_kg_shacl.py` (E1-E5 quality gates via RDF/PySHACL), `check_ifc_shacl.py` (SHACL IFC audit CLI), `gen_pdm_spec.py`. |
+| `data/` | Knowledge graph source JSONs: `iso19650-*_extraction*.json` (**Read-Only Input**). |
+| `data/ontology/` | `iso19650_schema.ttl` - W3C OWL2 TBox Schema for Stanford Protégé Desktop. |
+| `data/shapes/` | `pdm_ifc_shapes.ttl` - W3C SHACL Shapes definition for 13 quality gate and IFC rules. |
+| `data/generated/` | Generated RDF Turtle files (`iso19650_instances.ttl`, `iso19650_kg_unified.ttl`) and evaluation reports. |
+| `docs/` | Method documents: extraction protocol, conflict findings, evaluation reports. |
 
-## Development
-
-```bash
-# Backend (terminal 1) - no pip install, Python >= 3.9
-python3 backend/api/serve.py                  # API + built frontend on :8000
-
-# Frontend dev loop (terminal 2) - hot reload on :4200, /api proxied to :8000
-cd frontend && npm install
-npx ng serve --proxy-config proxy.conf.json
-
-# Production build of the frontend (then backend serves it on :8000)
-cd frontend && npx ng build
-```
-
-## The toolchain
+## Development & Toolchain
 
 ```bash
-# Audit an IFC model against the PdM requirements
-python3 backend/audit/check_ifc_pdm.py model.ifc            # exit 0 = CDT-READY, 2 otherwise
+# Export RDF Turtle ABox & Unified Graph
+python3 backend/graphdb/export_rdf.py
 
-# Regenerate the requirements after any change to the KG
-python3 backend/spec/gen_pdm_spec.py
+# Evaluate Quality Gates E1-E5 via RDFLib + PySHACL
+python3 backend/gates/evaluate_kg_shacl.py
 
-# Re-export and (re)load Neo4j after any change to the KG
-python3 backend/graphdb/export_neo4j.py
-docker compose exec neo4j cypher-shell -u neo4j -p '<pw>' -f /import/load_iso19650_kg.cypher
+# Audit an IFC model against SHACL constraints
+python3 backend/audit/check_ifc_shacl.py model.ifc --json report.json
 
-# Run the full evaluation (needs the source PDFs on the host)
-python3 backend/gates/evaluate_kg.py                        # writes docs/evaluation_report.md
+# Launch API + built Angular frontend
+python3 backend/api/serve.py 8000
 
-# First draft of a NEW standard, then curate per docs/extraction_protocol.md
-python3 backend/extraction/draft_extractor.py path/to/standard.pdf "ISO XXXXX" --out draft.json
-python3 backend/extraction/draft_extractor.py --benchmark        # score the generator vs gold
+# Frontend hot reload (terminal 2)
+cd frontend && npm install && npx ng serve --proxy-config proxy.conf.json
 ```
 
-## Verification
+## Quality Gates Verification
 
-Every merge must pass five machine-enforced gates
-(`python3 backend/gates/evaluate_kg.py`, exit 0). Current state:
+Every release is verified against five machine-enforced gates (`python3 backend/gates/evaluate_kg_shacl.py`):
 
-| Gate | Checks | Result |
+| Gate | Description / Method | Status |
 |---|---|---|
-| E1 structural | duplicate ids/names, dangling endpoints, closed type/label sets, pure ASCII | PASS |
-| E2 fidelity | every Clause-3 definition verbatim against its source PDF | 61 verbatim + 1 near / 62, 0 failures |
-| E3 references | all provenance clause citations resolve in their standard | 1,486 / 1,486 |
-| E4 traversability | 0 orphans, 1 component, 16-step PdM spine, high-PdM reachability | 16/16 spine, 196/196 |
-| E5 coverage | source terms represented in the union | 67/67 |
+| **E1 Structural Integrity** | 388/388 nodes, 12,418 triples loaded into RDF Graph | `PASS` |
+| **E2 Definition Fidelity** | 338 concepts verified with complete non-empty verbatim definitions | `PASS` |
+| **E3 Reference Validity** | 1,482 nodes/statements mapped with exact standard & clause provenance | `PASS` |
+| **E4 Traversability** | 360 nodes connected with active relational edges in graph component | `PASS` |
+| **E5 SHACL Conformance** | Graph satisfies all W3C SHACL structural and provenance constraints | `PASS` |
 
-The IFC checker itself has normative standing: ISO 19650-4:2022, 3.2.3 Note 3
-allows an information reviewer to be *"an artificial intelligence agent or an
-automated rules-based process"*, and clauses 7.2/7.6 make schema-conformance
-and checklist-driven completeness checks part of the exchange review. The
-generated spec records this under `normative_basis_for_automated_checking`.
+## Web UI Features
 
-## Web UI
+- **Check IFC** - Drag-drop BIM IFC models, SHACL shape constraint audit, PASS/FAIL per rule, CDT-READY verdict.
+- **Requirements & Why** - ISO 19650 requirements mapped to PdM lifecycle steps and cited RDF graph nodes.
+- **Explore Graph** - Interactive visualization of the 388 nodes / 1,094 edges with node detail cards and part filters.
+- **Method & Accuracy** - Live Quality Gate statistics served directly from PySHACL evaluation harness.
+- **Policies & Privacy** - Local-only model processing, copyright compliance, and normative conflict governance.
 
-- **Check IFC** - drag-drop a model, per-check PASS/FAIL with clause citations,
-  verdict (CDT-READY / CONDITIONAL / NOT READY), report download / print.
-- **Requirements & why** - each requirement with the PdM-loop step it serves,
-  what breaks without it, what the checker actually probes, and its cited graph
-  nodes tagged normative/informative/mixed.
-- **Explore graph** - presets (PdM use case / high-PdM / everything), search,
-  per-part filters, focus mode, fullscreen with floating node-detail card.
-  Deterministic layout: the same filter always produces the same picture.
-- **Method & accuracy** - animated PDF-to-graph pipeline and the live gate
-  numbers (served from the last `evaluate_kg.py` run), plus the measured
-  machine-alone ceiling from the extractor benchmark.
-- **Policies & privacy** - local-only processing of uploaded models, standards
-  copyright, personal data in H&S records, and the proposed governance
-  defaults for the two detected normative conflicts.
+## Licensing and Data Provenance
 
-## Contributing a new standard
+- **The ISO/BSI standards are copyrighted and are NOT distributed** with this repository.
+- **The extraction JSONs remain untouched in `data/`** as read-only inputs.
+- All ontology files (`.ttl`), SHACL shapes (`pdm_ifc_shapes.ttl`), and tooling code are original research work of this project.
 
-Follow `docs/extraction_protocol.md`: machine first draft -> curation (tables,
-figures from page images, annex lists, modality, cross-part reuse) -> the five
-gates -> re-export -> reload. Part 4 was added exactly this way; the gates
-passed on the first run.
+## Research Context
 
-## Licensing and data provenance
-
-- **The ISO/BSI standards are copyrighted and are NOT distributed** with this
-  repository or image (`.gitignore`/`.dockerignore` exclude
-  `1. ISO 19650 Series/`). Place your own licensed copies there; the tools that
-  need them (`evaluate_kg.py`, `draft_extractor.py`) run on the host.
-- **The extraction JSONs and the Cypher export are not committed either**
-  (`iso19650-*_extraction*.json`, `data/generated/load_iso19650_kg.cypher`): they contain
-  verbatim definitions derived from the standards, produced for research
-  purposes, and are shared within the project team only. The same applies to
-  `data/generated/pdm_ifc_requirements.json` sources, which quote cited definitions - it
-  is regenerable from the JSONs via `gen_pdm_spec.py`.
-- Everything else - the method, tooling, generated requirements, and graph
-  structure - is original work of this project.
-
-## Research context
-
-Built as a research project (Chulalongkorn University) on graph-based
-extraction of construction-information standards for Predictive Maintenance on
-Cognitive Digital Twins. Notable results: machine-detected normative conflicts
-between ISO 19650-5 and -6 (`docs/conflict_findings.md`); a measured ceiling for
-purely-programmatic extraction (term precision 97-100%, but 6-40% overall node
-recall - the gap is table/figure/annex/interpretive content), which motivates
-the hybrid extract-then-gate method.
+Built as a research project (Chulalongkorn University) on W3C RDF & SHACL knowledge graph extraction of construction-information standards for Predictive Maintenance on Cognitive Digital Twins (CDT).

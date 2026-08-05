@@ -1,0 +1,227 @@
+@prefix iso: <http://example.org/iso19650#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+
+<http://example.org/iso19650> a owl:Ontology ;
+    dc:title "ISO 19650 Series Domain Ontology (TBox)" ;
+    dc:description "W3C OWL2 Ontology schema for ISO 19650 Information Management Series, compatible with Stanford Protégé Desktop." ;
+    owl:versionInfo "1.0.0" .
+
+#################################################################
+#    Classes (Node Types)
+#################################################################
+
+iso:IsoNode a owl:Class ;
+    rdfs:label "ISO Node" ;
+    rdfs:comment "Root class for all ISO 19650 knowledge graph nodes." .
+
+iso:Concept a owl:Class ;
+    rdfs:subClassOf iso:IsoNode ;
+    rdfs:label "Concept" ;
+    rdfs:comment "Normative or body-clause concepts defined in ISO 19650." .
+
+iso:State a owl:Class ;
+    rdfs:subClassOf iso:IsoNode ;
+    rdfs:label "State" ;
+    rdfs:comment "Lifecycle or information container state." .
+
+iso:Purpose a owl:Class ;
+    rdfs:subClassOf iso:IsoNode ;
+    rdfs:label "Purpose" ;
+    rdfs:comment "Purpose of information management." .
+
+iso:Perspective a owl:Class ;
+    rdfs:subClassOf iso:IsoNode ;
+    rdfs:label "Perspective" ;
+    rdfs:comment "Perspective or context." .
+
+iso:Function a owl:Class ;
+    rdfs:subClassOf iso:IsoNode ;
+    rdfs:label "Function" ;
+    rdfs:comment "Information management function or task." .
+
+iso:Principle a owl:Class ;
+    rdfs:subClassOf iso:IsoNode ;
+    rdfs:label "Principle" ;
+    rdfs:comment "High-level principle governing information management." .
+
+iso:Requirement a owl:Class ;
+    rdfs:subClassOf iso:IsoNode ;
+    rdfs:label "Requirement" ;
+    rdfs:comment "Normative requirement statement." .
+
+iso:Process a owl:Class ;
+    rdfs:subClassOf iso:IsoNode ;
+    rdfs:label "Process" ;
+    rdfs:comment "Information management process or activity." .
+
+iso:WorkflowPhase a owl:Class ;
+    rdfs:subClassOf iso:IsoNode ;
+    rdfs:label "Workflow Phase" ;
+    rdfs:comment "Stage or phase in the information management workflow." .
+
+#################################################################
+#    Datatype Properties (Node & Edge Attributes)
+#################################################################
+
+iso:nodeId a owl:DatatypeProperty ;
+    rdfs:domain iso:IsoNode ;
+    rdfs:range xsd:string ;
+    rdfs:label "Node ID" .
+
+iso:termNo a owl:DatatypeProperty ;
+    rdfs:domain iso:IsoNode ;
+    rdfs:range xsd:string ;
+    rdfs:label "Term Number" .
+
+iso:sourceType a owl:DatatypeProperty ;
+    rdfs:domain iso:IsoNode ;
+    rdfs:range xsd:string ;
+    rdfs:label "Source Type" .
+
+iso:pdmRelevance a owl:DatatypeProperty ;
+    rdfs:domain iso:IsoNode ;
+    rdfs:range xsd:string ;
+    rdfs:label "PdM Relevance" .
+
+iso:definition a owl:DatatypeProperty ;
+    rdfs:domain iso:IsoNode ;
+    rdfs:range xsd:string ;
+    rdfs:label "Definition" .
+
+iso:part a owl:DatatypeProperty ;
+    rdfs:domain iso:IsoNode ;
+    rdfs:range xsd:string ;
+    rdfs:label "ISO Part" .
+
+iso:provenanceStandard a owl:DatatypeProperty ;
+    rdfs:range xsd:string ;
+    rdfs:label "Provenance Standard" .
+
+iso:provenanceClause a owl:DatatypeProperty ;
+    rdfs:range xsd:string ;
+    rdfs:label "Provenance Clause" .
+
+iso:relationshipNote a owl:DatatypeProperty ;
+    rdfs:range xsd:string ;
+    rdfs:label "Relationship Note" .
+
+#################################################################
+#    Object Properties (Relationships)
+#################################################################
+
+iso:isoRelationship a owl:ObjectProperty ;
+    rdfs:domain iso:IsoNode ;
+    rdfs:range iso:IsoNode ;
+    rdfs:label "ISO Relationship" .
+
+iso:DERIVED_FROM a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "DERIVED_FROM" .
+
+iso:SPECIFIED_IN a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "SPECIFIED_IN" .
+
+iso:AGGREGATED_INTO a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "AGGREGATED_INTO" .
+
+iso:TRANSITIONS_TO a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "TRANSITIONS_TO" .
+
+iso:APPOINTS a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "APPOINTS" .
+
+iso:MEMBER_OF a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "MEMBER_OF" .
+
+iso:LEADS a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "LEADS" .
+
+iso:SUBTYPE_OF a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "SUBTYPE_OF" .
+
+iso:PART_OF a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "PART_OF" .
+
+iso:DESCRIBES a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "DESCRIBES" .
+
+iso:APPLIES_TO a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "APPLIES_TO" .
+
+iso:RESULTS_IN a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "RESULTS_IN" .
+
+iso:RESPONDS_TO a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "RESPONDS_TO" .
+
+iso:CONTRIBUTES_TO a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "CONTRIBUTES_TO" .
+
+iso:SUPPORTS a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "SUPPORTS" .
+
+iso:RESPONSIBLE_FOR a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "RESPONSIBLE_FOR" .
+
+iso:DEVELOPED_INTO a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "DEVELOPED_INTO" .
+
+iso:ALLOCATED_TO a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "ALLOCATED_TO" .
+
+iso:ENABLES a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "ENABLES" .
+
+iso:SERVES_PURPOSE a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "SERVES_PURPOSE" .
+
+iso:VIEWED_FROM a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "VIEWED_FROM" .
+
+iso:ESTABLISHES a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "ESTABLISHES" .
+
+iso:ASSIGNED_TO a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "ASSIGNED_TO" .
+
+iso:GOVERNS a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "GOVERNS" .
+
+iso:STAGE_OF a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "STAGE_OF" .
+
+iso:CORRESPONDS_TO a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "CORRESPONDS_TO" .
+
+iso:RECORDED_IN a owl:ObjectProperty ;
+    rdfs:subPropertyOf iso:isoRelationship ;
+    rdfs:label "RECORDED_IN" .

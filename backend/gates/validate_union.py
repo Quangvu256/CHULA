@@ -8,9 +8,19 @@ relationship types or labels, non-ASCII bytes, self-loops, exact duplicate edges
 import json, os, sys, collections, unicodedata
 os.chdir(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
-FILES = ["data/iso19650-1_extraction_v4.json", "data/iso19650-2_extraction_v1.json",
-         "data/iso19650-3_extraction_v1.2.json", "data/iso19650-4_extraction_v1.json", "data/iso19650-5_extraction_v1.json",
-         "data/iso19650-6_extraction_v2.json"]
+import glob
+
+def discover_kg_files():
+    data_dir = "data"
+    found = sorted(glob.glob(os.path.join(data_dir, "*extraction*.json")))
+    active = [os.path.normpath(f).replace("\\", "/") for f in found if not f.endswith(".superseded")]
+    if active:
+        return active
+    return ["data/iso19650-1_extraction_v4.json", "data/iso19650-2_extraction_v1.json",
+            "data/iso19650-3_extraction_v1.2.json", "data/iso19650-4_extraction_v1.json",
+            "data/iso19650-5_extraction_v1.json", "data/iso19650-6_extraction_v2.json"]
+
+FILES = discover_kg_files()
 
 ALLOWED_TYPES = {  # Part 1 set + {REFINES, PRECEDES, LINKED_TO} from Part 3
     "AGGREGATED_INTO", "ALLOCATED_TO", "APPLIES_TO", "APPOINTS", "ASSIGNED_TO",

@@ -29,9 +29,22 @@ import json, re, subprocess, sys, os, glob, difflib
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 os.chdir(ROOT)
 SERIES = os.path.join(ROOT, "1. ISO 19650 Series")
-KG_FILES = ["data/iso19650-1_extraction_v4.json", "data/iso19650-2_extraction_v1.json",
-            "data/iso19650-3_extraction_v1.2.json", "data/iso19650-4_extraction_v1.json",
-            "data/iso19650-5_extraction_v1.json", "data/iso19650-6_extraction_v2.json"]
+
+def discover_kg_files():
+    data_dir = os.path.join(ROOT, "data")
+    found = sorted(glob.glob(os.path.join(data_dir, "*extraction*.json")))
+    active = [f for f in found if not f.endswith(".superseded")]
+    
+    # Gom nhóm theo họ tiêu chuẩn (vd: iso19650-1), chỉ chọn file phiên bản mới nhất
+    latest_by_family = {}
+    for f in active:
+        family = os.path.basename(f).split("_extraction")[0]
+        latest_by_family[family] = f
+        
+    selected = sorted(latest_by_family.values())
+    return [os.path.relpath(f, ROOT).replace("\\", "/") for f in selected]
+
+KG_FILES = discover_kg_files()
 
 
 def pdf_for(part):
@@ -44,13 +57,18 @@ def pdf_for(part):
 
 
 def text_of(pdf, cache):
+    if not pdf or not os.path.exists(pdf):
+        return ""
     if pdf not in cache:
-        out = subprocess.run(["pdftotext", "-layout", pdf, "-"],
-                             capture_output=True, text=True).stdout
-        for a, b in [("’", "'"), ("‘", "'"), ("“", '"'), ("”", '"'),
-                     ("‑", "-"), ("—", "-"), ("–", "-"), ("​", ""), ("﻿", "")]:
-            out = out.replace(a, b)
-        cache[pdf] = out
+        try:
+            out = subprocess.run(["pdftotext", "-layout", pdf, "-"],
+                                 capture_output=True, text=True).stdout
+            for a, b in [("’", "'"), ("‘", "'"), ("“", '"'), ("”", '"'),
+                         ("‑", "-"), ("—", "-"), ("–", "-"), ("​", ""), ("﻿", "")]:
+                out = out.replace(a, b)
+            cache[pdf] = out
+        except Exception:
+            cache[pdf] = ""
     return cache[pdf]
 
 
@@ -133,7 +151,8 @@ def main():
     ok = fuzzy = fail = 0
     fails = []
     for f, d in data.items():
-        pdf_terms = parse_terms(txt[d["standard"].split(":")[0]])
+        std_key = d["standard"].split(":")[0].strip()
+        pdf_terms = parse_terms(txt.get(std_key, ""))
         for n in d["nodes"]:
             no = n.get("term_no")
             if not no:

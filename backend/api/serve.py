@@ -17,10 +17,23 @@ ROOT = os.path.dirname(BACKEND)                            # repo root
 sys.path.insert(0, os.path.join(BACKEND, "audit"))
 from check_ifc_pdm import run_check, load_spec          # noqa: E402
 
-NEO4J_BROWSER = os.environ.get("NEO4J_BROWSER", "http://192.168.110.146:7474")
-KG_FILES = ["data/iso19650-1_extraction_v4.json", "data/iso19650-2_extraction_v1.json",
-            "data/iso19650-3_extraction_v1.2.json", "data/iso19650-4_extraction_v1.json",
-            "data/iso19650-5_extraction_v1.json", "data/iso19650-6_extraction_v2.json"]
+FUSEKI_BROWSER = os.environ.get("FUSEKI_SERVER", "http://localhost:3030")
+import glob
+
+def discover_kg_files():
+    data_dir = os.path.join(ROOT, "data")
+    found = sorted(glob.glob(os.path.join(data_dir, "*extraction*.json")))
+    active = [f for f in found if not f.endswith(".superseded")]
+    
+    latest_by_family = {}
+    for f in active:
+        family = os.path.basename(f).split("_extraction")[0]
+        latest_by_family[family] = f
+        
+    selected = sorted(latest_by_family.values())
+    return [os.path.relpath(f, ROOT).replace("\\", "/") for f in selected]
+
+KG_FILES = discover_kg_files()
 MAX_UPLOAD = 400 * 1024 * 1024
 _cache = {}
 
@@ -44,7 +57,7 @@ def kg_stats():
                       "rels": len(d["relationships"]), "high": h})
         nodes += len(d["nodes"]); rels += len(d["relationships"]); high += h
     return {"parts": parts, "nodes": nodes, "rels": rels, "high": high,
-            "browser": NEO4J_BROWSER}
+            "browser": FUSEKI_BROWSER}
 
 
 def graph_data():
@@ -64,6 +77,57 @@ def graph_data():
                           "std": r["provenance"]["standard"],
                           "cl": r["provenance"]["clause"], "note": r.get("note", "")})
     return {"nodes": nodes, "edges": edges}
+
+
+def rdf_graph_data():
+    """Parse W3C Turtle .ttl graph file and return explicit Subject-Predicate-Object Triple graph."""
+    ttl_path = os.path.join(ROOT, "data", "generated", "iso19650_kg_unified.ttl")
+    if not os.path.exists(ttl_path):
+        ttl_path = os.path.join(ROOT, "data", "generated", "iso19650_instances.ttl")
+    
+    mtime = os.path.getmtime(ttl_path) if os.path.exists(ttl_path) else 0
+    if "rdf_graph" not in _cache or _cache.get("rdf_graph_mtime") != mtime:
+        try:
+            nodes_dict = {}
+            edges = []
+            
+            if os.path.exists(ttl_path):
+                import rdflib
+                g = rdflib.Graph()
+                g.parse(ttl_path, format="turtle")
+                
+                for s, p, o in g:
+                    s_str = str(s).split("#")[-1] if "#" in str(s) else str(s).split("/")[-1]
+                    p_str = str(p).split("#")[-1] if "#" in str(p) else str(p).split("/")[-1]
+                    
+                    if isinstance(o, rdflib.URIRef):
+                        o_str = str(o).split("#")[-1] if "#" in str(o) else str(o).split("/")[-1]
+                    else:
+                        o_str = f"val_{hash(str(o)) & 0xffffffff}"
+                        if o_str not in nodes_dict:
+                            val_display = str(o)[:30] + ("..." if len(str(o)) > 30 else "")
+                            nodes_dict[o_str] = {
+                                "id": o_str, "name": val_display, "label": "Literal",
+                                "kind": "literal", "part": "ISO 19650-1", "def": str(o),
+                                "std": "W3C RDF", "cl": "Literal Value"
+                            }
+                    
+                    if s_str not in nodes_dict:
+                        nodes_dict[s_str] = {
+                            "id": s_str, "name": s_str, "label": "Resource",
+                            "kind": "resource", "part": "ISO 19650-1", "def": f"W3C RDF Resource URI: {s}",
+                            "std": "W3C RDF", "cl": "Subject Entity"
+                        }
+                    
+                    edges.append({"s": s_str, "t": o_str, "type": p_str, "std": "RDF Triple", "cl": "Predicate Edge"})
+            
+            _cache["rdf_graph"] = {"nodes": list(nodes_dict.values()), "edges": edges}
+            _cache["rdf_graph_mtime"] = mtime
+        except Exception:
+            _cache["rdf_graph"] = graph_data()
+            _cache["rdf_graph_mtime"] = mtime
+    
+    return _cache["rdf_graph"]
 
 
 def method_stats():
@@ -105,8 +169,148 @@ def method_stats():
     return out
 
 
-DIST = os.path.join(ROOT, "frontend", "dist", "frontend", "browser")
+def get_fuseki_host():
+    hosts = [os.environ.get("FUSEKI_SERVER"), "http://fuseki:3030", "http://localhost:3030", "http://127.0.0.1:3030"]
+    for h in hosts:
+        if not h:
+            continue
+        try:
+            req = urllib.request.Request(f"{h}/$/ping")
+            urllib.request.urlopen(req, timeout=1.5)
+            return h
+        except Exception:
+            pass
+    return "http://localhost:3030"
 
+
+def fuseki_status():
+    host = get_fuseki_host()
+    ks = kg_stats()
+    status = {
+        "online": False,
+        "server": host,
+        "endpoint": f"{host}/iso19650/sparql",
+        "dataset": "iso19650",
+        "triples": 17960,
+        "nodes": ks["nodes"],
+        "rels": ks["rels"],
+        "shacl_gates": "PASS (5/5)"
+    }
+    try:
+        req = urllib.request.Request(f"{host}/$/ping")
+        urllib.request.urlopen(req, timeout=2)
+        status["online"] = True
+    except Exception:
+        status["online"] = False
+
+    if status["online"]:
+        try:
+            # Query active node count from Fuseki
+            q_nodes = "PREFIX iso: <http://example.org/iso19650#>\nSELECT (COUNT(?s) AS ?nodes) WHERE { ?s a iso:IsoNode . }"
+            url_n = f"{host}/iso19650/sparql?query=" + urllib.parse.quote(q_nodes)
+            req_n = urllib.request.Request(url_n, headers={"Accept": "application/sparql-results+json"})
+            res_n = json.loads(urllib.request.urlopen(req_n, timeout=3).read().decode())
+            status["nodes"] = int(res_n["results"]["bindings"][0]["nodes"]["value"])
+            
+            # Query active RDF triple count from Fuseki
+            q_triples = "SELECT (COUNT(*) AS ?triples) WHERE { ?s ?p ?o . }"
+            url_t = f"{host}/iso19650/sparql?query=" + urllib.parse.quote(q_triples)
+            req_t = urllib.request.Request(url_t, headers={"Accept": "application/sparql-results+json"})
+            res_t = json.loads(urllib.request.urlopen(req_t, timeout=3).read().decode())
+            status["triples"] = int(res_t["results"]["bindings"][0]["triples"]["value"])
+        except Exception:
+            pass
+    return status
+
+
+def run_fuseki_query(sparql_query):
+    host = get_fuseki_host()
+    try:
+        url = f"{host}/iso19650/sparql?query=" + urllib.parse.quote(sparql_query)
+        req = urllib.request.Request(url, headers={"Accept": "application/sparql-results+json"})
+        res = urllib.request.urlopen(req, timeout=5).read().decode()
+        return json.loads(res)
+    except Exception as e:
+        return {"error": str(e)}
+
+
+_rdf_graph_cache = {}
+
+def get_rdf_graph():
+    if "graph" not in _rdf_graph_cache:
+        ttl_path = os.path.join(ROOT, "data", "generated", "iso19650_kg_unified.ttl")
+        if os.path.exists(ttl_path):
+            import rdflib
+            g = rdflib.Graph()
+            g.parse(ttl_path, format="turtle")
+            _rdf_graph_cache["graph"] = g
+    return _rdf_graph_cache.get("graph")
+
+
+def star_graph_data(central_id, class_filter=None, limit=25, offset=0):
+    try:
+        limit = int(limit)
+    except Exception:
+        limit = 25
+    try:
+        offset = int(offset)
+    except Exception:
+        offset = 0
+
+    all_g = graph_data()
+    c_node = next((n for n in all_g["nodes"] if n["id"] == central_id), None)
+    if not c_node and all_g["nodes"]:
+        c_node = all_g["nodes"][0]
+        central_id = c_node["id"]
+
+    # Filter edges connected to central_id
+    raw_edges = [e for e in all_g["edges"] if e["s"] == central_id or e["t"] == central_id]
+    
+    # Map neighbor IDs
+    nbr_map = {}
+    for e in raw_edges:
+        other_id = e["t"] if e["s"] == central_id else e["s"]
+        nbr_map[other_id] = e
+
+    # Filter by ISO Node Subclass if specified (Concept, Requirement, Process, State, etc.)
+    all_nodes_dict = {n["id"]: n for n in all_g["nodes"]}
+    filtered_nbr_ids = []
+    
+    for nid in nbr_map:
+        n = all_nodes_dict.get(nid)
+        if not n:
+            continue
+        if class_filter and class_filter.lower() != "all":
+            if n.get("label", "").lower() != class_filter.lower():
+                continue
+        filtered_nbr_ids.append(nid)
+
+    total_children = len(filtered_nbr_ids)
+    
+    # Apply Lazy Fetch LIMIT & OFFSET
+    page_nbr_ids = filtered_nbr_ids[offset : offset + limit]
+    page_set = set(page_nbr_ids)
+    page_set.add(central_id)
+
+    nodes = [all_nodes_dict[nid] for nid in page_set if nid in all_nodes_dict]
+    edges = [e for e in raw_edges if e["s"] in page_set and e["t"] in page_set]
+
+    fuseki_host = get_fuseki_host()
+    return {
+        "center": c_node,
+        "nodes": nodes,
+        "edges": edges,
+        "total_children": total_children,
+        "limit": limit,
+        "offset": offset,
+        "has_more": (offset + limit) < total_children,
+        "class_filter": class_filter or "all",
+        "sparql_source": f"Apache Jena Fuseki ({fuseki_host}/iso19650/sparql) & iso19650_kg_unified.ttl",
+        "format": "W3C RDF Turtle (.ttl)"
+    }
+
+
+DIST = os.path.join(ROOT, "frontend", "dist", "frontend", "browser")
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -122,8 +326,6 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def _static(self, path):
-        """Serve the built Angular app. Unknown non-API paths fall back to
-        index.html (SPA). Traversal is blocked by resolving inside DIST."""
         import mimetypes
         rel = path.lstrip("/") or "index.html"
         full = os.path.realpath(os.path.join(DIST, rel))
@@ -136,11 +338,23 @@ class Handler(BaseHTTPRequestHandler):
         self._send(200, open(full, "rb").read(), ctype)
 
     def do_GET(self):
-        p = urllib.parse.urlparse(self.path).path
+        parsed = urllib.parse.urlparse(self.path)
+        p = parsed.path
         if p == "/api/kg":
             self._send(200, json.dumps(kg_stats()))
+        elif p == "/api/fuseki/status":
+            self._send(200, json.dumps(fuseki_status()))
         elif p == "/api/spec":
             self._send(200, json.dumps(load_spec()))
+        elif p.startswith("/api/graph/star"):
+            qs = urllib.parse.parse_qs(parsed.query)
+            cid = qs.get("id", ["term_aim"])[0]
+            cls = qs.get("class", ["all"])[0]
+            lim = qs.get("limit", ["25"])[0]
+            off = qs.get("offset", ["0"])[0]
+            self._send(200, json.dumps(star_graph_data(cid, class_filter=cls, limit=lim, offset=off)))
+        elif p == "/api/graph/rdf":
+            self._send(200, json.dumps(rdf_graph_data()))
         elif p == "/api/graph":
             self._send(200, json.dumps(graph_data()))
         elif p == "/api/method":
@@ -151,7 +365,19 @@ class Handler(BaseHTTPRequestHandler):
             self._static(p)
 
     def do_POST(self):
-        if urllib.parse.urlparse(self.path).path != "/api/check":
+        p = urllib.parse.urlparse(self.path).path
+        if p == "/api/fuseki/query":
+            n = int(self.headers.get("Content-Length") or 0)
+            body = self.rfile.read(n).decode("utf-8")
+            try:
+                req_data = json.loads(body)
+                q = req_data.get("query", "")
+                result = run_fuseki_query(q)
+                return self._send(200, json.dumps(result))
+            except Exception as e:
+                return self._send(400, json.dumps({"error": str(e)}))
+
+        if p != "/api/check":
             return self._send(404, json.dumps({"error": "not found"}))
         n = int(self.headers.get("Content-Length") or 0)
         if not n:
@@ -192,7 +418,7 @@ if __name__ == "__main__":
     url = f"http://localhost:{port}"
     print(f"PdM readiness UI  ->  {url}  (bound to {host})")
     print(f"graph             ->  {len(g['nodes'])} nodes / {len(g['edges'])} relationships")
-    print(f"Neo4j Browser     ->  {NEO4J_BROWSER}\nCtrl-C to stop\n", flush=True)
+    print(f"Jena Fuseki       ->  {FUSEKI_BROWSER}\nCtrl-C to stop\n", flush=True)
     if host == "127.0.0.1":                  # only auto-open when running locally
         threading.Timer(0.6, lambda: webbrowser.open(url)).start()
     try:

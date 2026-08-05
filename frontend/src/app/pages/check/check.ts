@@ -12,8 +12,8 @@ import { AppState } from '../../core/state';
       <div class="stat"><b>{{k.high}}</b><span>high&#8209;PdM</span></div>
       <div class="stat"><b>{{k.parts.length}}</b><span>standards</span></div>
       <div class="stat" style="min-width:auto">
-        <b style="font-size:14px;padding-top:3px"><a [href]="k.browser" target="_blank" rel="noopener">Neo4j Browser &#8599;</a></b>
-        <span>same data, Cypher</span></div>
+        <b style="font-size:14px;padding-top:3px"><a [href]="k.browser" target="_blank" rel="noopener">Apache Jena Fuseki &#8599;</a></b>
+        <span>SPARQL Endpoint :3030</span></div>
     }
   </div>
 
