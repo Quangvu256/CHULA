@@ -24,7 +24,7 @@
       {
         "node": "criterion_conformance",
         "name": "review criterion - conformance",
-        "definition": "check of the information container against the chosen exchange schema and data format",
+        "definition": "against the chosen exchange schema and data format",
         "pdm_relevance": "high",
         "modality": "normative",
         "standard": "ISO 19650-4",
@@ -33,7 +33,7 @@
       {
         "node": "criterion_completeness",
         "name": "review criterion - completeness",
-        "definition": "check for the presence and adequacy of the information against the level of information need specified by the EIR and any additional expectations; the reviewer shall consider three requirements: to satisfy the purposes associated to the immediate delivery stage or operational trigger event; to support oversight and coordination of the delivery or operational phase; and to enable long-term management and societal requirements, using standard naming and classification and open standards; the reviewer shall consider using a formalized procedure when checking against the information requirements or checklists derived from them, possibly including structured rules using REPEATABLE AUTOMATED PROCESSES, and means of sharing checking procedures with information providers through the information production methods and procedures",
+        "definition": "presence and adequacy of the information against the level of information need specified by the EIR and any additional expectations. [...] An information reviewer shall consider the following three requirements: to satisfy the purposes associated to the immediate delive",
         "pdm_relevance": "high",
         "modality": "normative",
         "standard": "ISO 19650-4",
@@ -102,7 +102,7 @@
         {
           "node": "term_asset_system_description",
           "name": "asset and served-system description",
-          "definition": "description of an asset and the asset system that it serves",
+          "definition": "descriptions of assets and the asset systems they serve",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-3",
@@ -159,7 +159,7 @@
         {
           "node": "term_asset_unique_identifier",
           "name": "unique asset identifier",
-          "definition": "unique identifier associated with an asset so that its information can be distinguished and linked consistently",
+          "definition": "unique asset identifiers",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-3",
@@ -168,7 +168,7 @@
         {
           "node": "field_identifier",
           "name": "Identifier",
-          "definition": "unique identifier of the record; for a context it is the project/asset identifier, for a risk, risk treatment or incident it is project/asset identifier - originator identifier - sequential number ( - record type), as defined in 4.4.2 and 4.4.3",
+          "definition": "Text",
           "pdm_relevance": "high",
           "modality": "normative",
           "standard": "ISO 19650-6",
@@ -177,7 +177,7 @@
         {
           "node": "term_hs_identifier",
           "name": "health and safety record identifier",
-          "definition": "identifier which shall be unique to the project or asset; the context identifier is composed of the project/asset identifier as identified in the project/asset information standard (example PR101); risk, risk treatment and incident identifiers are composed of the project/asset identifier - the originator identifier - the sequential number ( - record type), where the identifier includes the originator raising the risk, treatment or incident, the sequential number is unique within the context and typically four digits, and an optional final element (record type) can distinguish among risk, treatment or incident (example PR101-AAA-0003-Risk)",
+          "definition": "unique to the project or asset. [...] Project/asset and originator identifiers can be defined in the project/asset standard methods and procedures.",
           "pdm_relevance": "medium",
           "modality": "normative",
           "standard": "ISO 19650-6",
@@ -255,7 +255,7 @@
         {
           "node": "field_associated_location",
           "name": "Associated location",
-          "definition": "space, location, zone or site associated with the record; for a context it is the site or zone and only exceptional zones need be recorded; can be a name, category description or model entity reference",
+          "definition": "Text or identifier",
           "pdm_relevance": "high",
           "modality": "normative",
           "standard": "ISO 19650-6",
@@ -264,7 +264,7 @@
         {
           "node": "term_asset_location_spatial_context",
           "name": "asset location and spatial context",
-          "definition": "asset location and related spatial data, potentially using spatial referencing or geographic information systems",
+          "definition": "locations of the assets, possibly using spatial referencing or geographical information systems [...] spatial data relating to assets, for example pavement areas, room sizes",
           "pdm_relevance": "medium",
           "modality": "informative",
           "standard": "ISO 19650-3",
@@ -325,7 +325,7 @@
         {
           "node": "term_asset_system_description",
           "name": "asset and served-system description",
-          "definition": "description of an asset and the asset system that it serves",
+          "definition": "descriptions of assets and the asset systems they serve",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-3",
@@ -334,7 +334,7 @@
         {
           "node": "term_ifc_representation",
           "name": "IFC representation of health and safety information",
-          "definition": "mapping of the 4.3 schema to ISO 16739-1 IFC4.3, IFC4.0 and IFC2x3 (Table D.1): Context maps to IfcProject, with location as IfcSite/IfcZone, product as IfcFacility/IfcSystem and activity as IfcProject/IfcWorkPlan; Risk, Incident and Treatment map to Pset_Risk and IfcAnnotation, with location as IfcSpaceType/IfcSpace, product as IfcElementType/IfcElement and activity as IfcTaskType/IfcTask; Party maps to IfcActor and IfcActorRole; context is represented by the higher-level objects, and treatments can be represented by changes to the specifications of the associated locations, products and activities associated to the risks and incidents; Pset_Risk can be associated to locations, products and/or tasks, or to a separate annotation such as a 2D or 3D symbol compliant to ISO 7010",
+          "definition": "A mapping of the schema in 4.3 to ISO 16739-1 IFC4.3, IFC4.0 and IFC2x3 is shown in Table D.1.",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-6",
@@ -343,7 +343,7 @@
         {
           "node": "term_asset_function_interdependency",
           "name": "asset function and operational interdependency",
-          "definition": "asset function and any interdependency with the activities that require that function",
+          "definition": "functions of assets, including any interdependencies to the activities that require them",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-3",
@@ -399,7 +399,7 @@
         {
           "node": "term_hs_categorization",
           "name": "health and safety categorization",
-          "definition": "categorization of assets, health and safety risks and incidents according to the regional, national or project/asset convention identified in the project/asset information standard; risk treatment is categorized within the schema itself (Table 4)",
+          "definition": "regional, national or project/asset convention identified in the project/asset information standard.",
           "pdm_relevance": "medium",
           "modality": "normative",
           "standard": "ISO 19650-6",
@@ -408,7 +408,7 @@
         {
           "node": "field_category",
           "name": "Category",
-          "definition": "classification of the asset (context) or of the risk, incident or treatment; for context, risk and incident the enumeration is the external convention identified in the project/asset information standard (4.3.7), for treatment it is the fixed five-value enumeration of Table 4",
+          "definition": "Enumeration",
           "pdm_relevance": "high",
           "modality": "normative",
           "standard": "ISO 19650-6",
@@ -469,7 +469,7 @@
         {
           "node": "term_vendor_lead_time",
           "name": "asset vendor data and lead time",
-          "definition": "vendor data identifying the organization that supplied an asset, including asset lead time",
+          "definition": "vendor data (details of the organization that supplied the asset) including asset lead time",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-3",
@@ -540,7 +540,7 @@
         {
           "node": "term_asset_design_parameters",
           "name": "asset engineering data and design parameters",
-          "definition": "engineering data and design parameters relevant to the asset",
+          "definition": "engineering data and design parameters",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-3",
@@ -584,7 +584,7 @@
         {
           "node": "term_condition_monitoring_system",
           "name": "condition monitoring system",
-          "definition": "enterprise system functionality: condition monitoring",
+          "definition": "condition monitoring",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-3",
@@ -593,7 +593,7 @@
         {
           "node": "term_scada_system",
           "name": "supervisory control and data acquisition (SCADA)",
-          "definition": "enterprise system functionality: supervisory control and data acquisition (SCADA)",
+          "definition": "supervisory control and data acquisition (SCADA)",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-3",
@@ -602,7 +602,7 @@
         {
           "node": "term_iot_security_assessment",
           "name": "internet of things security assessment",
-          "definition": "assessment that the organization(s) should undertake prior to the implementation of any system based on the internet of things or other distributed technologies, comprising: a) understanding the security architecture of the proposed technologies; b) determining the extent to which that architecture meets the security requirements of the organization(s); c) assessing any security risks, including the potential impact of a failure of the technology, against the risk appetite of the organization(s) and the benefits which it is anticipated can be gained; and d) putting in place appropriate and proportionate security risk mitigation measures to manage any unacceptable security risks",
+          "definition": "internet of things or other distributed technologies, the organization(s) should: a) understand the security architecture of the proposed technologies",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-5",
@@ -665,7 +665,7 @@
         {
           "node": "term_ifc_representation",
           "name": "IFC representation of health and safety information",
-          "definition": "mapping of the 4.3 schema to ISO 16739-1 IFC4.3, IFC4.0 and IFC2x3 (Table D.1): Context maps to IfcProject, with location as IfcSite/IfcZone, product as IfcFacility/IfcSystem and activity as IfcProject/IfcWorkPlan; Risk, Incident and Treatment map to Pset_Risk and IfcAnnotation, with location as IfcSpaceType/IfcSpace, product as IfcElementType/IfcElement and activity as IfcTaskType/IfcTask; Party maps to IfcActor and IfcActorRole; context is represented by the higher-level objects, and treatments can be represented by changes to the specifications of the associated locations, products and activities associated to the risks and incidents; Pset_Risk can be associated to locations, products and/or tasks, or to a separate annotation such as a 2D or 3D symbol compliant to ISO 7010",
+          "definition": "A mapping of the schema in 4.3 to ISO 16739-1 IFC4.3, IFC4.0 and IFC2x3 is shown in Table D.1.",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-6",
@@ -674,7 +674,7 @@
         {
           "node": "field_level_of_risk",
           "name": "Level of risk (health and safety schema field)",
-          "definition": "prioritization provided to support communication and review; the grade can be derived from likelihood and consequence using the combination matrix of Table C.2",
+          "definition": "Text",
           "pdm_relevance": "high",
           "modality": "normative",
           "standard": "ISO 19650-6",
@@ -683,7 +683,7 @@
         {
           "node": "field_likelihood",
           "name": "Likelihood (health and safety schema field)",
-          "definition": "optional Annex C extension to Tables 2 and 3: grade of the likelihood, to support communication and review; six values - Very low, Low, Moderate, High, Very high, Unknown; the grade will be Unknown until it has been assessed",
+          "definition": "Enumeration",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-6",
@@ -692,7 +692,7 @@
         {
           "node": "field_consequence",
           "name": "Consequence (health and safety schema field)",
-          "definition": "optional Annex C extension to Tables 2 and 3: grade of the consequence, to support communication and review; same six-value enumeration as likelihood",
+          "definition": "Enumeration",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-6",
@@ -724,7 +724,7 @@
         {
           "node": "term_maintenance_inspection_schedule",
           "name": "future maintenance and inspection schedule",
-          "definition": "future schedule of maintenance and inspection tasks including details of overdue tasks, the maintenance organization, and qualifications/certifications required to carry out each task",
+          "definition": "future schedule of maintenance and inspection tasks including details of overdue tasks, and including details of the maintenance organization and details of qualifications/certifications required to carry out each",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-3",
@@ -733,7 +733,7 @@
         {
           "node": "term_ifc_representation",
           "name": "IFC representation of health and safety information",
-          "definition": "mapping of the 4.3 schema to ISO 16739-1 IFC4.3, IFC4.0 and IFC2x3 (Table D.1): Context maps to IfcProject, with location as IfcSite/IfcZone, product as IfcFacility/IfcSystem and activity as IfcProject/IfcWorkPlan; Risk, Incident and Treatment map to Pset_Risk and IfcAnnotation, with location as IfcSpaceType/IfcSpace, product as IfcElementType/IfcElement and activity as IfcTaskType/IfcTask; Party maps to IfcActor and IfcActorRole; context is represented by the higher-level objects, and treatments can be represented by changes to the specifications of the associated locations, products and activities associated to the risks and incidents; Pset_Risk can be associated to locations, products and/or tasks, or to a separate annotation such as a 2D or 3D symbol compliant to ISO 7010",
+          "definition": "A mapping of the schema in 4.3 to ISO 16739-1 IFC4.3, IFC4.0 and IFC2x3 is shown in Table D.1.",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-6",
@@ -760,7 +760,7 @@
         {
           "node": "term_asset_commissioning_data",
           "name": "asset commissioning dates and data",
-          "definition": "commissioning dates and commissioning data associated with an asset",
+          "definition": "commissioning dates and data",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-3",
@@ -791,7 +791,7 @@
         {
           "node": "term_asset_performance_target",
           "name": "asset condition and performance target",
-          "definition": "condition or performance target or standard associated with an asset",
+          "definition": "condition and performance targets or standards",
           "pdm_relevance": "high",
           "modality": "informative",
           "standard": "ISO 19650-3",
@@ -839,7 +839,7 @@
         {
           "node": "field_associated_location",
           "name": "Associated location",
-          "definition": "space, location, zone or site associated with the record; for a context it is the site or zone and only exceptional zones need be recorded; can be a name, category description or model entity reference",
+          "definition": "Text or identifier",
           "pdm_relevance": "high",
           "modality": "normative",
           "standard": "ISO 19650-6",

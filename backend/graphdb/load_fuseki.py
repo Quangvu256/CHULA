@@ -62,8 +62,8 @@ def load_ttl(server_url, dataset):
     headers = get_auth_header()
     headers["Content-Type"] = "text/turtle; charset=utf-8"
 
-    upload_url = f"{server_url}/{dataset}/data"
-    req = urllib.request.Request(upload_url, data=ttl_bytes, headers=headers, method="POST")
+    upload_url = f"{server_url}/{dataset}/data?default"
+    req = urllib.request.Request(upload_url, data=ttl_bytes, headers=headers, method="PUT")
 
     try:
         res = urllib.request.urlopen(req).read().decode()
