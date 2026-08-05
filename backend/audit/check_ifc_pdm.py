@@ -15,6 +15,24 @@ ever matters.
 """
 import json, os, re, sys, collections
 
+def decode_ifc_string(s: str) -> str:
+    """Decode STEP ISO-10646/Unicode escape sequences (e.g. \\X2\\0041\\X0\\)."""
+    if not s or "\\X" not in s:
+        return s
+    def repl_x2(match):
+        hex_str = match.group(1)
+        res = []
+        for i in range(0, len(hex_str), 4):
+            chunk = hex_str[i:i+4]
+            if len(chunk) == 4:
+                try:
+                    res.append(chr(int(chunk, 16)))
+                except ValueError:
+                    pass
+        return "".join(res)
+    return re.sub(r"\\X2\\([0-9A-Fa-f]+)\\X0\\", repl_x2, s)
+
+
 # ---------------------------------------------------------------- SPF parser
 def parse_spf(path):
     text = open(path, encoding="utf-8", errors="replace").read()
@@ -46,7 +64,7 @@ def parse_spf(path):
         ents[eid] = {
             "type": etype,
             "refs": [int(x) for x in re.findall(r"#(\d+)", args)],
-            "strs": [s.replace("''", "'") for s in re.findall(r"'((?:[^']|'')*)'", args)],
+            "strs": [decode_ifc_string(s.replace("''", "'")) for s in re.findall(r"'((?:[^']|'')*)'", args)],
         }
     return schema, ents
 

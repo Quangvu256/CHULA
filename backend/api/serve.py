@@ -33,19 +33,31 @@ def discover_kg_files():
     selected = sorted(latest_by_family.values())
     return [os.path.relpath(f, ROOT).replace("\\", "/") for f in selected]
 
+
 KG_FILES = discover_kg_files()
 MAX_UPLOAD = 400 * 1024 * 1024
 _cache = {}
 
 
+def _get_kg_mtime():
+    mtimes = []
+    for f in KG_FILES:
+        p = os.path.join(ROOT, f)
+        if os.path.exists(p):
+            mtimes.append(os.path.getmtime(p))
+    return max(mtimes) if mtimes else 0
+
+
 def _load_kg():
-    if "kg" not in _cache:
+    cur_mtime = _get_kg_mtime()
+    if "kg" not in _cache or _cache.get("kg_mtime") != cur_mtime:
         out = []
         for f in KG_FILES:
             p = os.path.join(ROOT, f)
             if os.path.exists(p):
-                out.append((f, json.load(open(p))))
+                out.append((f, json.load(open(p, encoding="utf-8"))))
         _cache["kg"] = out
+        _cache["kg_mtime"] = cur_mtime
     return _cache["kg"]
 
 
@@ -191,7 +203,7 @@ def fuseki_status():
         "server": host,
         "endpoint": f"{host}/iso19650/sparql",
         "dataset": "iso19650",
-        "triples": 17960,
+        "triples": 17931,
         "nodes": ks["nodes"],
         "rels": ks["rels"],
         "shacl_gates": "PASS (5/5)"
@@ -322,8 +334,15 @@ class Handler(BaseHTTPRequestHandler):
         self.send_response(code)
         self.send_header("Content-Type", ctype)
         self.send_header("Content-Length", str(len(body)))
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type, X-Filename")
+        self.send_header("X-Content-Type-Options", "nosniff")
         self.end_headers()
         self.wfile.write(body)
+
+    def do_OPTIONS(self):
+        self._send(200, json.dumps({"status": "ok"}))
 
     def _static(self, path):
         import mimetypes
