@@ -72,22 +72,64 @@ def kg_stats():
             "browser": FUSEKI_BROWSER}
 
 
+TAXONOMY_CLASSES = [
+    {"id": "IsoNode", "name": "ISO Node", "label": "IsoNode", "def": "Root class for all ISO 19650 knowledge graph nodes."},
+    {"id": "Concept", "name": "Concept", "label": "Concept", "def": "Normative or body-clause concepts defined in ISO 19650."},
+    {"id": "State", "name": "State", "label": "State", "def": "Lifecycle or information container state."},
+    {"id": "Purpose", "name": "Purpose", "label": "Purpose", "def": "Purpose of information management."},
+    {"id": "Perspective", "name": "Perspective", "label": "Perspective", "def": "Perspective or context."},
+    {"id": "Function", "name": "Function", "label": "Function", "def": "Information management function or task."},
+    {"id": "Principle", "name": "Principle", "label": "Principle", "def": "High-level principle governing information management."},
+    {"id": "Requirement", "name": "Requirement", "label": "Requirement", "def": "Normative requirement statement."},
+    {"id": "Process", "name": "Process", "label": "Process", "def": "Information management process or activity."},
+    {"id": "WorkflowPhase", "name": "Workflow Phase", "label": "WorkflowPhase", "def": "Stage or phase in the information management workflow."}
+]
+TAXONOMY_CLASS_IDS = {c["id"] for c in TAXONOMY_CLASSES}
+
+
 def graph_data():
     """Whole graph, flattened for the browser (~550 KB - fine over localhost)."""
     nodes, edges = [], []
+    seen_nodes = set()
+
+    # 1. Include Taxonomy Class Nodes (Yellow Protégé OWL Class circles)
+    for c in TAXONOMY_CLASSES:
+        nodes.append({
+            "id": c["id"], "name": c["name"], "label": c["id"],
+            "kind": "class", "part": "ISO 19650-1", "pdm": "high",
+            "def": c["def"], "std": "ISO 19650 Schema (TBox)", "cl": "owl:Class", "note": ""
+        })
+        seen_nodes.add(c["id"])
+        if c["id"] != "IsoNode":
+            edges.append({
+                "s": c["id"], "t": "IsoNode", "type": "rdfs:subClassOf",
+                "std": "W3C RDF Taxonomy", "cl": "Subclass Assertion", "note": ""
+            })
+
+    # 2. Include Individual Nodes and their type edges to Class nodes
     for _, d in _load_kg():
-        # "ISO 19650-1:2018" -> "ISO 19650-1": the year is display noise here and
-        # the colour/filter keys in the page are keyed on the part alone
         std = d["standard"].split(":")[0].strip()
         for n in d["nodes"]:
-            nodes.append({"id": n["id"], "name": n["name"], "label": n["label"],
-                          "part": std, "pdm": n.get("pdm_relevance", "low"),
-                          "def": n["definition"], "std": n["provenance"]["standard"],
-                          "cl": n["provenance"]["clause"], "note": n.get("note", "")})
+            if n["id"] not in seen_nodes:
+                nodes.append({"id": n["id"], "name": n["name"], "label": n["label"],
+                              "kind": n.get("kind", "individual"),
+                              "part": std, "pdm": n.get("pdm_relevance", "low"),
+                              "def": n["definition"], "std": n["provenance"]["standard"],
+                              "cl": n["provenance"]["clause"], "note": n.get("note", "")})
+                seen_nodes.add(n["id"])
+            
+            # Connect individual node to its Class node (e.g. Concept, Function, Requirement)
+            if n.get("label") in TAXONOMY_CLASS_IDS:
+                edges.append({
+                    "s": n["id"], "t": n["label"], "type": "rdf:type",
+                    "std": "W3C RDF Taxonomy", "cl": "Class Assertion", "note": ""
+                })
+
         for r in d["relationships"]:
             edges.append({"s": r["from"], "t": r["to"], "type": r["type"],
                           "std": r["provenance"]["standard"],
                           "cl": r["provenance"]["clause"], "note": r.get("note", "")})
+
     return {"nodes": nodes, "edges": edges}
 
 
@@ -102,6 +144,14 @@ def rdf_graph_data():
         try:
             nodes_dict = {}
             edges = []
+            
+            # Initialize Taxonomy Class Nodes (Yellow Protégé OWL Class circles)
+            for c in TAXONOMY_CLASSES:
+                nodes_dict[c["id"]] = {
+                    "id": c["id"], "name": c["name"], "label": c["id"],
+                    "kind": "class", "part": "ISO 19650-1", "pdm": "high",
+                    "def": c["def"], "std": "ISO 19650 Schema (TBox)", "cl": "owl:Class", "note": ""
+                }
             
             if os.path.exists(ttl_path):
                 import rdflib
@@ -125,11 +175,22 @@ def rdf_graph_data():
                             }
                     
                     if s_str not in nodes_dict:
+                        default_name = f"reference number : {s_str[4:]}" if (s_str.startswith("rel_") and s_str[4:].isdigit()) else s_str
+                        default_label = "Statement" if s_str.startswith("rel_") else "Resource"
+                        is_class_node = s_str in TAXONOMY_CLASS_IDS or s_str == "IsoNode"
                         nodes_dict[s_str] = {
-                            "id": s_str, "name": s_str, "label": "Resource",
-                            "kind": "resource", "part": "ISO 19650-1", "def": f"W3C RDF Resource URI: {s}",
-                            "std": "W3C RDF", "cl": "Subject Entity"
+                            "id": s_str, "name": default_name, "label": s_str if is_class_node else default_label,
+                            "kind": "class" if is_class_node else "resource", "part": "ISO 19650-1",
+                            "def": f"W3C RDF Resource URI: {s}", "std": "W3C RDF", "cl": "Subject Entity"
                         }
+                    elif s_str in TAXONOMY_CLASS_IDS:
+                        nodes_dict[s_str]["kind"] = "class"
+
+                    if o_str in TAXONOMY_CLASS_IDS and o_str in nodes_dict:
+                        nodes_dict[o_str]["kind"] = "class"
+
+                    if p_str == "label" or str(p).endswith("label"):
+                        nodes_dict[s_str]["name"] = str(o)
                     
                     edges.append({"s": s_str, "t": o_str, "type": p_str, "std": "RDF Triple", "cl": "Predicate Edge"})
             

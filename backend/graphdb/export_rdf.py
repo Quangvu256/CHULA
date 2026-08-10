@@ -170,6 +170,7 @@ def main():
             if prov or note:
                 stmt_id = f"iso:rel_{n_rels}"
                 lines.append(f"{stmt_id} a rdf:Statement ;")
+                lines.append(f'    rdfs:label "reference number : {n_rels}" ;')
                 lines.append(f"    rdf:subject {from_iri} ;")
                 lines.append(f"    rdf:predicate {pred_iri} ;")
                 lines.append(f"    rdf:object {to_iri} ;")

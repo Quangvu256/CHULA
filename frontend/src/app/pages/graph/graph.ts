@@ -11,15 +11,22 @@ import { AppState } from '../../core/state';
  *  The physics engine is the deterministic settle engine ported verbatim from BIMLab_KG:
  *  phyllotaxis seed (no Math.random), monotonic alpha decay rendered over ~90 frames, then a dead stop.
  */
-const USECASE = ['term_condition_monitoring_system','term_scada_system','term_condition_observation',
- 'term_asset_operational_data','term_pdm_model','term_health_indicator','term_anomaly_event',
- 'term_remaining_useful_life_prediction','term_maintenance_alert','term_maintenance_work_order',
- 'term_maintenance_intervention_outcome','term_failure_mode','term_asset_failure_history',
- 'term_maintenance_history','term_asset_criticality','term_asset_condition_duty',
- 'term_hs_incident','term_near_miss','term_hs_risk','term_risk_treatment','term_treatment_control',
- 'term_level_of_risk','term_likelihood','term_consequence','term_risk_urgency_prioritization',
- 'term_hs_register','term_hs_properties','term_foreseen_trigger_event','trigger_maintenance_work',
- 'term_security_information_requirements','term_asset','term_aim'];
+const USECASE_CORE = [
+  'term_asset', 'term_condition_monitoring_system', 'term_health_indicator',
+  'term_anomaly_event', 'term_remaining_useful_life_prediction', 'term_maintenance_alert',
+  'term_maintenance_work_order', 'term_failure_mode', 'term_asset_criticality',
+  'term_asset_operational_data', 'term_pdm_model', 'term_hs_risk', 'term_treatment_control'
+];
+
+const USECASE = [
+  ...USECASE_CORE,
+  'term_scada_system', 'term_condition_observation', 'term_maintenance_intervention_outcome',
+  'term_asset_failure_history', 'term_maintenance_history', 'term_asset_condition_duty',
+  'term_hs_incident', 'term_near_miss', 'term_risk_treatment', 'term_level_of_risk',
+  'term_likelihood', 'term_consequence', 'term_risk_urgency_prioritization',
+  'term_hs_register', 'term_hs_properties', 'term_foreseen_trigger_event',
+  'trigger_maintenance_work', 'term_security_information_requirements', 'term_aim'
+];
 
 const PCOL: Record<string, string> = {
   'ISO 19650-1': '--p1',
@@ -30,7 +37,7 @@ const PCOL: Record<string, string> = {
   'ISO 19650-6': '--p6'
 };
 
-const SIM = { CH: -1500, LD: 120, LS: 0.09, GR: 0.035, VD: 0.62, VMAX: 28 };
+const SIM = { CH: -5200, LD: 240, LS: 0.08, GR: 0.015, VD: 0.65, VMAX: 32 };
 
 @Component({
   selector: 'graph-tab',
@@ -39,9 +46,13 @@ const SIM = { CH: -1500, LD: 120, LS: 0.09, GR: 0.035, VD: 0.62, VMAX: 28 };
   template: `
   <div class="gbar">
     <strong style="font-size:13px; color: var(--acc)">W3C RDF Triple Store:</strong>
-    <button class="b" [class.on]="view()==='usecase'" (click)="preset('usecase')">PdM use case</button>
+    <button class="b" [class.on]="view()==='core'" (click)="preset('core')">PdM Core (13 nodes)</button>
+    <button class="b" [class.on]="view()==='usecase'" (click)="preset('usecase')">PdM Full (32 nodes)</button>
     <button class="b" [class.on]="view()==='high'" (click)="preset('high')">High-PdM only</button>
     <button class="b" [class.on]="view()==='all'" (click)="preset('all')">Everything</button>
+    <button class="b" [class.on]="paletteMode()==='protege'" (click)="togglePalette()" title="Switch between Protégé OWL Taxonomy shapes/colors and ISO Part colors">
+      Theme: {{paletteMode()==='protege' ? 'Protégé OWL' : 'ISO Parts'}}
+    </button>
   </div>
   <div class="gbar">
     <input type="search" placeholder="Search Subject, Predicate, or Object&hellip;" [value]="q()"
@@ -72,11 +83,23 @@ const SIM = { CH: -1500, LD: 120, LS: 0.09, GR: 0.035, VD: 0.62, VMAX: 28 };
     <div id="panel" [class.show]="fs() && !!selected()">
       @if (selected(); as n) {
         <button class="pclose" (click)="hidePanel()" title="close">&#x2715;</button>
-        <h3>{{n.name}}</h3>
+        <h3>
+          @if (getNodeKind(n) === 'class') {<span style="color:#f59e0b; font-size:16px" title="OWL Class">●</span>}
+          @else if (getNodeKind(n) === 'individual') {<span style="color:#a855f7; font-size:16px" title="OWL Individual">◆</span>}
+          @else {<span style="color:#10b981; font-size:16px" title="Literal Value">■</span>}
+          {{n.name}}
+        </h3>
         <div class="src"><span class="dot" [style.background]="'var('+(pcol[n.part]||'--mut')+')'"></span>
           {{n.part}} &middot; {{n.label}} &middot; <code>{{n.id}}</code></div>
         
-        <div class="k" style="color: #38bdf8">W3C RDF Turtle (.ttl)</div>
+        <div class="k" style="color: #f59e0b; display:flex; align-items:center; gap:4px">
+          <span style="color:#f59e0b; font-size:14px">●</span> Types (Class Taxonomy)
+        </div>
+        <div class="src" style="display:flex; align-items:center; gap:6px; background: rgba(245,158,11,0.1); padding: 4px 8px; border-radius: 4px; border: 1px solid rgba(245,158,11,0.3); color: #f59e0b">
+          <span style="color:#f59e0b; font-size:14px">●</span> <b>{{n.label}}</b> &middot; <code>iso:IsoNode</code>
+        </div>
+
+        <div class="k" style="color: #38bdf8; margin-top:8px">W3C RDF Turtle (.ttl)</div>
         <div class="src" style="font-family: monospace; background: rgba(15,23,42,0.6); padding: 6px; border-radius: 4px; overflow-x: auto; color: #38bdf8">
           iso:{{n.id}} a iso:{{n.label}} ;<br>
           &nbsp;&nbsp;rdfs:label "{{n.name}}" ;<br>
@@ -86,35 +109,53 @@ const SIM = { CH: -1500, LD: 120, LS: 0.09, GR: 0.035, VD: 0.62, VMAX: 28 };
         <div class="row" style="margin-top:10px">
           <button class="b" (click)="focusOn(n.id)">Show only this neighbourhood</button>
         </div>
-        <div class="k">Definition / RDF Literal</div><div>{{n.def}}</div>
-        <div class="k">Provenance</div><div>{{n.std}} &mdash; clause {{n.cl}}</div>
-        @if (n.note) {<div class="k">Note</div><div class="src" style="font-size:12px">{{n.note}}</div>}
-        <div class="k">Outgoing RDF Predicates (Subject &rarr; Predicate &rarr; Object) ({{outEdges().length}})</div>
+
+        <div class="k" style="color: #10b981; display:flex; align-items:center; gap:4px">
+          <span style="color:#10b981; font-size:14px">■</span> Data property assertions
+        </div>
+        <div style="font-size:13px">{{n.def}}</div>
+        <div class="src" style="margin-top:2px">Provenance: {{n.std}} &mdash; clause {{n.cl}}</div>
+        @if (n.note) {<div class="src" style="font-size:12px; margin-top:2px">Note: {{n.note}}</div>}
+
+        <div class="k" style="color: #38bdf8; display:flex; align-items:center; gap:4px; margin-top:10px">
+          <span style="color:#38bdf8; font-size:14px">■</span> Object property assertions (Outgoing {{outEdges().length}})
+        </div>
         @for (e of outEdges(); track $index) {
           <div class="nb" (click)="jump(e.t)">
-            <span class="dot" [style.background]="'var('+(pcol[nodeOf(e.t)?.part]||'--mut')+')'"></span>
+            <span style="color:#38bdf8; font-weight:bold">■</span>
             &rarr; <b>[{{e.type}}]</b> {{nodeOf(e.t)?.name || e.t}}
             <div class="src">{{e.std}} {{e.cl}}</div></div>
         } @empty {<div class="src">none</div>}
-        <div class="k">Incoming RDF Predicates (Subject &rarr; Predicate &rarr; Object) ({{inEdges().length}})</div>
+
+        <div class="k" style="color: #38bdf8; display:flex; align-items:center; gap:4px; margin-top:10px">
+          <span style="color:#38bdf8; font-size:14px">■</span> Object property assertions (Incoming {{inEdges().length}})
+        </div>
         @for (e of inEdges(); track $index) {
           <div class="nb" (click)="jump(e.s)">
-            <span class="dot" [style.background]="'var('+(pcol[nodeOf(e.s)?.part]||'--mut')+')'"></span>
+            <span style="color:#38bdf8; font-weight:bold">■</span>
             &larr; <b>[{{e.type}}]</b> {{nodeOf(e.s)?.name || e.s}}
             <div class="src">{{e.std}} {{e.cl}}</div></div>
         } @empty {<div class="src">none</div>}
       } @else if (!fs()) {
-        <p class="hint">Click a Subject or Object node to read its W3C Turtle triples, Predicates, and Literals.
+        <p class="hint">Click a Subject or Object node to read its Protégé RDF Turtle triples, Predicates, and Literals.
         Drag to move a node, scroll to zoom, drag background to pan.</p>
       }
     </div>
   </div>
   <div class="legend">
-    @for (p of partKeys; track p) {
-      <span><span class="dot" [style.background]="'var('+pcol[p]+')'"></span>{{p}}</span>
+    @if (paletteMode() === 'protege') {
+      <span style="font-weight:600; color:var(--acc)">Protégé Taxonomy:</span>
+      <span><span style="color:#f59e0b; font-size:14px; margin-right:3px">●</span> OWL Class</span>
+      <span><span style="color:#a855f7; font-size:14px; margin-right:3px">◆</span> Individual / Subject</span>
+      <span><span style="color:#38bdf8; font-size:14px; margin-right:3px">■</span> Object Property</span>
+      <span><span style="color:#10b981; font-size:14px; margin-right:3px">■</span> Data Property / Literal</span>
+    } @else {
+      @for (p of partKeys; track p) {
+        <span><span class="dot" [style.background]="'var('+pcol[p]+')'"></span>{{p}}</span>
+      }
     }
     <span>node size = connections</span>
-    <span style="margin-left: auto; color: var(--acc)">Format: Subject &rarr; [Predicate Box] &rarr; Object (W3C RDF Triples)</span>
+    <span style="margin-left: auto; color: var(--acc)">Protégé RDF Triple Store Visualization</span>
   </div>`,
 })
 export class GraphTab implements AfterViewInit, OnDestroy {
@@ -126,13 +167,14 @@ export class GraphTab implements AfterViewInit, OnDestroy {
 
   pcol = PCOL;
   partKeys = Object.keys(PCOL);
-  view = signal('usecase');
+  view = signal('core');
   q = signal('');
   hidden = signal(new Set<string>());
   focusId = signal<string | null>(null);
   selected = signal<any | null>(null);
   count = signal('');
   fs = signal(false);
+  paletteMode = signal<'protege' | 'iso'>('protege');
 
   private G: any = null;
   private byId: Record<string, any> = {};
@@ -200,6 +242,22 @@ export class GraphTab implements AfterViewInit, OnDestroy {
   outEdges() { const s = this.selected(); return s ? this.E.filter(e => e.s === s.id) : []; }
   inEdges() { const s = this.selected(); return s ? this.E.filter(e => e.t === s.id) : []; }
 
+  getNodeKind(n: any): 'class' | 'individual' | 'literal' {
+    if (!n) return 'individual';
+    if (n.kind === 'literal' || n.label === 'Literal') return 'literal';
+    if (n.kind === 'class' ||
+        ['Class', 'IsoNode', 'ISO Node', 'owl:Class', 'Concept', 'Function', 'Perspective', 'Principle', 'Process', 'Purpose', 'Requirement', 'State', 'WorkflowPhase', 'Workflow Phase'].includes(n.label) ||
+        ['IsoNode', 'Concept', 'Function', 'Perspective', 'Principle', 'Process', 'Purpose', 'Requirement', 'State', 'WorkflowPhase'].includes(n.id)) {
+      return 'class';
+    }
+    return 'individual';
+  }
+
+  togglePalette() {
+    this.paletteMode.set(this.paletteMode() === 'protege' ? 'iso' : 'protege');
+    this.draw();
+  }
+
   showNode(id: string) {
     const n = this.byId[id]; if (!n) return;
     this.q.set(n.name); this.view.set('');
@@ -220,13 +278,20 @@ export class GraphTab implements AfterViewInit, OnDestroy {
     if (!this.G) return;
     const q = this.q().trim().toLowerCase();
     const focusId = this.focusId();
+    const taxonomyClassIds = new Set(['IsoNode', 'Concept', 'Function', 'Perspective', 'Principle', 'Process', 'Purpose', 'Requirement', 'State', 'WorkflowPhase']);
     let keep: Set<string>;
     if (focusId) {
       keep = new Set([focusId]);
       this.G.edges.forEach((e: any) => { if (e.s === focusId) keep.add(e.t); if (e.t === focusId) keep.add(e.s); });
-    } else if (this.view() === 'all') keep = new Set(this.G.nodes.map((n: any) => n.id));
-    else if (this.view() === 'high') keep = new Set(this.G.nodes.filter((n: any) => n.pdm === 'high').map((n: any) => n.id));
-    else keep = new Set(USECASE.filter(s => this.byId[s]));
+    } else if (this.view() === 'core') {
+      keep = new Set(USECASE_CORE.filter(s => this.byId[s]));
+    } else if (this.view() === 'usecase') {
+      keep = new Set(USECASE.filter(s => this.byId[s]));
+    } else if (this.view() === 'high') {
+      keep = new Set(this.G.nodes.filter((n: any) => n.pdm === 'high').map((n: any) => n.id));
+    } else {
+      keep = new Set(this.G.nodes.map((n: any) => n.id));
+    }
     if (q && !focusId) {
       const hit = new Set(this.G.nodes
         .filter((n: any) => n.name.toLowerCase().includes(q) || n.id.includes(q)).map((n: any) => n.id));
@@ -234,6 +299,14 @@ export class GraphTab implements AfterViewInit, OnDestroy {
       this.G.edges.forEach((e: any) => { if (hit.has(e.s)) grow.add(e.t); if (hit.has(e.t)) grow.add(e.s); });
       keep = grow as Set<string>;
     }
+
+    // Keep connected yellow OWL Class nodes for active individuals
+    const extraClasses = new Set<string>();
+    this.G.edges.forEach((e: any) => {
+      if (keep.has(e.s) && taxonomyClassIds.has(e.t)) extraClasses.add(e.t);
+      if (keep.has(e.t) && taxonomyClassIds.has(e.s)) extraClasses.add(e.s);
+    });
+    extraClasses.forEach(c => keep.add(c));
     const old: Record<string, any> = {}; this.N.forEach(n => old[n.id] = n);
     const hidden = this.hidden();
     this.N = this.G.nodes.filter((n: any) => keep.has(n.id) && !hidden.has(n.part)).map((n: any) => {
@@ -249,13 +322,13 @@ export class GraphTab implements AfterViewInit, OnDestroy {
       + (focusId ? ` (focused on ${this.byId[focusId].name})` : ''));
     if (relayout) { this.seed(); this.userMoved = false;
       this.selected.set(focusId ? this.N.find(n => n.id === focusId) || null : null);
-      this.settle(this.N.length > 200 ? 760 : 440); }
+      this.settle(this.N.length > 200 ? 760 : 520); }
     else { this.fit(); }
   }
 
   private seed() {
     const A = Math.PI * (3 - Math.sqrt(5));
-    this.N.forEach((n, i) => { const r = 16 * Math.sqrt(0.5 + i), a = i * A;
+    this.N.forEach((n, i) => { const r = 38 * Math.sqrt(0.5 + i), a = i * A;
       n.x = r * Math.cos(a); n.y = r * Math.sin(a); n.vx = 0; n.vy = 0; });
   }
   private tickOnce() {
@@ -311,7 +384,28 @@ export class GraphTab implements AfterViewInit, OnDestroy {
     this.ty = this.H / 2 - (y0 + y1) / 2 * this.scale;
     this.draw();
   }
-  private rad(n: any) { return 5 + Math.min(9, Math.sqrt(n.deg || 1) * 2.1); }
+  private rad(n: any) { return 6 + Math.min(9, Math.sqrt(n.deg || 1) * 2.1); }
+
+  private drawShape(ctx: CanvasRenderingContext2D, kind: string, X: number, Y: number, r: number) {
+    ctx.beginPath();
+    if (kind === 'class') {
+      ctx.arc(X, Y, r, 0, Math.PI * 2);
+    } else if (kind === 'individual') {
+      ctx.moveTo(X, Y - r * 1.3);
+      ctx.lineTo(X + r * 1.3, Y);
+      ctx.lineTo(X, Y + r * 1.3);
+      ctx.lineTo(X - r * 1.3, Y);
+      ctx.closePath();
+    } else { // literal
+      const w = r * 2.2, h = r * 1.5;
+      if ((ctx as any).roundRect) {
+        (ctx as any).roundRect(X - w / 2, Y - h / 2, w, h, 4);
+      } else {
+        ctx.rect(X - w / 2, Y - h / 2, w, h);
+      }
+    }
+  }
+
   private draw() {
     const ctx = this.ctx; if (!ctx) return;
     const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
@@ -319,8 +413,9 @@ export class GraphTab implements AfterViewInit, OnDestroy {
     const sel = this.selected();
     const nbr = sel ? new Set(this.E.filter(e => e.s === sel.id || e.t === sel.id)
       .flatMap(e => [e.s, e.t])) : null;
+    const isProtege = this.paletteMode() === 'protege';
 
-    // 1. Draw RDF Directed Arrows & Predicate Label Boxes in the Center of Arrows
+    // 1. Draw RDF Directed Arrows & Predicate Label Boxes (Protégé Blue Object Property / Green Data Property)
     for (const e of this.E) {
       const on = sel && (e.s === sel.id || e.t === sel.id);
       const x1 = e.a.x * this.scale + this.tx;
@@ -328,9 +423,16 @@ export class GraphTab implements AfterViewInit, OnDestroy {
       const x2 = e.b.x * this.scale + this.tx;
       const y2 = e.b.y * this.scale + this.ty;
 
+      const targetKind = this.getNodeKind(e.b);
+      const isDataProperty = targetKind === 'literal' || e.type.startsWith('iso:def') || e.type.includes('Clause');
+
       ctx.lineWidth = on ? 2.2 : 1.2;
-      ctx.strokeStyle = on ? this.cssv('--acc') : this.cssv('--edge');
-      ctx.globalAlpha = sel ? (on ? 0.95 : 0.15) : 0.55;
+      if (isProtege) {
+        ctx.strokeStyle = on ? this.cssv('--acc') : (isDataProperty ? (isDark ? '#059669' : '#16a34a') : (isDark ? '#0284c7' : '#2563eb'));
+      } else {
+        ctx.strokeStyle = on ? this.cssv('--acc') : this.cssv('--edge');
+      }
+      ctx.globalAlpha = sel ? (on ? 0.95 : 0.15) : 0.65;
 
       // Arrow Edge Line
       ctx.beginPath();
@@ -349,7 +451,7 @@ export class GraphTab implements AfterViewInit, OnDestroy {
       ctx.moveTo(arrowX, arrowY);
       ctx.lineTo(arrowX - headlen * Math.cos(angle - Math.PI / 6), arrowY - headlen * Math.sin(angle - Math.PI / 6));
       ctx.lineTo(arrowX - headlen * Math.cos(angle + Math.PI / 6), arrowY - headlen * Math.sin(angle + Math.PI / 6));
-      ctx.fillStyle = on ? this.cssv('--acc') : this.cssv('--edge');
+      ctx.fillStyle = ctx.strokeStyle;
       ctx.fill();
 
       // RDF Predicate Label Box in the center of the arrow line
@@ -363,51 +465,87 @@ export class GraphTab implements AfterViewInit, OnDestroy {
         const ph = 14;
 
         ctx.globalAlpha = sel ? (on ? 1.0 : 0.2) : 0.92;
-        ctx.fillStyle = isDark ? '#1e1e23' : '#ffffff';
+        ctx.fillStyle = isDark ? '#0f172a' : '#ffffff';
         ctx.fillRect(mx - pw / 2, my - ph / 2, pw, ph);
-        ctx.strokeStyle = on ? this.cssv('--acc') : (isDark ? '#3a3a42' : '#c8c8c2');
+
+        if (isProtege) {
+          ctx.strokeStyle = on ? this.cssv('--acc') : (isDataProperty ? '#10b981' : '#38bdf8');
+        } else {
+          ctx.strokeStyle = on ? this.cssv('--acc') : (isDark ? '#3a3a42' : '#c8c8c2');
+        }
         ctx.lineWidth = 1;
         ctx.strokeRect(mx - pw / 2, my - ph / 2, pw, ph);
 
-        ctx.fillStyle = on ? this.cssv('--acc') : (isDark ? '#e8e8e4' : '#1a1a18');
+        if (isProtege) {
+          ctx.fillStyle = on ? this.cssv('--acc') : (isDataProperty ? '#34d399' : '#38bdf8');
+        } else {
+          ctx.fillStyle = on ? this.cssv('--acc') : (isDark ? '#e8e8e4' : '#1a1a18');
+        }
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
         ctx.fillText(txt, mx, my);
       }
     }
 
-    // 2. Draw Subject & Object Nodes with Double Rim (Matching RDF Triple Store Diagram)
+    // 2. Draw Subject & Object Nodes with Protégé Shapes (Circle Class, Diamond Individual, Rect Literal)
     ctx.globalAlpha = 1;
     for (const a of this.N) {
       const X = a.x * this.scale + this.tx, Y = a.y * this.scale + this.ty;
       const r = this.rad(a) * Math.min(1.5, Math.max(0.6, this.scale));
       const dim = sel && nbr && !nbr.has(a.id);
+      const kind = this.getNodeKind(a);
       ctx.globalAlpha = dim ? 0.2 : 1;
 
-      // Outer Rim Ring (RDF Node Outline as shown in diagram)
-      ctx.beginPath();
-      ctx.arc(X, Y, r + 3.5, 0, 6.284);
-      ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.15)';
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
+      if (isProtege) {
+        // Outer Rim Ring with Protégé translucent halo
+        let rimColor = 'rgba(168, 85, 247, 0.35)'; // Purple for individual
+        if (kind === 'class') rimColor = 'rgba(245, 158, 11, 0.4)'; // Yellow for class
+        else if (kind === 'literal') rimColor = 'rgba(16, 185, 129, 0.4)'; // Green for literal
 
-      // Main Circle Fill
-      ctx.beginPath(); ctx.arc(X, Y, r, 0, 6.284);
-      ctx.fillStyle = a.kind === 'literal' ? '#f59e0b' : this.cssv(PCOL[a.part] || '--mut');
-      ctx.fill();
+        this.drawShape(ctx, kind, X, Y, r + 3.5);
+        ctx.strokeStyle = rimColor;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        // Fill Protégé shape
+        this.drawShape(ctx, kind, X, Y, r);
+        if (kind === 'class') {
+          ctx.fillStyle = isDark ? '#f59e0b' : '#d97706'; // Protégé Yellow Circle
+        } else if (kind === 'individual') {
+          ctx.fillStyle = isDark ? '#a855f7' : '#7e22ce'; // Protégé Purple Diamond
+        } else {
+          ctx.fillStyle = isDark ? '#10b981' : '#15803d'; // Protégé Green Rect Tag
+        }
+        ctx.fill();
+      } else {
+        // Legacy ISO Part Part-color rendering
+        ctx.beginPath(); ctx.arc(X, Y, r + 3.5, 0, 6.284);
+        ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.18)' : 'rgba(0,0,0,0.15)';
+        ctx.lineWidth = 1.5; ctx.stroke();
+
+        ctx.beginPath(); ctx.arc(X, Y, r, 0, 6.284);
+        ctx.fillStyle = a.kind === 'literal' ? '#f59e0b' : this.cssv(PCOL[a.part] || '--mut');
+        ctx.fill();
+      }
 
       if (a === sel || a === this.hover) {
-        ctx.lineWidth = 2.5; ctx.strokeStyle = this.cssv('--acc'); ctx.stroke(); }
+        this.drawShape(ctx, kind, X, Y, r);
+        ctx.lineWidth = 2.5; ctx.strokeStyle = this.cssv('--acc'); ctx.stroke();
+      }
       if (a.pin) {
-        ctx.globalAlpha = dim ? 0.2 : 0.6; ctx.beginPath(); ctx.arc(X, Y, r + 5.5, 0, 6.284);
-        ctx.strokeStyle = this.cssv('--mut'); ctx.stroke(); }
+        ctx.globalAlpha = dim ? 0.2 : 0.6;
+        this.drawShape(ctx, kind, X, Y, r + 5.5);
+        ctx.strokeStyle = this.cssv('--mut'); ctx.stroke();
+      }
 
       if (!dim && (this.scale > 0.6 || a === sel || a === this.hover || this.N.length < 50)) {
         ctx.globalAlpha = 0.95; ctx.fillStyle = this.cssv('--fg');
         ctx.font = '11px ui-sans-serif,-apple-system,sans-serif'; ctx.textAlign = 'center';
         ctx.textBaseline = 'alphabetic';
         const t = a.name.length > 30 ? a.name.slice(0, 29) + '...' : a.name;
-        ctx.fillText(t, X, Y - r - 6); }
+        const offsetY = kind === 'individual' ? Y - r * 1.3 - 5 : (kind === 'literal' ? Y - r * 0.9 - 5 : Y - r - 6);
+        ctx.fillText(t, X, offsetY);
+      }
     }
     ctx.globalAlpha = 1;
   }
